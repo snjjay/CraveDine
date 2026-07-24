@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EatKath.API.Controllers;
-[Authorize]
+
 [ApiController]
 [Route("api/[controller]")]
 public class CuisineController : ControllerBase
@@ -16,6 +16,8 @@ public class CuisineController : ControllerBase
         _cuisineService = cuisineService;
     }
 
+    // Public - Anyone can view all cuisines
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -23,6 +25,8 @@ public class CuisineController : ControllerBase
         return Ok(cuisines);
     }
 
+    // Public - Anyone can view a single cuisine
+    [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -36,8 +40,9 @@ public class CuisineController : ControllerBase
         return Ok(cuisine);
     }
 
-    [HttpPost]
+    // Protected - Admin only
     [Authorize(Roles = "Admin")]
+    [HttpPost]
     public async Task<IActionResult> Create(CreateCuisineDto dto)
     {
         var createdCuisine = await _cuisineService.CreateAsync(dto);
@@ -48,8 +53,9 @@ public class CuisineController : ControllerBase
             createdCuisine);
     }
 
-    [HttpPut("{id}")]
+    // Protected - Admin only
     [Authorize(Roles = "Admin")]
+    [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, UpdateCuisineDto dto)
     {
         var updatedCuisine = await _cuisineService.UpdateAsync(id, dto);
@@ -62,8 +68,9 @@ public class CuisineController : ControllerBase
         return Ok(updatedCuisine);
     }
 
-    [HttpDelete("{id}")]
+    // Protected - Admin only
     [Authorize(Roles = "Admin")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         var deleted = await _cuisineService.DeleteAsync(id);

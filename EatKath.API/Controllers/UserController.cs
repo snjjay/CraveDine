@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EatKath.API.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
@@ -17,6 +17,7 @@ namespace EatKath.API.Controllers
             _userService = userService;
         }
 
+        // Admin only - Get all users
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -24,6 +25,7 @@ namespace EatKath.API.Controllers
             return Ok(users);
         }
 
+        // Admin only - Get user by ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -35,9 +37,9 @@ namespace EatKath.API.Controllers
             return Ok(user);
         }
 
+        // Admin only - Create user
         [HttpPost]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create(CreateUserDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateUserDto dto)
         {
             var user = await _userService.CreateAsync(dto);
 
@@ -47,9 +49,9 @@ namespace EatKath.API.Controllers
                 user);
         }
 
+        // Admin only - Update user
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Update(int id, UpdateUserDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto dto)
         {
             var user = await _userService.UpdateAsync(id, dto);
 
@@ -59,8 +61,8 @@ namespace EatKath.API.Controllers
             return Ok(user);
         }
 
+        // Admin only - Delete user
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var deleted = await _userService.DeleteAsync(id);

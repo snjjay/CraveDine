@@ -32,6 +32,7 @@ builder.Services.AddScoped<IDiningTypeService, DiningTypeService>();
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IDealService, DealService>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
@@ -90,6 +91,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddHttpContextAccessor();
 
 
 var app = builder.Build();

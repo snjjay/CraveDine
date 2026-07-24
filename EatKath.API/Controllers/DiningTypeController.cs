@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EatKath.API.Controllers;
-[Authorize]
+
 [ApiController]
 [Route("api/[controller]")]
 public class DiningTypeController : ControllerBase
@@ -16,6 +16,8 @@ public class DiningTypeController : ControllerBase
         _diningTypeService = diningTypeService;
     }
 
+    // Public - Anyone can view all dining types
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -23,6 +25,8 @@ public class DiningTypeController : ControllerBase
         return Ok(diningTypes);
     }
 
+    // Public - Anyone can view a single dining type
+    [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -36,8 +40,9 @@ public class DiningTypeController : ControllerBase
         return Ok(diningType);
     }
 
-    [HttpPost]
+    // Protected - Admin only
     [Authorize(Roles = "Admin")]
+    [HttpPost]
     public async Task<IActionResult> Create(CreateDiningTypeDto dto)
     {
         var createdDiningType = await _diningTypeService.CreateAsync(dto);
@@ -48,8 +53,9 @@ public class DiningTypeController : ControllerBase
             createdDiningType);
     }
 
-    [HttpPut("{id}")]
+    // Protected - Admin only
     [Authorize(Roles = "Admin")]
+    [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, UpdateDiningTypeDto dto)
     {
         var updatedDiningType = await _diningTypeService.UpdateAsync(id, dto);
@@ -62,8 +68,9 @@ public class DiningTypeController : ControllerBase
         return Ok(updatedDiningType);
     }
 
-    [HttpDelete("{id}")]
+    // Protected - Admin only
     [Authorize(Roles = "Admin")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         var deleted = await _diningTypeService.DeleteAsync(id);

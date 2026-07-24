@@ -1,9 +1,7 @@
 ﻿namespace EatKath.API.DTOs.Deal
 {
-    public class DealDto
+    public class CreateDealDto
     {
-        public int Id { get; set; }
-
         public int RestaurantId { get; set; }
 
         public string Title { get; set; } = string.Empty;

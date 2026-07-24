@@ -3,6 +3,7 @@ using EatKath.API.DTOs.Area;
 using EatKath.API.DTOs.Cuisine;
 using EatKath.API.DTOs.DiningType;
 using EatKath.API.Entities;
+using EatKath.API.DTOs.Deal;
 
 namespace EatKath.API.Mappings;
 
@@ -22,5 +23,9 @@ public class MappingProfile : Profile
         CreateMap<DiningType, DiningTypeDto>();
         CreateMap<CreateDiningTypeDto, DiningType>();
         CreateMap<UpdateDiningTypeDto, DiningType>();
+
+        CreateMap<Deal, DealDto>().ReverseMap();
+        CreateMap<Deal, CreateDealDto>().ReverseMap();
+        CreateMap<Deal, UpdateDealDto>().ReverseMap();
     }
 }
