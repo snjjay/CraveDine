@@ -5,6 +5,7 @@ using EatKath.API.DTOs.User;
 using EatKath.API.Entities;
 using EatKath.API.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace EatKath.API.Services
 {
@@ -12,6 +13,7 @@ namespace EatKath.API.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly PasswordHasher<User> _passwordHasher = new();
 
         public UserService(ApplicationDbContext context, IMapper mapper)
         {
@@ -48,6 +50,7 @@ namespace EatKath.API.Services
                 throw new Exception("Email already exists.");
 
             var user = _mapper.Map<User>(dto);
+            user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
 
             user.CreatedAt = DateTime.UtcNow;
             user.UpdatedAt = DateTime.UtcNow;

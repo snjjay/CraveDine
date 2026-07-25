@@ -27,7 +27,7 @@ namespace EatKath.API.Data
         public DbSet<RestaurantDiningType> RestaurantDiningTypes => Set<RestaurantDiningType>();
 
         // Menu Tables
-        public DbSet<MenuItem> Menus => Set<MenuItem>();
+
         public DbSet<MenuCategory> MenuCategories => Set<MenuCategory>();
         public DbSet<MenuItem> MenuItems => Set<MenuItem>();
 
@@ -131,13 +131,13 @@ namespace EatKath.API.Data
             // Menu Relationships
             // ============================
 
-                modelBuilder.Entity<MenuItem>()
-           .HasOne(m => m.Restaurant)
-           .WithMany(r => r.MenuItems)
-           .HasForeignKey(m => m.RestaurantId)
-           .OnDelete(DeleteBehavior.Cascade);
+                        modelBuilder.Entity<MenuItem>()
+            .HasOne(m => m.Restaurant)
+            .WithMany(r => r.MenuItems)
+            .HasForeignKey(m => m.RestaurantId)
+            .OnDelete(DeleteBehavior.NoAction);
 
-            
+
 
             modelBuilder.Entity<MenuItem>()
                 .HasOne(mi => mi.MenuCategory)

@@ -26,11 +26,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\Menu\" />
     <Folder Include="Helpers\" />
     <Folder Include="Configurations\" />
     <Folder Include="Extensions\" />
     <Folder Include="Repositories\" />
+    <Folder Include="Validators\MenuItem\" />
   </ItemGroup>
 
 </Project>

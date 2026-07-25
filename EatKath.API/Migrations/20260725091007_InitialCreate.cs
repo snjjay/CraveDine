@@ -17,7 +17,7 @@ namespace EatKath.API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -157,22 +157,22 @@ namespace EatKath.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Menus",
+                name: "MenuCategories",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RestaurantId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    DisplayOrder = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Menus", x => x.Id);
+                    table.PrimaryKey("PK_MenuCategories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Menus_Restaurants_RestaurantId",
+                        name: "FK_MenuCategories_Restaurants_RestaurantId",
                         column: x => x.RestaurantId,
                         principalTable: "Restaurants",
                         principalColumn: "Id",
@@ -328,27 +328,6 @@ namespace EatKath.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MenuCategories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    MenuId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DisplayOrder = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MenuCategories", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_MenuCategories_Menus_MenuId",
-                        column: x => x.MenuId,
-                        principalTable: "Menus",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "MenuItems",
                 columns: table => new
                 {
@@ -359,7 +338,8 @@ namespace EatKath.API.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     IsFeatured = table.Column<bool>(type: "bit", nullable: false),
-                    IsAvailable = table.Column<bool>(type: "bit", nullable: false)
+                    IsAvailable = table.Column<bool>(type: "bit", nullable: false),
+                    RestaurantId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -370,7 +350,18 @@ namespace EatKath.API.Migrations
                         principalTable: "MenuCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MenuItems_Restaurants_RestaurantId",
+                        column: x => x.RestaurantId,
+                        principalTable: "Restaurants",
+                        principalColumn: "Id");
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Areas_Name",
+                table: "Areas",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Deals_RestaurantId",
@@ -378,9 +369,9 @@ namespace EatKath.API.Migrations
                 column: "RestaurantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MenuCategories_MenuId",
+                name: "IX_MenuCategories_RestaurantId",
                 table: "MenuCategories",
-                column: "MenuId");
+                column: "RestaurantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MenuItems_MenuCategoryId",
@@ -388,8 +379,8 @@ namespace EatKath.API.Migrations
                 column: "MenuCategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Menus_RestaurantId",
-                table: "Menus",
+                name: "IX_MenuItems_RestaurantId",
+                table: "MenuItems",
                 column: "RestaurantId");
 
             migrationBuilder.CreateIndex(
@@ -478,9 +469,6 @@ namespace EatKath.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "DiningTypes");
-
-            migrationBuilder.DropTable(
-                name: "Menus");
 
             migrationBuilder.DropTable(
                 name: "Restaurants");

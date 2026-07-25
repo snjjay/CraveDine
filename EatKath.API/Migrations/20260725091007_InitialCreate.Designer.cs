@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EatKath.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260725031912_AddMenuManagement")]
-    partial class AddMenuManagement
+    [Migration("20260725091007_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -142,18 +142,21 @@ namespace EatKath.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("MenuId")
+                    b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("RestaurantId")
+                    b.Property<int>("RestaurantId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -183,9 +186,6 @@ namespace EatKath.API.Migrations
                     b.Property<int>("MenuCategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MenuCategoryId1")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -200,13 +200,9 @@ namespace EatKath.API.Migrations
 
                     b.HasIndex("MenuCategoryId");
 
-                    b.HasIndex("MenuCategoryId1")
-                        .IsUnique()
-                        .HasFilter("[MenuCategoryId1] IS NOT NULL");
-
                     b.HasIndex("RestaurantId");
 
-                    b.ToTable("MenuItem");
+                    b.ToTable("MenuItems");
                 });
 
             modelBuilder.Entity("EatKath.API.Entities.Redemption", b =>
@@ -487,9 +483,13 @@ namespace EatKath.API.Migrations
 
             modelBuilder.Entity("EatKath.API.Entities.MenuCategory", b =>
                 {
-                    b.HasOne("EatKath.API.Entities.Restaurant", null)
+                    b.HasOne("EatKath.API.Entities.Restaurant", "Restaurant")
                         .WithMany("MenuCategories")
-                        .HasForeignKey("RestaurantId");
+                        .HasForeignKey("RestaurantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Restaurant");
                 });
 
             modelBuilder.Entity("EatKath.API.Entities.MenuItem", b =>
@@ -500,14 +500,10 @@ namespace EatKath.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EatKath.API.Entities.MenuCategory", null)
-                        .WithOne("MenuItem")
-                        .HasForeignKey("EatKath.API.Entities.MenuItem", "MenuCategoryId1");
-
                     b.HasOne("EatKath.API.Entities.Restaurant", "Restaurant")
                         .WithMany("MenuItems")
                         .HasForeignKey("RestaurantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("MenuCategory");
@@ -665,9 +661,6 @@ namespace EatKath.API.Migrations
 
             modelBuilder.Entity("EatKath.API.Entities.MenuCategory", b =>
                 {
-                    b.Navigation("MenuItem")
-                        .IsRequired();
-
                     b.Navigation("MenuItems");
                 });
 

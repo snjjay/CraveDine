@@ -20,7 +20,7 @@ namespace EatKath.API.Validators.User
                 .EmailAddress()
                 .MaximumLength(255);
 
-            RuleFor(x => x.PasswordHash)
+            RuleFor(x => x.Password)
                 .NotEmpty()
                 .MinimumLength(6);
 

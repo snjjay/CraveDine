@@ -38,8 +38,8 @@ namespace EatKath.API.Controllers
             return Ok(restaurant);
         }
 
-        // Protected - Admin only
-        [Authorize(Roles = "Admin")]
+        // Admin or Owner can create a restaurant
+        [Authorize(Roles = "Admin,Owner")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateRestaurantDto dto)
         {
@@ -51,8 +51,8 @@ namespace EatKath.API.Controllers
                 restaurant);
         }
 
-        // Protected - Admin only
-        [Authorize(Roles = "Admin")]
+        // Admin or Owner can update
+        [Authorize(Roles = "Admin,Owner")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateRestaurantDto dto)
         {
@@ -64,7 +64,7 @@ namespace EatKath.API.Controllers
             return Ok(restaurant);
         }
 
-        // Protected - Admin only
+        // Only Admin can delete restaurants
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
