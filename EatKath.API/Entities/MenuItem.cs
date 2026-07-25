@@ -18,5 +18,8 @@
 
         // Navigation Property
         public MenuCategory MenuCategory { get; set; } = null!;
+        public Restaurant Restaurant { get; set; } = null!;
+        public int RestaurantId { get; set; }
+
     }
 }

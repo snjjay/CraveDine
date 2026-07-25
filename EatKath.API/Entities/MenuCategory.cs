@@ -11,7 +11,7 @@
         public int DisplayOrder { get; set; }
 
         // Navigation Properties
-        public Menu Menu { get; set; } = null!;
+        public MenuItem MenuItem { get; set; } = null!;
 
         public ICollection<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
     }

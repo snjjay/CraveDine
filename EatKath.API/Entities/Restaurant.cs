@@ -38,7 +38,9 @@
 
         public ICollection<RestaurantDiningType> RestaurantDiningTypes { get; set; } = new List<RestaurantDiningType>();
 
-        public ICollection<Menu> Menus { get; set; } = new List<Menu>();
+        public ICollection<MenuCategory> MenuCategories { get; set; } = new List<MenuCategory>();
+
+        public ICollection<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
 
         public ICollection<Deal> Deals { get; set; } = new List<Deal>();
 
