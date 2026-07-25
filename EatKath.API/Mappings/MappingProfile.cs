@@ -7,6 +7,7 @@ using EatKath.API.DTOs.MenuCategory;
 using EatKath.API.Entities;
 using EatKath.API.DTOs.User;
 using EatKath.API.DTOs.MenuItem;
+using EatKath.API.DTOs.RestaurantImage;
 
 
 namespace EatKath.API.Mappings;
@@ -52,5 +53,9 @@ public class MappingProfile : Profile
         CreateMap<Deal, DealDto>().ReverseMap();
         CreateMap<Deal, CreateDealDto>().ReverseMap();
         CreateMap<Deal, UpdateDealDto>().ReverseMap();
+
+        CreateMap<RestaurantImage, RestaurantImageDto>();
+        CreateMap<CreateRestaurantImageDto, RestaurantImage>();
+        CreateMap<UpdateRestaurantImageDto, RestaurantImage>();
     }
 }

@@ -1,6 +1,6 @@
-﻿namespace EatKath.API.Entities
+﻿namespace EatKath.API.DTOs.RestaurantImage
 {
-    public class RestaurantImage
+    public class RestaurantImageDto
     {
         public int Id { get; set; }
 
@@ -11,7 +11,5 @@
         public bool IsLogo { get; set; }
 
         public int DisplayOrder { get; set; }
-
-        public Restaurant Restaurant { get; set; } = null!;
     }
 }
