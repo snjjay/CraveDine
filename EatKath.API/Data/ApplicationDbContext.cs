@@ -27,7 +27,6 @@ namespace EatKath.API.Data
         public DbSet<RestaurantDiningType> RestaurantDiningTypes => Set<RestaurantDiningType>();
 
         // Menu Tables
-
         public DbSet<MenuCategory> MenuCategories => Set<MenuCategory>();
         public DbSet<MenuItem> MenuItems => Set<MenuItem>();
 
@@ -41,42 +40,42 @@ namespace EatKath.API.Data
             base.OnModelCreating(modelBuilder);
 
             // ============================
-            // Composite Primary Keys
+            // Composite Keys
             // ============================
 
             modelBuilder.Entity<RestaurantCuisine>()
-                .HasKey(rc => new { rc.RestaurantId, rc.CuisineId });
+                .HasKey(x => new { x.RestaurantId, x.CuisineId });
 
             modelBuilder.Entity<RestaurantDiningType>()
-                .HasKey(rdt => new { rdt.RestaurantId, rdt.DiningTypeId });
+                .HasKey(x => new { x.RestaurantId, x.DiningTypeId });
 
             modelBuilder.Entity<UserFavorite>()
-                .HasKey(uf => new { uf.UserId, uf.RestaurantId });
+                .HasKey(x => new { x.UserId, x.RestaurantId });
 
             // ============================
-            // User Relationships
+            // User
             // ============================
 
             modelBuilder.Entity<User>()
-                .HasOne(u => u.Role)
-                .WithMany(r => r.Users)
-                .HasForeignKey(u => u.RoleId)
+                .HasOne(x => x.Role)
+                .WithMany(x => x.Users)
+                .HasForeignKey(x => x.RoleId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // ============================
-            // Restaurant Relationships
+            // Restaurant
             // ============================
 
             modelBuilder.Entity<Restaurant>()
-                .HasOne(r => r.Owner)
-                .WithMany(u => u.Restaurants)
-                .HasForeignKey(r => r.OwnerId)
+                .HasOne(x => x.Owner)
+                .WithMany(x => x.Restaurants)
+                .HasForeignKey(x => x.OwnerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Restaurant>()
-                .HasOne(r => r.Area)
-                .WithMany(a => a.Restaurants)
-                .HasForeignKey(r => r.AreaId)
+                .HasOne(x => x.Area)
+                .WithMany(x => x.Restaurants)
+                .HasForeignKey(x => x.AreaId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // ============================
@@ -84,9 +83,9 @@ namespace EatKath.API.Data
             // ============================
 
             modelBuilder.Entity<RestaurantImage>()
-                .HasOne(ri => ri.Restaurant)
-                .WithMany(r => r.Images)
-                .HasForeignKey(ri => ri.RestaurantId)
+                .HasOne(x => x.Restaurant)
+                .WithMany(x => x.Images)
+                .HasForeignKey(x => x.RestaurantId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // ============================
@@ -94,9 +93,9 @@ namespace EatKath.API.Data
             // ============================
 
             modelBuilder.Entity<RestaurantOpeningHour>()
-                .HasOne(roh => roh.Restaurant)
-                .WithMany(r => r.OpeningHours)
-                .HasForeignKey(roh => roh.RestaurantId)
+                .HasOne(x => x.Restaurant)
+                .WithMany(x => x.OpeningHours)
+                .HasForeignKey(x => x.RestaurantId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // ============================
@@ -104,45 +103,43 @@ namespace EatKath.API.Data
             // ============================
 
             modelBuilder.Entity<RestaurantCuisine>()
-                .HasOne(rc => rc.Restaurant)
-                .WithMany(r => r.RestaurantCuisines)
-                .HasForeignKey(rc => rc.RestaurantId);
+                .HasOne(x => x.Restaurant)
+                .WithMany(x => x.RestaurantCuisines)
+                .HasForeignKey(x => x.RestaurantId);
 
             modelBuilder.Entity<RestaurantCuisine>()
-                .HasOne(rc => rc.Cuisine)
-                .WithMany(c => c.RestaurantCuisines)
-                .HasForeignKey(rc => rc.CuisineId);
+                .HasOne(x => x.Cuisine)
+                .WithMany(x => x.RestaurantCuisines)
+                .HasForeignKey(x => x.CuisineId);
 
             // ============================
-            // Restaurant Dining Types
+            // Restaurant Dining Type
             // ============================
 
             modelBuilder.Entity<RestaurantDiningType>()
-                .HasOne(rdt => rdt.Restaurant)
-                .WithMany(r => r.RestaurantDiningTypes)
-                .HasForeignKey(rdt => rdt.RestaurantId);
+                .HasOne(x => x.Restaurant)
+                .WithMany(x => x.RestaurantDiningTypes)
+                .HasForeignKey(x => x.RestaurantId);
 
             modelBuilder.Entity<RestaurantDiningType>()
-                .HasOne(rdt => rdt.DiningType)
-                .WithMany(dt => dt.RestaurantDiningTypes)
-                .HasForeignKey(rdt => rdt.DiningTypeId);
+                .HasOne(x => x.DiningType)
+                .WithMany(x => x.RestaurantDiningTypes)
+                .HasForeignKey(x => x.DiningTypeId);
 
             // ============================
-            // Menu Relationships
+            // Menu
             // ============================
-
-                        modelBuilder.Entity<MenuItem>()
-            .HasOne(m => m.Restaurant)
-            .WithMany(r => r.MenuItems)
-            .HasForeignKey(m => m.RestaurantId)
-            .OnDelete(DeleteBehavior.NoAction);
-
-
 
             modelBuilder.Entity<MenuItem>()
-                .HasOne(mi => mi.MenuCategory)
-                .WithMany(mc => mc.MenuItems)
-                .HasForeignKey(mi => mi.MenuCategoryId)
+                .HasOne(x => x.Restaurant)
+                .WithMany(x => x.MenuItems)
+                .HasForeignKey(x => x.RestaurantId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<MenuItem>()
+                .HasOne(x => x.MenuCategory)
+                .WithMany(x => x.MenuItems)
+                .HasForeignKey(x => x.MenuCategoryId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // ============================
@@ -150,9 +147,9 @@ namespace EatKath.API.Data
             // ============================
 
             modelBuilder.Entity<Deal>()
-                .HasOne(d => d.Restaurant)
-                .WithMany(r => r.Deals)
-                .HasForeignKey(d => d.RestaurantId)
+                .HasOne(x => x.Restaurant)
+                .WithMany(x => x.Deals)
+                .HasForeignKey(x => x.RestaurantId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // ============================
@@ -160,15 +157,15 @@ namespace EatKath.API.Data
             // ============================
 
             modelBuilder.Entity<Redemption>()
-                .HasOne(r => r.User)
-                .WithMany(u => u.Redemptions)
-                .HasForeignKey(r => r.UserId)
+                .HasOne(x => x.User)
+                .WithMany(x => x.Redemptions)
+                .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Redemption>()
-                .HasOne(r => r.Deal)
-                .WithMany(d => d.Redemptions)
-                .HasForeignKey(r => r.DealId)
+                .HasOne(x => x.Deal)
+                .WithMany(x => x.Redemptions)
+                .HasForeignKey(x => x.DealId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // ============================
@@ -176,25 +173,22 @@ namespace EatKath.API.Data
             // ============================
 
             modelBuilder.Entity<UserFavorite>()
-                .HasOne(uf => uf.User)
-                .WithMany(u => u.UserFavorites)
-                .HasForeignKey(uf => uf.UserId);
+                .HasOne(x => x.User)
+                .WithMany(x => x.UserFavorites)
+                .HasForeignKey(x => x.UserId);
 
             modelBuilder.Entity<UserFavorite>()
-                .HasOne(uf => uf.Restaurant)
-                .WithMany(r => r.UserFavorites)
-                .HasForeignKey(uf => uf.RestaurantId);
+                .HasOne(x => x.Restaurant)
+                .WithMany(x => x.UserFavorites)
+                .HasForeignKey(x => x.RestaurantId);
 
             // ============================
-            // Unique Constraints
+            // Unique Indexes
             // ============================
 
             modelBuilder.Entity<Area>()
-                .HasIndex(a => a.Name)
+                .HasIndex(x => x.Name)
                 .IsUnique();
-
-
-
         }
     }
 }

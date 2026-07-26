@@ -1,4 +1,5 @@
 ﻿using EatKath.API.Entities;
+using EatKath.API.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace EatKath.API.Data.Seeders
@@ -158,64 +159,66 @@ namespace EatKath.API.Data.Seeders
             }
 
             // ============================
-            // Deals
+            // Offers (Deals)
             // ============================
             if (!context.Deals.Any())
             {
                 context.Deals.AddRange(
+
                     new Deal
                     {
                         RestaurantId = restaurant.Id,
-                        Title = "Chicken Momo Combo",
-                        Description = "Chicken Momo + Coke",
-                        OriginalPrice = 18.99m,
-                        DiscountedPrice = 13.99m,
-                        StartDate = DateTime.UtcNow,
-                        EndDate = DateTime.UtcNow.AddMonths(3),
+                        Title = "25% OFF Dine-In",
+                        Description = "Enjoy 25% off your total dine-in bill.",
+                        DiscountPercentage = 25,
+                        OfferType = OfferType.DineIn,
+                        PromoImageUrl = "",
+                        TermsAndConditions = "Valid for dine-in only.",
+                        StartDate = DateOnly.FromDateTime(DateTime.Today),
+                        EndDate = DateOnly.FromDateTime(DateTime.Today.AddMonths(3)),
+                        StartTime = new TimeOnly(18, 0),
+                        EndTime = new TimeOnly(20, 0),
+                        MaximumGuests = 6,
+                        AdvanceRedeemMinutes = 30,
+                        DailyRedemptionLimit = 20,
                         IsActive = true
                     },
+
                     new Deal
                     {
                         RestaurantId = restaurant.Id,
-                        Title = "Buff Momo Combo",
-                        Description = "Buff Momo + Coke",
-                        OriginalPrice = 19.99m,
-                        DiscountedPrice = 14.99m,
-                        StartDate = DateTime.UtcNow,
-                        EndDate = DateTime.UtcNow.AddMonths(3),
+                        Title = "20% OFF Takeaway",
+                        Description = "Enjoy 20% off your takeaway order.",
+                        DiscountPercentage = 20,
+                        OfferType = OfferType.Takeaway,
+                        PromoImageUrl = "",
+                        TermsAndConditions = "Valid for takeaway only.",
+                        StartDate = DateOnly.FromDateTime(DateTime.Today),
+                        EndDate = DateOnly.FromDateTime(DateTime.Today.AddMonths(3)),
+                        StartTime = new TimeOnly(11, 0),
+                        EndTime = new TimeOnly(15, 0),
+                        MaximumGuests = 1,
+                        AdvanceRedeemMinutes = 30,
+                        DailyRedemptionLimit = 30,
                         IsActive = true
                     },
+
                     new Deal
                     {
                         RestaurantId = restaurant.Id,
-                        Title = "Lunch Special",
-                        Description = "20% off all Momos",
-                        OriginalPrice = 16.99m,
-                        DiscountedPrice = 12.99m,
-                        StartDate = DateTime.UtcNow,
-                        EndDate = DateTime.UtcNow.AddMonths(3),
-                        IsActive = true
-                    },
-                    new Deal
-                    {
-                        RestaurantId = restaurant.Id,
-                        Title = "Family Pack",
-                        Description = "4 Plates of Momos",
-                        OriginalPrice = 59.99m,
-                        DiscountedPrice = 44.99m,
-                        StartDate = DateTime.UtcNow,
-                        EndDate = DateTime.UtcNow.AddMonths(3),
-                        IsActive = true
-                    },
-                    new Deal
-                    {
-                        RestaurantId = restaurant.Id,
-                        Title = "Student Deal",
-                        Description = "Student Discount",
-                        OriginalPrice = 15.99m,
-                        DiscountedPrice = 10.99m,
-                        StartDate = DateTime.UtcNow,
-                        EndDate = DateTime.UtcNow.AddMonths(3),
+                        Title = "15% OFF Family Dinner",
+                        Description = "Perfect for family dining.",
+                        DiscountPercentage = 15,
+                        OfferType = OfferType.DineIn,
+                        PromoImageUrl = "",
+                        TermsAndConditions = "Maximum 6 guests.",
+                        StartDate = DateOnly.FromDateTime(DateTime.Today),
+                        EndDate = DateOnly.FromDateTime(DateTime.Today.AddMonths(3)),
+                        StartTime = new TimeOnly(17, 0),
+                        EndTime = new TimeOnly(21, 0),
+                        MaximumGuests = 6,
+                        AdvanceRedeemMinutes = 30,
+                        DailyRedemptionLimit = 15,
                         IsActive = true
                     });
 

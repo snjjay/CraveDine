@@ -2,6 +2,7 @@
 using EatKath.API.Data;
 using EatKath.API.DTOs.Redemption;
 using EatKath.API.Entities;
+using EatKath.API.Enums;
 using EatKath.API.Interfaces;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -35,26 +36,36 @@ namespace EatKath.API.Services
                 throw new ValidationException(validation.Errors);
 
             var deal = await _context.Deals
-                .Include(x => x.Restaurant)
-                .FirstOrDefaultAsync(x => x.Id == dto.DealId);
+                .Include(d => d.Restaurant)
+                .FirstOrDefaultAsync(d => d.Id == dto.DealId);
 
             if (deal == null)
-                throw new Exception("Deal not found.");
+                throw new Exception("Offer not found.");
 
             if (!deal.IsActive)
-                throw new Exception("Deal is not active.");
+                throw new Exception("Offer is inactive.");
 
-            if (deal.EndDate < DateTime.UtcNow)
-                throw new Exception("Deal has expired.");
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            if (today < deal.StartDate || today > deal.EndDate)
+                throw new Exception("Offer is not available today.");
 
             if (!deal.Restaurant.IsActive)
                 throw new Exception("Restaurant is inactive.");
+
+            if (dto.GuestCount > deal.MaximumGuests)
+                throw new Exception($"Maximum {deal.MaximumGuests} guests allowed.");
 
             var redemption = new Redemption
             {
                 DealId = deal.Id,
                 UserId = _currentUser.UserId,
-                RedemptionAmount = deal.DiscountedPrice,
+                ArrivalDate = dto.ArrivalDate,
+                ArrivalTime = dto.ArrivalTime,
+                GuestCount = dto.GuestCount,
+
+                Status = RedemptionStatus.Redeemed,
+
                 RedeemedAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
@@ -65,11 +76,11 @@ namespace EatKath.API.Services
             await _context.SaveChangesAsync();
 
             await _context.Entry(redemption)
-                .Reference(x => x.Deal)
+                .Reference(r => r.Deal)
                 .LoadAsync();
 
             await _context.Entry(redemption)
-                .Reference(x => x.User)
+                .Reference(r => r.User)
                 .LoadAsync();
 
             return _mapper.Map<RedemptionDto>(redemption);
@@ -78,10 +89,10 @@ namespace EatKath.API.Services
         public async Task<IEnumerable<RedemptionDto>> GetMyHistoryAsync()
         {
             var items = await _context.Redemptions
-                .Include(x => x.Deal)
-                .Include(x => x.User)
-                .Where(x => x.UserId == _currentUser.UserId)
-                .OrderByDescending(x => x.RedeemedAt)
+                .Include(r => r.Deal)
+                .Include(r => r.User)
+                .Where(r => r.UserId == _currentUser.UserId)
+                .OrderByDescending(r => r.RedeemedAt)
                 .ToListAsync();
 
             return _mapper.Map<IEnumerable<RedemptionDto>>(items);
@@ -90,10 +101,10 @@ namespace EatKath.API.Services
         public async Task<IEnumerable<RedemptionDto>> GetRestaurantRedemptionsAsync(int restaurantId)
         {
             var items = await _context.Redemptions
-                .Include(x => x.Deal)
-                .Include(x => x.User)
-                .Where(x => x.Deal.RestaurantId == restaurantId)
-                .OrderByDescending(x => x.RedeemedAt)
+                .Include(r => r.Deal)
+                .Include(r => r.User)
+                .Where(r => r.Deal.RestaurantId == restaurantId)
+                .OrderByDescending(r => r.RedeemedAt)
                 .ToListAsync();
 
             return _mapper.Map<IEnumerable<RedemptionDto>>(items);
@@ -102,9 +113,9 @@ namespace EatKath.API.Services
         public async Task<RedemptionDto?> GetByIdAsync(int id)
         {
             var redemption = await _context.Redemptions
-                .Include(x => x.Deal)
-                .Include(x => x.User)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .Include(r => r.Deal)
+                .Include(r => r.User)
+                .FirstOrDefaultAsync(r => r.Id == id);
 
             if (redemption == null)
                 return null;

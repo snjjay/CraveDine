@@ -9,28 +9,28 @@ namespace EatKath.API.Controllers
     [Route("api/[controller]")]
     public class DealController : ControllerBase
     {
-        private readonly IDealService _dealService;
+        private readonly IDealService _service;
 
-        public DealController(IDealService dealService)
+        public DealController(IDealService service)
         {
-            _dealService = dealService;
+            _service = service;
         }
 
-        // Public - Anyone can view all deals
-        [AllowAnonymous]
+        // ============================
+        // Public Endpoints
+        // ============================
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<DealDto>>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var deals = await _dealService.GetAllAsync();
+            var deals = await _service.GetAllAsync();
             return Ok(deals);
         }
 
-        // Public - Anyone can view a single deal
-        [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<ActionResult<DealDto>> GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var deal = await _dealService.GetByIdAsync(id);
+            var deal = await _service.GetByIdAsync(id);
 
             if (deal == null)
                 return NotFound();
@@ -38,12 +38,15 @@ namespace EatKath.API.Controllers
             return Ok(deal);
         }
 
-        // Protected - Only Admin and Owner can create deals
+        // ============================
+        // Admin / Owner
+        // ============================
+
         [Authorize(Roles = "Admin,Owner")]
         [HttpPost]
-        public async Task<ActionResult<DealDto>> Create(CreateDealDto dto)
+        public async Task<IActionResult> Create(CreateDealDto dto)
         {
-            var deal = await _dealService.CreateAsync(dto);
+            var deal = await _service.CreateAsync(dto);
 
             return CreatedAtAction(
                 nameof(GetById),
@@ -51,28 +54,20 @@ namespace EatKath.API.Controllers
                 deal);
         }
 
-        // Protected - Only Admin and Owner can update deals
         [Authorize(Roles = "Admin,Owner")]
         [HttpPut("{id}")]
-        public async Task<ActionResult<DealDto>> Update(int id, UpdateDealDto dto)
+        public async Task<IActionResult> Update(int id, UpdateDealDto dto)
         {
-            try
-            {
-                var deal = await _dealService.UpdateAsync(id, dto);
-                return Ok(deal);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var deal = await _service.UpdateAsync(id, dto);
+
+            return Ok(deal);
         }
 
-        // Protected - Only Admin and Owner can delete deals
         [Authorize(Roles = "Admin,Owner")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _dealService.DeleteAsync(id);
+            var deleted = await _service.DeleteAsync(id);
 
             if (!deleted)
                 return NotFound();

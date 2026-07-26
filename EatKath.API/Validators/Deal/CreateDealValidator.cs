@@ -3,10 +3,13 @@ using FluentValidation;
 
 namespace EatKath.API.Validators.Deal
 {
-    public class UpdateDealDtoValidator : AbstractValidator<UpdateDealDto>
+    public class CreateDealValidator : AbstractValidator<CreateDealDto>
     {
-        public UpdateDealDtoValidator()
+        public CreateDealValidator()
         {
+            RuleFor(x => x.RestaurantId)
+                .GreaterThan(0);
+
             RuleFor(x => x.Title)
                 .NotEmpty()
                 .MaximumLength(200);
