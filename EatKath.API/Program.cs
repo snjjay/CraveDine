@@ -42,6 +42,7 @@ builder.Services.AddScoped<IRestaurantOpeningHourService, RestaurantOpeningHourS
 builder.Services.AddScoped<IUserFavoriteService, UserFavoriteService>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IRedemptionService, RedemptionService>();
+builder.Services.AddScoped<IOwnerDashboardService, OwnerDashboardService>();
 
 // Learn more about configuring Swagger/OpenAPI.
 builder.Services.AddEndpointsApiExplorer();
