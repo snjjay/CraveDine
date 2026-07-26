@@ -10,6 +10,7 @@ using EatKath.API.DTOs.MenuItem;
 using EatKath.API.DTOs.RestaurantImage;
 using EatKath.API.DTOs.RestaurantOpeningHour;
 using EatKath.API.DTOs.UserFavorite;
+using EatKath.API.DTOs.Redemption;
 
 
 namespace EatKath.API.Mappings;
@@ -70,5 +71,12 @@ public class MappingProfile : Profile
          opt => opt.MapFrom(src => src.Restaurant.Name))
         .ForMember(dest => dest.LogoUrl,
         opt => opt.MapFrom(src => src.Restaurant.LogoUrl));
+
+
+        CreateMap<Redemption, RedemptionDto>()
+        .ForMember(dest => dest.DealTitle,
+         opt => opt.MapFrom(src => src.Deal.Title))
+        .ForMember(dest => dest.CustomerName,
+         opt => opt.MapFrom(src => src.User.FirstName + " " + src.User.LastName));
     }
 }
