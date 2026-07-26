@@ -1,0 +1,196 @@
+# EatKath Project Notes
+
+This document records every major module implemented during the project.
+
+For each module we document:
+
+- Objective
+- Business Problem
+- Database Changes
+- API Changes
+- Business Rules
+- Testing
+- What I Learned
+- Interview Questions
+- Git Commit
+
+---
+
+# Module 1 - Deal/Offer Management & Redemption Workflow
+
+## Objective
+
+Implement an EatClub-style Deal/Offer and Redemption workflow where:
+
+- Restaurant Owner creates Deals/Offers.
+- Customer redeems Deals/Offers.
+- Restaurant completes the redemption after payment.
+
+---
+
+## Business Workflow
+
+### Step 1
+
+Restaurant Owner creates a Deal/Offer.
+
+### Step 2
+
+Customer redeems the Deal/Offer by selecting:
+
+- Arrival Date
+- Arrival Time
+- Guest Count
+
+Status:
+
+Redeemed
+
+### Step 3
+
+Customer arrives and informs the restaurant that they redeemed the Deal/Offer.
+
+Restaurant verifies the conditions.
+
+### Step 4
+
+At payment time the restaurant enters the bill amount.
+
+System automatically calculates:
+
+- Discount Amount
+- Final Amount
+
+Status becomes:
+
+Completed
+
+---
+
+## Database Changes
+
+### Deal
+
+Added:
+
+- Discount Percentage
+- Offer Type
+- Start Time
+- End Time
+- Maximum Guests
+- Daily Redemption Limit
+- Advance Redeem Minutes
+
+### Redemption
+
+Added:
+
+- Arrival Date
+- Arrival Time
+- Guest Count
+- Bill Amount
+- Discount Amount
+- Final Amount
+- Status
+- Completed At
+
+---
+
+## APIs Completed
+
+### Deal
+
+- Create
+- Update
+- Delete
+- Get
+- Get All
+
+### Redemption
+
+- Redeem
+- Complete Redemption
+- Get My History
+- Get Restaurant Redemptions
+- Get By Id
+
+---
+
+## Business Rules
+
+- Restaurant Owner creates Deal/Offer.
+- Customer redeems Deal/Offer.
+- Restaurant Owner completes redemption.
+- Discount is calculated on the server.
+- Customer cannot complete redemption.
+- Completed redemption cannot be completed again.
+
+---
+
+## Testing Performed
+
+Successfully tested using Swagger.
+
+- Deal creation
+- Deal update
+- Deal retrieval
+- Customer redemption
+- Restaurant completion
+- Discount calculation
+- Customer history
+
+---
+
+## What I Learned
+
+- Designing a real-world Deal/Offer workflow.
+- Role-based business logic.
+- Automatic discount calculation.
+- Entity relationships.
+- DTO design.
+- AutoMapper.
+- FluentValidation.
+
+---
+
+## Interview Questions
+
+### Why calculate discounts on the server instead of the client?
+
+Because client values cannot be trusted.
+
+---
+
+### Why separate Deal from Redemption?
+
+A Deal is reusable.
+
+A Redemption is a single customer transaction.
+
+---
+
+### Why use Status?
+
+To control the business workflow.
+
+Redeemed
+
+↓
+
+Completed
+
+↓
+
+Cancelled
+
+↓
+
+Expired
+
+---
+
+## Git Commit
+
+```
+Implement complete deal and redemption workflow
+```
