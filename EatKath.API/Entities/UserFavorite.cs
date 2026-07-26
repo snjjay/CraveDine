@@ -6,7 +6,8 @@
 
         public int RestaurantId { get; set; }
 
-        // Navigation Properties
+        public DateTime CreatedAt { get; set; }
+
         public User User { get; set; } = null!;
 
         public Restaurant Restaurant { get; set; } = null!;

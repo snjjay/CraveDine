@@ -20,9 +20,9 @@ namespace EatKath.API.Services
         private readonly PasswordHasher<Entities.User> _passwordHasher;
 
         public AuthService(
-        ApplicationDbContext context,
-        IConfiguration configuration,
-        IMapper mapper)
+            ApplicationDbContext context,
+            IConfiguration configuration,
+            IMapper mapper)
         {
             _context = context;
             _configuration = configuration;
@@ -39,13 +39,17 @@ namespace EatKath.API.Services
             if (existingUser)
                 throw new Exception("Email already exists.");
 
+            // Automatically assign the User role
+            var userRole = await _context.Roles
+                .FirstAsync(r => r.Name == "Customer");
+
             var user = new Entities.User
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Email = dto.Email,
                 PhoneNumber = dto.PhoneNumber,
-                RoleId = dto.RoleId,
+                RoleId = userRole.Id,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
@@ -92,14 +96,18 @@ namespace EatKath.API.Services
             return _passwordHasher.HashPassword(user, password);
         }
 
-        private bool VerifyPassword(Entities.User user, string password, string passwordHash)
+        private bool VerifyPassword(
+            Entities.User user,
+            string password,
+            string passwordHash)
         {
-            var result = _passwordHasher.VerifyHashedPassword(user, passwordHash, password);
+            var result = _passwordHasher.VerifyHashedPassword(
+                user,
+                passwordHash,
+                password);
 
             return result == PasswordVerificationResult.Success;
         }
-
-
 
         private AuthResponseDto GenerateJwtToken(Entities.User user)
         {
@@ -116,12 +124,12 @@ namespace EatKath.API.Services
                 Convert.ToDouble(jwtSettings["ExpiryInMinutes"]));
 
             var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                    new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
-                    new Claim(ClaimTypes.Role, user.Role.Name)
-                };
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
+                new Claim(ClaimTypes.Role, user.Role.Name)
+            };
 
             var token = new JwtSecurityToken(
                 issuer: jwtSettings["Issuer"],

@@ -9,6 +9,7 @@ using EatKath.API.DTOs.User;
 using EatKath.API.DTOs.MenuItem;
 using EatKath.API.DTOs.RestaurantImage;
 using EatKath.API.DTOs.RestaurantOpeningHour;
+using EatKath.API.DTOs.UserFavorite;
 
 
 namespace EatKath.API.Mappings;
@@ -63,5 +64,11 @@ public class MappingProfile : Profile
         CreateMap<RestaurantOpeningHour, RestaurantOpeningHourDto>();
         CreateMap<CreateRestaurantOpeningHourDto, RestaurantOpeningHour>();
         CreateMap<UpdateRestaurantOpeningHourDto, RestaurantOpeningHour>();
+
+        CreateMap<UserFavorite, UserFavoriteDto>()
+        .ForMember(dest => dest.RestaurantName,
+         opt => opt.MapFrom(src => src.Restaurant.Name))
+        .ForMember(dest => dest.LogoUrl,
+        opt => opt.MapFrom(src => src.Restaurant.LogoUrl));
     }
 }

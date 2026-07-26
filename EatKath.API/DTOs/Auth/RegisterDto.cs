@@ -21,9 +21,6 @@ namespace EatKath.API.DTOs.Auth
         [MinLength(8)]
         public string Password { get; set; } = string.Empty;
 
-        [Required]
-        public int RoleId { get; set; }
-
         [MaxLength(20)]
         public string? PhoneNumber { get; set; }
     }
