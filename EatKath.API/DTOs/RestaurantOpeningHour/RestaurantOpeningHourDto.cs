@@ -1,6 +1,6 @@
-﻿namespace EatKath.API.Entities
+﻿namespace EatKath.API.DTOs.RestaurantOpeningHour
 {
-    public class RestaurantOpeningHour
+    public class RestaurantOpeningHourDto
     {
         public int Id { get; set; }
 
@@ -13,7 +13,5 @@
         public TimeOnly CloseTime { get; set; }
 
         public bool IsClosed { get; set; }
-
-        public Restaurant Restaurant { get; set; } = null!;
     }
 }

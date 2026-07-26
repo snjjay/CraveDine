@@ -38,6 +38,7 @@ builder.Services.AddScoped<IDealService, DealService>();
 builder.Services.AddScoped<IMenuCategoryService, MenuCategoryService>();
 builder.Services.AddScoped<IMenuItemService, MenuItemService>();
 builder.Services.AddScoped<IRestaurantImageService, RestaurantImageService>();
+builder.Services.AddScoped<IRestaurantOpeningHourService, RestaurantOpeningHourService>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 

@@ -8,6 +8,7 @@ using EatKath.API.Entities;
 using EatKath.API.DTOs.User;
 using EatKath.API.DTOs.MenuItem;
 using EatKath.API.DTOs.RestaurantImage;
+using EatKath.API.DTOs.RestaurantOpeningHour;
 
 
 namespace EatKath.API.Mappings;
@@ -57,5 +58,10 @@ public class MappingProfile : Profile
         CreateMap<RestaurantImage, RestaurantImageDto>();
         CreateMap<CreateRestaurantImageDto, RestaurantImage>();
         CreateMap<UpdateRestaurantImageDto, RestaurantImage>();
+
+
+        CreateMap<RestaurantOpeningHour, RestaurantOpeningHourDto>();
+        CreateMap<CreateRestaurantOpeningHourDto, RestaurantOpeningHour>();
+        CreateMap<UpdateRestaurantOpeningHourDto, RestaurantOpeningHour>();
     }
 }
