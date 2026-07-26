@@ -86,6 +86,43 @@ namespace EatKath.API.Services
             return _mapper.Map<RedemptionDto>(redemption);
         }
 
+
+        public async Task<RedemptionDto> CompleteRedemptionAsync(
+    int redemptionId,
+    CompleteRedemptionDto dto)
+        {
+            var redemption = await _context.Redemptions
+                .Include(r => r.Deal)
+                .Include(r => r.User)
+                .FirstOrDefaultAsync(r => r.Id == redemptionId);
+
+            if (redemption == null)
+                throw new Exception("Redemption not found.");
+
+            if (redemption.Status == RedemptionStatus.Completed)
+                throw new Exception("Redemption has already been completed.");
+
+            redemption.BillAmount = dto.BillAmount;
+
+            redemption.DiscountAmount =
+                Math.Round(
+                    dto.BillAmount * redemption.Deal.DiscountPercentage / 100m,
+                    2);
+
+            redemption.FinalAmount =
+                dto.BillAmount - redemption.DiscountAmount;
+
+            redemption.Status = RedemptionStatus.Completed;
+
+            redemption.CompletedAt = DateTime.UtcNow;
+
+            redemption.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<RedemptionDto>(redemption);
+        }
+
         public async Task<IEnumerable<RedemptionDto>> GetMyHistoryAsync()
         {
             var items = await _context.Redemptions

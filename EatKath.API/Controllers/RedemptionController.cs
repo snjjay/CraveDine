@@ -48,5 +48,18 @@ namespace EatKath.API.Controllers
 
             return Ok(result);
         }
+
+
+        [Authorize(Roles = "Owner,Admin")]
+        [HttpPost("{id}/complete")]
+        public async Task<IActionResult> CompleteRedemption(
+        int id,
+        CompleteRedemptionDto dto)
+            {
+                var result = await _service.CompleteRedemptionAsync(id, dto);
+
+                return Ok(result);
+            }
+
     }
 }
