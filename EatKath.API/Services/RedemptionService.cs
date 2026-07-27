@@ -45,10 +45,18 @@ namespace EatKath.API.Services
             if (!deal.IsActive)
                 throw new Exception("Offer is inactive.");
 
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            if (dto.ArrivalDate < deal.StartDate ||
+                dto.ArrivalDate > deal.EndDate)
+                {
+                    throw new Exception("Offer is not available on the selected arrival date.");
+                }
 
-            if (today < deal.StartDate || today > deal.EndDate)
-                throw new Exception("Offer is not available today.");
+            // NEW: Validate arrival time is within the offer time
+            if (dto.ArrivalTime < deal.StartTime ||
+                dto.ArrivalTime > deal.EndTime)
+            {
+                throw new Exception("Arrival time must be within the offer time.");
+            }
 
             if (!deal.Restaurant.IsActive)
                 throw new Exception("Restaurant is inactive.");
@@ -86,10 +94,9 @@ namespace EatKath.API.Services
             return _mapper.Map<RedemptionDto>(redemption);
         }
 
-
         public async Task<RedemptionDto> CompleteRedemptionAsync(
-    int redemptionId,
-    CompleteRedemptionDto dto)
+            int redemptionId,
+            CompleteRedemptionDto dto)
         {
             var redemption = await _context.Redemptions
                 .Include(r => r.Deal)
@@ -113,9 +120,7 @@ namespace EatKath.API.Services
                 dto.BillAmount - redemption.DiscountAmount;
 
             redemption.Status = RedemptionStatus.Completed;
-
             redemption.CompletedAt = DateTime.UtcNow;
-
             redemption.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();

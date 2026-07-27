@@ -40,9 +40,7 @@ namespace EatKath.API.Validators.Deal
             RuleFor(x => x.MaximumGuests)
                 .InclusiveBetween(1, 50);
 
-            RuleFor(x => x.AdvanceRedeemMinutes)
-                .InclusiveBetween(0, 180);
-
+            
             RuleFor(x => x.DailyRedemptionLimit)
                 .GreaterThanOrEqualTo(0);
 

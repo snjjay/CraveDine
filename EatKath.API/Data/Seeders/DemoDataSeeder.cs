@@ -178,8 +178,7 @@ namespace EatKath.API.Data.Seeders
                         EndDate = DateOnly.FromDateTime(DateTime.Today.AddMonths(3)),
                         StartTime = new TimeOnly(18, 0),
                         EndTime = new TimeOnly(20, 0),
-                        MaximumGuests = 6,
-                        AdvanceRedeemMinutes = 30,
+                        MaximumGuests = 6,                        
                         DailyRedemptionLimit = 20,
                         IsActive = true
                     },
@@ -197,8 +196,7 @@ namespace EatKath.API.Data.Seeders
                         EndDate = DateOnly.FromDateTime(DateTime.Today.AddMonths(3)),
                         StartTime = new TimeOnly(11, 0),
                         EndTime = new TimeOnly(15, 0),
-                        MaximumGuests = 1,
-                        AdvanceRedeemMinutes = 30,
+                        MaximumGuests = 1,                        
                         DailyRedemptionLimit = 30,
                         IsActive = true
                     },
@@ -216,8 +214,7 @@ namespace EatKath.API.Data.Seeders
                         EndDate = DateOnly.FromDateTime(DateTime.Today.AddMonths(3)),
                         StartTime = new TimeOnly(17, 0),
                         EndTime = new TimeOnly(21, 0),
-                        MaximumGuests = 6,
-                        AdvanceRedeemMinutes = 30,
+                        MaximumGuests = 6,                      
                         DailyRedemptionLimit = 15,
                         IsActive = true
                     });

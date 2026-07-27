@@ -32,8 +32,6 @@ namespace EatKath.API.DTOs.Deal
 
         public int MaximumGuests { get; set; }
 
-        public int AdvanceRedeemMinutes { get; set; }
-
         public int DailyRedemptionLimit { get; set; }
 
         public bool IsActive { get; set; }

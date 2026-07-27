@@ -37,9 +37,7 @@ namespace EatKath.API.DTOs.Deal
         [Range(1, 50)]
         public int MaximumGuests { get; set; }
 
-        [Range(0, 180)]
-        public int AdvanceRedeemMinutes { get; set; }
-
+        
         [Range(0, 10000)]
         public int DailyRedemptionLimit { get; set; }
 
