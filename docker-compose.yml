@@ -28,7 +28,7 @@
       # - You choose this password.
       # - SQL Server does NOT generate it.
       # - The API connection string MUST use the same password.
-      SA_PASSWORD: "YourStrong@Pass123"
+      SA_PASSWORD: ${SA_PASSWORD}
 
     # Makes SQL Server accessible from your computer.
     #
@@ -142,8 +142,8 @@
       # "sqlserver" is the Docker service name.
       # Docker automatically resolves it to the
       # SQL Server container's IP address.
-      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=EatKathDB;User Id=sa;Password=YourStrong@Pass123;TrustServerCertificate=True;Encrypt=False;"
-
+      #ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=EatKathDB;User Id=sa;Password=YourStrong@Pass123;TrustServerCertificate=True;Encrypt=False;"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=EatKathDB;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;Encrypt=False;"
     # ----------------------------------------------------------
     # DEPENDENCY
     # ----------------------------------------------------------

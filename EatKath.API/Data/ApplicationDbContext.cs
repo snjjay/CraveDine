@@ -183,6 +183,39 @@ namespace EatKath.API.Data
                 .HasForeignKey(x => x.RestaurantId);
 
             // ============================
+            // Decimal Precision
+            // ============================
+            //
+            // Explicitly define SQL Server precision
+            // for decimal columns to avoid EF Core warnings
+            // and ensure monetary values are stored correctly.
+            //
+            // decimal(18,2)
+            // - 18 total digits
+            // - 2 decimal places
+            //
+
+            modelBuilder.Entity<Deal>()
+                .Property(x => x.DiscountPercentage)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<MenuItem>()
+                .Property(x => x.Price)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Redemption>()
+                .Property(x => x.BillAmount)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Redemption>()
+                .Property(x => x.DiscountAmount)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Redemption>()
+                .Property(x => x.FinalAmount)
+                .HasPrecision(18, 2);
+
+            // ============================
             // Unique Indexes
             // ============================
 
