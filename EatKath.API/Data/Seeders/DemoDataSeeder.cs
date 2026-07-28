@@ -8,11 +8,10 @@ namespace EatKath.API.Data.Seeders
     {
         public static async Task SeedAsync(ApplicationDbContext context)
         {
-            var restaurant = await context.Restaurants
-                .FirstOrDefaultAsync(x => x.Name == "Fewa Momo House");
+            var restaurant = await context.Restaurants.FirstOrDefaultAsync();
 
             if (restaurant == null)
-                throw new Exception("Fewa Momo House not found.");
+                throw new Exception("No restaurant found.");
 
             // ============================
             // Restaurant Cuisines

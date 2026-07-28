@@ -1,0 +1,200 @@
+﻿services:
+
+  # ==========================================================
+  # SQL SERVER DATABASE CONTAINER
+  # ==========================================================
+  sqlserver:
+
+    # Official Microsoft SQL Server 2022 Docker image.
+    # Docker downloads this automatically from Docker Hub
+    # the first time you run docker compose.
+    image: mcr.microsoft.com/mssql/server:2022-latest
+
+    # Friendly name shown in Docker Desktop.
+    # Easier than remembering a random generated container name.
+    container_name: eatkath-sqlserver
+
+    # Environment variables passed into SQL Server
+    # when the container starts.
+    environment:
+
+      # Required by Microsoft.
+      # Accepts the SQL Server license agreement.
+      ACCEPT_EULA: "Y"
+
+      # Creates the SQL Server Administrator (sa) account.
+      #
+      # IMPORTANT:
+      # - You choose this password.
+      # - SQL Server does NOT generate it.
+      # - The API connection string MUST use the same password.
+      SA_PASSWORD: "YourStrong@Pass123"
+
+    # Makes SQL Server accessible from your computer.
+    #
+    # Host Machine        Container
+    # localhost:1433 ---> SQL Server:1433
+    ports:
+      - "1433:1433"
+
+    # Stores database files outside the container.
+    #
+    # Without this volume:
+    #   Delete Container
+    #       ↓
+    #   Database is LOST
+    #
+    # With this volume:
+    #   Delete Container
+    #       ↓
+    #   Database survives
+    volumes:
+      - sql_data:/var/opt/mssql
+
+    # ----------------------------------------------------------
+    # HEALTH CHECK
+    # ----------------------------------------------------------
+    #
+    # Docker normally starts the API immediately after SQL Server.
+    #
+    # Problem:
+    # SQL Server needs 15-30 seconds to finish starting,
+    # recover databases and become ready for connections.
+    #
+    # During that time the API tries to connect and crashes.
+    #
+    # This health check repeatedly runs:
+    #
+    #     SELECT 1
+    #
+    # using sqlcmd.
+    #
+    # Once SQL Server successfully returns a result,
+    # Docker marks the container as HEALTHY.
+    #
+    # Only then will the API container start.
+    #
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'YourStrong@Pass123' -C -Q 'SELECT 1' || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # ==========================================================
+  # EATKATH ASP.NET CORE WEB API
+  # ==========================================================
+  api:
+
+    # Build the Docker image from the Dockerfile
+    # inside the EatKath.API project.
+    build:
+      context: ./EatKath.API
+      dockerfile: Dockerfile
+
+    # Friendly name shown inside Docker Desktop.
+    container_name: eatkath-api
+
+    # Makes the API accessible from your browser.
+    #
+    # Host Machine        Container
+    # localhost:8080 ---> ASP.NET API:8080
+    ports:
+      - "8080:8080"
+
+    # Environment variables override appsettings.json.
+    #
+    # Normally your application uses:
+    #
+    # Server=(localdb)\MSSQLLocalDB
+    #
+    # but inside Docker there is NO LocalDB.
+    #
+    # Instead the API connects to the SQL Server container.
+    environment:
+
+      # Run ASP.NET Core in Development mode.
+      #
+      # This enables:
+      # - Swagger
+      # - Developer exception page
+      # - Other Development-only features
+      #
+      # because Program.cs contains:
+      #
+      # if (app.Environment.IsDevelopment())
+      #
+      ASPNETCORE_ENVIRONMENT: Development
+
+      # Tell ASP.NET Core to listen on port 8080
+      # inside the Docker container.
+      #
+      # "+" means listen on all network interfaces.
+      ASPNETCORE_URLS: http://+:8080
+
+      # Override appsettings.json and connect
+      # to the SQL Server Docker container.
+      #
+      # "sqlserver" is the Docker service name.
+      # Docker automatically resolves it to the
+      # SQL Server container's IP address.
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=EatKathDB;User Id=sa;Password=YourStrong@Pass123;TrustServerCertificate=True;Encrypt=False;"
+
+    # ----------------------------------------------------------
+    # DEPENDENCY
+    # ----------------------------------------------------------
+    #
+    # This tells Docker:
+    #
+    # 1. Start SQL Server first.
+    # 2. Wait until SQL Server passes the Health Check.
+    # 3. Only then start the API.
+    #
+    # Without service_healthy:
+    #
+    # SQL Server starts
+    #        ↓
+    # API starts immediately
+    #        ↓
+    # SQL not ready
+    #        ↓
+    # API crashes
+    #
+    # With service_healthy:
+    #
+    # SQL Server starts
+    #        ↓
+    # SQL finishes initialising
+    #        ↓
+    # Health Check passes
+    #        ↓
+    # API starts successfully
+    #
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+# ==========================================================
+# NAMED DOCKER VOLUME
+# ==========================================================
+#
+# Docker stores SQL Server database files here.
+#
+# This volume exists independently of containers.
+#
+# Delete SQL Container
+#        ↓
+# Volume remains
+#        ↓
+# Database remains
+#
+# Create new SQL Container
+#        ↓
+# Database is automatically reused.
+#
+volumes:
+  sql_data:

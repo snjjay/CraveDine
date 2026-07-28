@@ -18,6 +18,10 @@ using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
+Console.WriteLine("========================================");
+Console.WriteLine("Connection String:");
+Console.WriteLine(builder.Configuration.GetConnectionString("DefaultConnection"));
+Console.WriteLine("========================================");
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -124,11 +128,47 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.MapControllers();
 
 // Seed Database
+// =====================================================
+// Seed Database (wait for SQL Server if necessary)
+// =====================================================
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-    await DatabaseSeeder.SeedAsync(context);
+    const int maxRetries = 10;
+
+    for (int i = 1; i <= maxRetries; i++)
+    {
+        try
+        {
+            Console.WriteLine($"Database seed attempt {i}/{maxRetries}...");
+
+            await DatabaseSeeder.SeedAsync(context);
+
+            Console.WriteLine("Database seeded successfully.");
+            break;
+        }
+        catch (Microsoft.Data.SqlClient.SqlException ex)
+        {
+            Console.WriteLine($"SQL Server not ready (Attempt {i}/{maxRetries})");
+            Console.WriteLine(ex);
+
+            if (i == maxRetries)
+                throw;
+
+            await Task.Delay(TimeSpan.FromSeconds(5));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("========================================");
+            Console.WriteLine("APPLICATION STARTUP ERROR");
+            Console.WriteLine(ex);
+            Console.WriteLine("========================================");
+            throw;
+        }
+    }
 }
 
 app.Run();
+
+
