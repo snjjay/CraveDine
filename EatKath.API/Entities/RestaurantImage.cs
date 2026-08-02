@@ -1,16 +1,16 @@
 ﻿namespace EatKath.API.Entities
 {
-    public class RestaurantImage
+    public class RestaurantImage : BaseEntity
     {
-        public int Id { get; set; }
-
         public int RestaurantId { get; set; }
 
         public string ImageUrl { get; set; } = string.Empty;
 
-        public bool IsLogo { get; set; }
+        public string? Caption { get; set; }
 
         public int DisplayOrder { get; set; }
+
+        public bool IsPrimary { get; set; }
 
         public Restaurant Restaurant { get; set; } = null!;
     }

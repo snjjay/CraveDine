@@ -45,5 +45,10 @@
         public ICollection<Deal> Deals { get; set; } = new List<Deal>();
 
         public ICollection<UserFavorite> UserFavorites { get; set; } = new List<UserFavorite>();
+
+   
+        public string? CoverImageUrl { get; set; }
+
+        public string? MenuPdfUrl { get; set; }
     }
 }

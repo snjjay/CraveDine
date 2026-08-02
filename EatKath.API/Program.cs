@@ -166,6 +166,8 @@ app.UseAuthorization();
 
 app.UseMiddleware<ExceptionMiddleware>();
 
+app.UseStaticFiles();
+
 app.MapControllers();
 
 // ==========================================================

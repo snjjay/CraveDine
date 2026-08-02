@@ -31,6 +31,7 @@
     <Folder Include="Extensions\" />
     <Folder Include="Repositories\" />
     <Folder Include="Validators\MenuItem\" />
+    <Folder Include="wwwroot\uploads\restaurants\" />
   </ItemGroup>
 
 </Project>

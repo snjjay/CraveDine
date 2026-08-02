@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using EatKath.API.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using EatKath.API.Entities;
 
 namespace EatKath.API.Data.Seeders
 {
@@ -18,8 +18,20 @@ namespace EatKath.API.Data.Seeders
             await AreaSeeder.SeedAsync(context);
             await CuisineSeeder.SeedAsync(context);
             await DiningTypeSeeder.SeedAsync(context);
+
             await RestaurantSeeder.SeedAsync(context);
-            await DemoDataSeeder.SeedAsync(context);
+            await RestaurantOpeningHourSeeder.SeedAsync(context);
+            await RestaurantCuisineSeeder.SeedAsync(context);
+            await RestaurantDiningTypeSeeder.SeedAsync(context);
+            await DealSeeder.SeedAsync(context);
+            await MenuCategorySeeder.SeedAsync(context);
+            await MenuItemSeeder.SeedAsync(context);
+            await UserFavoriteSeeder.SeedAsync(context);
+            await RedemptionSeeder.SeedAsync(context);
+
+            //// Optional
+            //await RestaurantImageSeeder.SeedAsync(context);
+
             // await SeedCuisines(context);
             // await SeedDiningTypes(context);
             // await SeedRestaurant(context);
