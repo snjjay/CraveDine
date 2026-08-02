@@ -13,24 +13,49 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 
-
-
-
-
 var builder = WebApplication.CreateBuilder(args);
+
 Console.WriteLine("========================================");
 Console.WriteLine("Connection String:");
 Console.WriteLine(builder.Configuration.GetConnectionString("DefaultConnection"));
 Console.WriteLine("========================================");
 
-// Add services to the container.
+// ==========================================================
+// Add Services
+// ==========================================================
+
 builder.Services.AddControllers();
 
+// ==========================================================
+// CORS
+// ==========================================================
+//
+// Allow the React application (Vite) running on
+// http://localhost:5173
+// to access this Web API.
+//
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ReactPolicy", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+// ==========================================================
+// Database
+// ==========================================================
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// ==========================================================
+// Dependency Injection
+// ==========================================================
 
 builder.Services.AddScoped<IAreaService, AreaService>();
 builder.Services.AddScoped<ICuisineService, CuisineService>();
@@ -44,11 +69,20 @@ builder.Services.AddScoped<IMenuItemService, MenuItemService>();
 builder.Services.AddScoped<IRestaurantImageService, RestaurantImageService>();
 builder.Services.AddScoped<IRestaurantOpeningHourService, RestaurantOpeningHourService>();
 builder.Services.AddScoped<IUserFavoriteService, UserFavoriteService>();
-builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IRedemptionService, RedemptionService>();
 builder.Services.AddScoped<IOwnerDashboardService, OwnerDashboardService>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
-// Learn more about configuring Swagger/OpenAPI.
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddValidatorsFromAssemblyContaining<CreateAreaValidator>();
+
+// ==========================================================
+// Swagger
+// ==========================================================
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(options =>
@@ -78,8 +112,9 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddValidatorsFromAssemblyContaining<CreateAreaValidator>();
-
+// ==========================================================
+// JWT Authentication
+// ==========================================================
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -102,37 +137,41 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
+// ==========================================================
+// Build Application
+// ==========================================================
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ==========================================================
+// Configure Middleware
+// ==========================================================
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
+// Always redirect HTTP -> HTTPS
+app.UseHttpsRedirection();
+
+// Always allow React frontend
+app.UseCors("ReactPolicy");
 
 app.UseAuthentication();
 
 app.UseAuthorization();
 
-
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 
+// ==========================================================
 // Seed Database
-// =====================================================
-// Seed Database (wait for SQL Server if necessary)
-// =====================================================
+// ==========================================================
+
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -148,6 +187,7 @@ using (var scope = app.Services.CreateScope())
             await DatabaseSeeder.SeedAsync(context);
 
             Console.WriteLine("Database seeded successfully.");
+
             break;
         }
         catch (Microsoft.Data.SqlClient.SqlException ex)
@@ -166,11 +206,10 @@ using (var scope = app.Services.CreateScope())
             Console.WriteLine("APPLICATION STARTUP ERROR");
             Console.WriteLine(ex);
             Console.WriteLine("========================================");
+
             throw;
         }
     }
 }
 
 app.Run();
-
-
