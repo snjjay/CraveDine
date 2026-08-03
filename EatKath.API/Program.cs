@@ -80,6 +80,8 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddValidatorsFromAssemblyContaining<CreateAreaValidator>();
 
+builder.Services.AddScoped<IReservationService, ReservationService>();
+
 // ==========================================================
 // Swagger
 // ==========================================================

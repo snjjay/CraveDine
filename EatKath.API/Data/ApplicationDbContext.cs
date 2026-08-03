@@ -35,6 +35,7 @@ namespace EatKath.API.Data
         public DbSet<Redemption> Redemptions => Set<Redemption>();
         public DbSet<UserFavorite> UserFavorites => Set<UserFavorite>();
 
+        public DbSet<Reservation> Reservations { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

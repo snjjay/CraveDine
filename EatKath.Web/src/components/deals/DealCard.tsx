@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import {
     Button,
     Card,
@@ -7,6 +9,7 @@ import {
     Typography
 } from "@mui/material";
 
+import ReservationDialog from "../reservations/ReservationDialog";
 import type { Deal } from "../../types/Deal";
 
 interface Props {
@@ -15,58 +18,69 @@ interface Props {
 
 function DealCard({ deal }: Props) {
 
+    const [open, setOpen] = useState(false);
+
     return (
-        <Card sx={{ mb: 2 }}>
+        <>
+            <Card sx={{ mb: 2 }}>
 
-            <CardContent>
+                <CardContent>
 
-                <Stack
-                    direction="row"
-                    sx={{
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        mb: 2
-                    }}
-                >
-                    <Typography variant="h6">
-                        {deal.title}
+                    <Stack
+                        direction="row"
+                        sx={{
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            mb: 2
+                        }}
+                    >
+                        <Typography variant="h6">
+                            {deal.title}
+                        </Typography>
+
+                        <Chip
+                            color="success"
+                            label={`${deal.discountPercentage}% OFF`}
+                        />
+                    </Stack>
+
+                    <Typography sx={{ mb: 2 }}>
+                        {deal.description}
                     </Typography>
 
-                    <Chip
-                        color="success"
-                        label={`${deal.discountPercentage}% OFF`}
-                    />
-                </Stack>
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                    >
+                        Time: {deal.startTime} - {deal.endTime}
+                    </Typography>
 
-                <Typography sx={{ mb: 2 }}>
-                    {deal.description}
-                </Typography>
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 2 }}
+                    >
+                        Valid: {deal.startDate} - {deal.endDate}
+                    </Typography>
 
-                <Typography
-                    variant="body2"
-                    color="text.secondary"
-                >
-                    Time: {deal.startTime} - {deal.endTime}
-                </Typography>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => setOpen(true)}
+                    >
+                        Reserve
+                    </Button>
 
-                <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mb: 2 }}
-                >
-                    Valid: {deal.startDate} - {deal.endDate}
-                </Typography>
+                </CardContent>
 
-                <Button
-                    variant="contained"
-                    color="primary"
-                >
-                    Reserve
-                </Button>
+            </Card>
 
-            </CardContent>
-
-        </Card>
+            <ReservationDialog
+                open={open}
+                onClose={() => setOpen(false)}
+                dealId={deal.id}
+            />
+        </>
     );
 }
 

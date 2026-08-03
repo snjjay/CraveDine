@@ -11,6 +11,7 @@ using EatKath.API.DTOs.RestaurantOpeningHour;
 using EatKath.API.DTOs.User;
 using EatKath.API.DTOs.UserFavorite;
 using EatKath.API.Entities;
+using EatKath.API.DTOs.Reservation;
 
 namespace EatKath.API.Mappings;
 
@@ -121,5 +122,13 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => src.User.FirstName + " " + src.User.LastName));
 
         CreateMap<CreateRedemptionDto, Redemption>();
+
+        // ============================
+        // Reservation
+        // ============================
+
+        CreateMap<Reservation, ReservationDto>();
+
+        CreateMap<CreateReservationDto, Reservation>();
     }
 }
