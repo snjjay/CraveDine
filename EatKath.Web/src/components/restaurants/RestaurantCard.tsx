@@ -18,35 +18,48 @@ interface Props {
 
 function RestaurantCard({ restaurant }: Props) {
 
+    const imageUrl = restaurant.logoUrl
+        ? `https://localhost:7203${restaurant.logoUrl}`
+        : "https://placehold.co/600x300?text=EatKath";
+
     return (
 
-        <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+        <Card
+            sx={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column"
+            }}
+        >
 
             <CardMedia
                 component="img"
                 height="180"
-                image={
-                    restaurant.logoUrl ||
-                    "https://placehold.co/600x300?text=EatKath"
-                }
+                image={imageUrl}
                 alt={restaurant.name}
             />
 
             <CardContent sx={{ flexGrow: 1 }}>
 
                 <Typography variant="h6">
+
                     {restaurant.name}
+
                 </Typography>
 
                 <Typography
                     variant="body2"
                     color="text.secondary"
                 >
+
                     📍 {restaurant.areaName}
+
                 </Typography>
 
                 <Typography sx={{ mt: 1, mb: 2 }}>
+
                     {restaurant.description}
+
                 </Typography>
 
                 {restaurant.activeDeals > 0 ? (
@@ -56,6 +69,7 @@ function RestaurantCard({ restaurant }: Props) {
                         spacing={1}
                         sx={{ mb: 2 }}
                     >
+
                         <Chip
                             color="success"
                             label={`${restaurant.bestDiscount}% OFF`}
@@ -65,6 +79,7 @@ function RestaurantCard({ restaurant }: Props) {
                             color="primary"
                             label={`${restaurant.activeDeals} Deals`}
                         />
+
                     </Stack>
 
                 ) : (
@@ -82,7 +97,9 @@ function RestaurantCard({ restaurant }: Props) {
                     fullWidth
                     variant="contained"
                 >
+
                     View Details
+
                 </Button>
 
             </CardContent>
@@ -90,6 +107,7 @@ function RestaurantCard({ restaurant }: Props) {
         </Card>
 
     );
+
 }
 
 export default RestaurantCard;

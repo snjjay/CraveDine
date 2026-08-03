@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import {
-   
     Card,
     CardContent,
     CardMedia,
@@ -31,8 +30,11 @@ function RestaurantDetailsPage() {
     useEffect(() => {
 
         if (id) {
+
             loadRestaurant(Number(id));
+
             loadDeals(Number(id));
+
         }
 
     }, [id]);
@@ -42,6 +44,7 @@ function RestaurantDetailsPage() {
         const data = await RestaurantService.getById(id);
 
         setRestaurant(data);
+
     }
 
     async function loadDeals(id: number) {
@@ -52,15 +55,18 @@ function RestaurantDetailsPage() {
 
             setDeals(data);
 
-        } catch (error) {
+        }
+        catch (error) {
 
             console.error(error);
 
-        } finally {
+        }
+        finally {
 
             setLoading(false);
 
         }
+
     }
 
     if (loading) {
@@ -72,12 +78,20 @@ function RestaurantDetailsPage() {
     if (!restaurant) {
 
         return (
+
             <Typography variant="h5">
+
                 Restaurant not found.
+
             </Typography>
+
         );
 
     }
+
+    const imageUrl = restaurant.logoUrl
+        ? `https://localhost:7203${restaurant.logoUrl}`
+        : "https://placehold.co/1200x400?text=EatKath";
 
     return (
 
@@ -88,49 +102,63 @@ function RestaurantDetailsPage() {
                 <CardMedia
                     component="img"
                     height="300"
-                    image={
-                        restaurant.logoUrl ||
-                        "https://placehold.co/1200x400?text=EatKath"
-                    }
+                    image={imageUrl}
                     alt={restaurant.name}
                 />
 
                 <CardContent>
 
                     <Typography variant="h4">
+
                         {restaurant.name}
+
                     </Typography>
 
                     <Typography color="text.secondary">
+
                         📍 {restaurant.areaName}
+
                     </Typography>
 
                     <Typography sx={{ mt: 2 }}>
+
                         {restaurant.description}
+
                     </Typography>
 
                     <Divider sx={{ my: 3 }} />
 
                     <Typography>
+
                         <strong>Address:</strong> {restaurant.address}
+
                     </Typography>
 
                     <Typography>
+
                         <strong>Phone:</strong> {restaurant.phoneNumber}
+
                     </Typography>
 
                     <Typography>
+
                         <strong>Email:</strong> {restaurant.email}
+
                     </Typography>
 
                     <Typography sx={{ mt: 1 }}>
+
                         <strong>Website:</strong>{" "}
+
                         <Link
                             href={restaurant.website}
                             target="_blank"
                         >
+
                             {restaurant.website}
+
                         </Link>
+
                     </Typography>
 
                 </CardContent>
@@ -141,13 +169,17 @@ function RestaurantDetailsPage() {
                 variant="h5"
                 sx={{ mb: 2 }}
             >
+
                 Available Deals
+
             </Typography>
 
             {deals.length === 0 ? (
 
                 <Typography color="text.secondary">
+
                     No deals available.
+
                 </Typography>
 
             ) : (
@@ -166,6 +198,7 @@ function RestaurantDetailsPage() {
         </>
 
     );
+
 }
 
 export default RestaurantDetailsPage;

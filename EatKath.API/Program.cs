@@ -217,4 +217,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+Console.WriteLine($"ContentRoot: {app.Environment.ContentRootPath}");
+Console.WriteLine($"WebRoot: {app.Environment.WebRootPath}");
 app.Run();

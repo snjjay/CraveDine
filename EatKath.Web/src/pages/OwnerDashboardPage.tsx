@@ -29,7 +29,9 @@ function OwnerDashboardPage() {
     const navigate = useNavigate();
 
     const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
+
     const [reservations, setReservations] = useState<OwnerReservation[]>([]);
+
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -46,11 +48,13 @@ function OwnerDashboardPage() {
                 await Promise.all([
 
                     OwnerRestaurantService.getMyRestaurant(),
+
                     OwnerReservationService.getAll()
 
                 ]);
 
             setRestaurant(restaurantData);
+
             setReservations(reservationData);
 
         }
@@ -95,6 +99,7 @@ function OwnerDashboardPage() {
 
             default:
                 return "warning";
+
         }
 
     }
@@ -111,9 +116,12 @@ function OwnerDashboardPage() {
 
             <Stack
                 direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                sx={{ mb: 3 }}
+                spacing={2}
+                sx={{
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 3
+                }}
             >
 
                 <Typography variant="h4">
@@ -122,12 +130,27 @@ function OwnerDashboardPage() {
 
                 </Typography>
 
-                <Button
-                    variant="contained"
-                    onClick={() => navigate("/owner/deals")}
+                <Stack
+                    direction="row"
+                    spacing={2}
                 >
-                    Manage Deals
-                </Button>
+
+                    <Button
+                        variant="contained"
+                        onClick={() => navigate("/owner/deals")}
+                    >
+                        Manage Deals
+                    </Button>
+
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={() => navigate("/owner/restaurant")}
+                    >
+                        Edit Restaurant
+                    </Button>
+
+                </Stack>
 
             </Stack>
 
@@ -201,14 +224,18 @@ function OwnerDashboardPage() {
                         <TableRow>
 
                             <TableCell>Customer</TableCell>
+
                             <TableCell>Deal</TableCell>
+
                             <TableCell>Date</TableCell>
+
                             <TableCell>Time</TableCell>
+
                             <TableCell>Guests</TableCell>
+
                             <TableCell>Status</TableCell>
-                            <TableCell align="center">
-                                Actions
-                            </TableCell>
+
+                            <TableCell>Actions</TableCell>
 
                         </TableRow>
 
@@ -269,22 +296,26 @@ function OwnerDashboardPage() {
                                         >
 
                                             <Button
-                                                variant="contained"
                                                 size="small"
+                                                variant="contained"
                                                 color="success"
                                                 onClick={() =>
-                                                    confirmReservation(reservation.id)
+                                                    confirmReservation(
+                                                        reservation.id
+                                                    )
                                                 }
                                             >
                                                 Confirm
                                             </Button>
 
                                             <Button
-                                                variant="contained"
                                                 size="small"
+                                                variant="contained"
                                                 color="error"
                                                 onClick={() =>
-                                                    cancelReservation(reservation.id)
+                                                    cancelReservation(
+                                                        reservation.id
+                                                    )
                                                 }
                                             >
                                                 Cancel

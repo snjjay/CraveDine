@@ -15,6 +15,7 @@ import AdminDashboardPage from "../pages/AdminDashboardPage";
 import LoginPage from "../features/auth/LoginPage";
 import ProtectedRoute from "../features/auth/ProtectedRoute";
 import EditDealPage from "../pages/EditDealPage";
+import OwnerRestaurantPage from "../pages/OwnerRestaurantPage";
 
 function AppRoutes() {
 
@@ -88,6 +89,15 @@ function AppRoutes() {
                         element={
                             <ProtectedRoute>
                                 <AdminDashboardPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/owner/restaurant"
+                        element={
+                            <ProtectedRoute>
+                                <OwnerRestaurantPage />
                             </ProtectedRoute>
                         }
                     />

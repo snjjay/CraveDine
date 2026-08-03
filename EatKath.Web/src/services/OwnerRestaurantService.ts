@@ -29,6 +29,69 @@ class OwnerRestaurantService {
 
     }
 
+    async uploadLogo(
+        id: number,
+        file: File
+    ): Promise<void> {
+
+        const formData = new FormData();
+
+        formData.append("file", file);
+
+        await api.post(
+            `/restaurant/${id}/logo`,
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            }
+        );
+
+    }
+
+    async uploadCover(
+        id: number,
+        file: File
+    ): Promise<void> {
+
+        const formData = new FormData();
+
+        formData.append("file", file);
+
+        await api.post(
+            `/restaurant/${id}/cover`,
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            }
+        );
+
+    }
+
+    async uploadMenu(
+        id: number,
+        file: File
+    ): Promise<void> {
+
+        const formData = new FormData();
+
+        formData.append("file", file);
+
+        await api.post(
+            `/restaurant/${id}/menu-pdf`,
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            }
+        );
+
+    }
+
 }
 
 export default new OwnerRestaurantService();
