@@ -2,6 +2,7 @@
 using EatKath.API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace EatKath.API.Controllers
 {
@@ -74,6 +75,22 @@ namespace EatKath.API.Controllers
 
             return NoContent();
         }
+
+
+        [Authorize(Roles = "Owner")]
+        [HttpGet("my")]
+        public async Task<IActionResult> GetMyDeals()
+        {
+            var ownerId = int.Parse(
+                User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+
+            var deals = await _service.GetByOwnerAsync(ownerId);
+
+            return Ok(deals);
+        }
+
+
+
 
         [HttpGet("restaurant/{restaurantId}")]
         public async Task<IActionResult> GetByRestaurant(int restaurantId)

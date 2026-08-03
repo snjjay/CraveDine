@@ -28,5 +28,7 @@ namespace EatKath.API.Services.Interfaces
         Task DeleteCoverAsync(int restaurantId);
 
         Task DeleteMenuPdfAsync(int restaurantId);
+
+        Task<RestaurantDto?> GetByOwnerIdAsync(int ownerId);
     }
 }

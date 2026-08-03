@@ -38,6 +38,27 @@ namespace EatKath.API.Controllers
             return Ok(restaurant);
         }
 
+
+        [Authorize(Roles = "Owner")]
+        [HttpGet("my")]
+        public async Task<IActionResult> GetMyRestaurant()
+        {
+            var ownerId = int.Parse(
+                User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+
+            var restaurant = await _restaurantService.GetByOwnerIdAsync(ownerId);
+
+            if (restaurant == null)
+                return NotFound();
+
+            return Ok(restaurant);
+        }
+
+
+
+
+
+
         // Admin or Owner can create a restaurant
         [Authorize(Roles = "Admin,Owner")]
         [HttpPost]

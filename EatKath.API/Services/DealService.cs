@@ -98,7 +98,9 @@ namespace EatKath.API.Services
             if (deal == null)
                 return false;
 
-            _context.Deals.Remove(deal);
+            // Soft delete instead of physically deleting
+            deal.IsActive = false;
+            deal.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
 
@@ -109,6 +111,16 @@ namespace EatKath.API.Services
         {
             return await _context.Deals
                 .Where(d => d.RestaurantId == restaurantId && d.IsActive)
+                .ProjectTo<DealDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+        }
+
+
+        public async Task<IEnumerable<DealDto>> GetByOwnerAsync(int ownerId)
+        {
+            return await _context.Deals
+                .Include(d => d.Restaurant)
+                .Where(d => d.Restaurant.OwnerId == ownerId && d.IsActive)
                 .ProjectTo<DealDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
         }

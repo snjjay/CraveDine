@@ -68,6 +68,42 @@ namespace EatKath.API.Services
             return _mapper.Map<RestaurantDto>(restaurant);
         }
 
+        public async Task<RestaurantDto?> GetByOwnerIdAsync(int ownerId)
+        {
+            var restaurant = await _context.Restaurants
+                .Include(r => r.Area)
+                .Include(r => r.Deals)
+                .FirstOrDefaultAsync(r => r.OwnerId == ownerId);
+
+            if (restaurant == null)
+                return null;
+
+            return new RestaurantDto
+            {
+                Id = restaurant.Id,
+                Name = restaurant.Name,
+                Description = restaurant.Description,
+                Address = restaurant.Address,
+                PhoneNumber = restaurant.PhoneNumber,
+                Email = restaurant.Email,
+                Website = restaurant.Website,
+                LogoUrl = restaurant.LogoUrl,
+                IsActive = restaurant.IsActive,
+                AreaId = restaurant.AreaId,
+                AreaName = restaurant.Area.Name,
+
+                ActiveDeals = restaurant.Deals.Count(d => d.IsActive),
+
+                BestDiscount = restaurant.Deals
+                    .Where(d => d.IsActive)
+                    .Select(d => (decimal?)d.DiscountPercentage)
+                    .DefaultIfEmpty()
+                    .Max()
+            };
+        }
+
+
+
         public async Task<RestaurantDto> CreateAsync(CreateRestaurantDto dto)
         {
             var restaurant = _mapper.Map<Restaurant>(dto);
