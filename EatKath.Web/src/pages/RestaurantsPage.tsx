@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import {
     CircularProgress,
     Grid,
-    Typography
+    Typography,
+    TextField
 } from "@mui/material";
 
 import RestaurantCard from "../components/restaurants/RestaurantCard";
@@ -19,6 +20,8 @@ function RestaurantsPage() {
     const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
     const [favorites, setFavorites] = useState<UserFavorite[]>([]);
     const [loading, setLoading] = useState(true);
+
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
 
@@ -66,6 +69,10 @@ function RestaurantsPage() {
     if (loading)
         return <CircularProgress />;
 
+    const filteredRestaurants = restaurants.filter(r =>
+        r.name.toLowerCase().includes(search.toLowerCase())
+    );
+
     return (
 
         <>
@@ -77,9 +84,18 @@ function RestaurantsPage() {
                 Restaurants
             </Typography>
 
+            <TextField
+                fullWidth
+                label="Search Restaurants"
+                placeholder="Type restaurant name..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                sx={{ mb: 3 }}
+            />
+
             <Grid container spacing={3}>
 
-                {restaurants.map((restaurant) => (
+                {filteredRestaurants.map((restaurant) => (
 
                     <Grid
                         key={restaurant.id}
