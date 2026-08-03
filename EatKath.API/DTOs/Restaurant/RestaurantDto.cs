@@ -29,5 +29,10 @@
         public int ActiveDeals { get; set; }
 
         public bool IsFavorite { get; set; }
+
+        // NEW
+        public List<string> Cuisines { get; set; } = new();
+
+        public List<string> DiningTypes { get; set; } = new();
     }
 }

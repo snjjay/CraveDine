@@ -17,22 +17,31 @@ import RestaurantCard from "../components/restaurants/RestaurantCard";
 import RestaurantService from "../services/RestaurantService";
 import UserFavoriteService from "../services/UserFavoriteService";
 import AreaService from "../services/AreaService";
+import CuisineService from "../services/CuisineService";
+import DiningTypeService from "../services/DiningTypeService";
 
 import type { Restaurant } from "../types/Restaurant";
 import type { UserFavorite } from "../types/UserFavorite";
 import type { Area } from "../types/Area";
+import type { Cuisine } from "../types/Cuisine";
+import type { DiningType } from "../types/DiningType";
 
 function RestaurantsPage() {
 
     const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
     const [favorites, setFavorites] = useState<UserFavorite[]>([]);
+
     const [areas, setAreas] = useState<Area[]>([]);
+    const [cuisines, setCuisines] = useState<Cuisine[]>([]);
+    const [diningTypes, setDiningTypes] = useState<DiningType[]>([]);
 
     const [loading, setLoading] = useState(true);
 
     const [search, setSearch] = useState("");
 
     const [selectedArea, setSelectedArea] = useState("");
+    const [selectedCuisine, setSelectedCuisine] = useState("");
+    const [selectedDiningType, setSelectedDiningType] = useState("");
 
     useEffect(() => {
 
@@ -53,7 +62,16 @@ function RestaurantsPage() {
                 await AreaService.getAll();
 
             setAreas(areasData);
-            console.log(areasData);
+
+            const cuisinesData =
+                await CuisineService.getAll();
+
+            setCuisines(cuisinesData);
+
+            const diningTypesData =
+                await DiningTypeService.getAll();
+
+            setDiningTypes(diningTypesData);
 
             try {
 
@@ -64,6 +82,8 @@ function RestaurantsPage() {
 
             }
             catch {
+
+                // Not logged in
 
             }
 
@@ -104,7 +124,22 @@ function RestaurantsPage() {
 
             r.areaId === Number(selectedArea);
 
-        return matchesSearch && matchesArea;
+        const matchesCuisine =
+
+            selectedCuisine === "" ||
+
+            r.cuisines.includes(selectedCuisine);
+
+        const matchesDiningType =
+
+            selectedDiningType === "" ||
+
+            r.diningTypes.includes(selectedDiningType);
+
+        return matchesSearch &&
+            matchesArea &&
+            matchesCuisine &&
+            matchesDiningType;
 
     });
 
@@ -125,7 +160,7 @@ function RestaurantsPage() {
                 sx={{ mb: 3 }}
             >
 
-                <Grid size={{ xs: 12, md: 8 }}>
+                <Grid size={{ xs: 12, md: 4 }}>
 
                     <TextField
                         fullWidth
@@ -138,15 +173,11 @@ function RestaurantsPage() {
 
                 </Grid>
 
-                <Grid size={{ xs: 12, md: 4 }}>
+                <Grid size={{ xs: 12, md: 3 }}>
 
                     <FormControl fullWidth>
 
-                        <InputLabel>
-
-                            Area
-
-                        </InputLabel>
+                        <InputLabel>Area</InputLabel>
 
                         <Select
                             label="Area"
@@ -157,9 +188,7 @@ function RestaurantsPage() {
                         >
 
                             <MenuItem value="">
-
                                 All Areas
-
                             </MenuItem>
 
                             {areas.map(area => (
@@ -168,9 +197,77 @@ function RestaurantsPage() {
                                     key={area.id}
                                     value={area.id.toString()}
                                 >
-
                                     {area.name}
+                                </MenuItem>
 
+                            ))}
+
+                        </Select>
+
+                    </FormControl>
+
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 2.5 }}>
+
+                    <FormControl fullWidth>
+
+                        <InputLabel>Cuisine</InputLabel>
+
+                        <Select
+                            label="Cuisine"
+                            value={selectedCuisine}
+                            onChange={(e: SelectChangeEvent) =>
+                                setSelectedCuisine(e.target.value)
+                            }
+                        >
+
+                            <MenuItem value="">
+                                All Cuisines
+                            </MenuItem>
+
+                            {cuisines.map(cuisine => (
+
+                                <MenuItem
+                                    key={cuisine.id}
+                                    value={cuisine.name}
+                                >
+                                    {cuisine.name}
+                                </MenuItem>
+
+                            ))}
+
+                        </Select>
+
+                    </FormControl>
+
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 2.5 }}>
+
+                    <FormControl fullWidth>
+
+                        <InputLabel>Dining Type</InputLabel>
+
+                        <Select
+                            label="Dining Type"
+                            value={selectedDiningType}
+                            onChange={(e: SelectChangeEvent) =>
+                                setSelectedDiningType(e.target.value)
+                            }
+                        >
+
+                            <MenuItem value="">
+                                All Dining Types
+                            </MenuItem>
+
+                            {diningTypes.map(type => (
+
+                                <MenuItem
+                                    key={type.id}
+                                    value={type.name}
+                                >
+                                    {type.name}
                                 </MenuItem>
 
                             ))}

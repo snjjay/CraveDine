@@ -29,7 +29,11 @@ namespace EatKath.API.Services
         {
             var restaurants = await _context.Restaurants
                 .Include(r => r.Area)
-                .Include(r => r.Deals)
+.Include(r => r.Deals)
+.Include(r => r.RestaurantCuisines)
+    .ThenInclude(rc => rc.Cuisine)
+.Include(r => r.RestaurantDiningTypes)
+    .ThenInclude(rd => rd.DiningType)
                 .ToListAsync();
 
             return restaurants.Select(r => new RestaurantDto
@@ -48,6 +52,14 @@ namespace EatKath.API.Services
 
                 ActiveDeals = r.Deals.Count(d => d.IsActive),
 
+                Cuisines = r.RestaurantCuisines
+                .Select(x => x.Cuisine.Name)
+                .ToList(),
+
+                DiningTypes = r.RestaurantDiningTypes
+                .Select(x => x.DiningType.Name)
+                .ToList(),
+
                 BestDiscount = r.Deals
                     .Where(d => d.IsActive)
                     .Select(d => (decimal?)d.DiscountPercentage)
@@ -59,20 +71,58 @@ namespace EatKath.API.Services
         public async Task<RestaurantDto?> GetByIdAsync(int id)
         {
             var restaurant = await _context.Restaurants
-                .Include(r => r.Area)
-                .FirstOrDefaultAsync(r => r.Id == id);
+                            .Include(r => r.Area)
+                             .Include(r => r.Deals)
+            .Include(r => r.RestaurantCuisines)
+                .ThenInclude(rc => rc.Cuisine)
+            .Include(r => r.RestaurantDiningTypes)
+                .ThenInclude(rd => rd.DiningType)
+                            .FirstOrDefaultAsync(r => r.Id == id);
 
             if (restaurant == null)
                 return null;
 
-            return _mapper.Map<RestaurantDto>(restaurant);
+            return new RestaurantDto
+            {
+                Id = restaurant.Id,
+                Name = restaurant.Name,
+                Description = restaurant.Description,
+                Address = restaurant.Address,
+                PhoneNumber = restaurant.PhoneNumber,
+                Email = restaurant.Email,
+                Website = restaurant.Website,
+                LogoUrl = restaurant.LogoUrl,
+                IsActive = restaurant.IsActive,
+                AreaId = restaurant.AreaId,
+                AreaName = restaurant.Area.Name,
+
+                ActiveDeals = restaurant.Deals.Count(d => d.IsActive),
+
+                BestDiscount = restaurant.Deals
+        .Where(d => d.IsActive)
+        .Select(d => (decimal?)d.DiscountPercentage)
+        .DefaultIfEmpty()
+        .Max(),
+
+                Cuisines = restaurant.RestaurantCuisines
+        .Select(x => x.Cuisine.Name)
+        .ToList(),
+
+                DiningTypes = restaurant.RestaurantDiningTypes
+        .Select(x => x.DiningType.Name)
+        .ToList()
+            };
         }
 
         public async Task<RestaurantDto?> GetByOwnerIdAsync(int ownerId)
         {
             var restaurant = await _context.Restaurants
                 .Include(r => r.Area)
-                .Include(r => r.Deals)
+.Include(r => r.Deals)
+.Include(r => r.RestaurantCuisines)
+    .ThenInclude(rc => rc.Cuisine)
+.Include(r => r.RestaurantDiningTypes)
+    .ThenInclude(rd => rd.DiningType)
                 .FirstOrDefaultAsync(r => r.OwnerId == ownerId);
 
             if (restaurant == null)
@@ -93,6 +143,14 @@ namespace EatKath.API.Services
                 AreaName = restaurant.Area.Name,
 
                 ActiveDeals = restaurant.Deals.Count(d => d.IsActive),
+
+                Cuisines = restaurant.RestaurantCuisines
+                .Select(x => x.Cuisine.Name)
+                .ToList(),
+
+                            DiningTypes = restaurant.RestaurantDiningTypes
+                .Select(x => x.DiningType.Name)
+                .ToList(),
 
                 BestDiscount = restaurant.Deals
                     .Where(d => d.IsActive)
@@ -122,8 +180,13 @@ namespace EatKath.API.Services
         public async Task<RestaurantDto?> UpdateAsync(int id, UpdateRestaurantDto dto)
         {
             var restaurant = await _context.Restaurants
-                .Include(r => r.Area)
-                .FirstOrDefaultAsync(r => r.Id == id);
+            .Include(r => r.Area)
+            .Include(r => r.Deals)
+            .Include(r => r.RestaurantCuisines)
+                .ThenInclude(rc => rc.Cuisine)
+            .Include(r => r.RestaurantDiningTypes)
+                .ThenInclude(rd => rd.DiningType)
+            .FirstOrDefaultAsync(r => r.Id == id);
 
             if (restaurant == null)
                 return null;
@@ -136,8 +199,37 @@ namespace EatKath.API.Services
                 .Reference(r => r.Area)
                 .LoadAsync();
 
-            return _mapper.Map<RestaurantDto>(restaurant);
-        }
+            return new RestaurantDto
+            {
+                Id = restaurant.Id,
+                Name = restaurant.Name,
+                Description = restaurant.Description,
+                Address = restaurant.Address,
+                PhoneNumber = restaurant.PhoneNumber,
+                Email = restaurant.Email,
+                Website = restaurant.Website,
+                LogoUrl = restaurant.LogoUrl,
+                IsActive = restaurant.IsActive,
+                AreaId = restaurant.AreaId,
+                AreaName = restaurant.Area.Name,
+
+                ActiveDeals = restaurant.Deals.Count(d => d.IsActive),
+
+                BestDiscount = restaurant.Deals
+                .Where(d => d.IsActive)
+                .Select(d => (decimal?)d.DiscountPercentage)
+                .DefaultIfEmpty()
+                .Max(),
+
+                        Cuisines = restaurant.RestaurantCuisines
+                .Select(x => x.Cuisine.Name)
+                .ToList(),
+
+                        DiningTypes = restaurant.RestaurantDiningTypes
+                .Select(x => x.DiningType.Name)
+                .ToList()
+                    };
+                }
 
         public async Task<bool> DeleteAsync(int id)
         {
