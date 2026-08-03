@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
     Button,
@@ -14,6 +15,8 @@ import OwnerDealService from "../services/OwnerDealService";
 import type { Deal } from "../types/Deal";
 
 function OwnerDealsPage() {
+
+    const navigate = useNavigate();
 
     const [deals, setDeals] = useState<Deal[]>([]);
     const [loading, setLoading] = useState(true);
@@ -66,8 +69,12 @@ function OwnerDealsPage() {
 
             <Stack
                 direction="row"
-                justifyContent="space-between"
-                sx={{ mb: 3 }}
+                spacing={2}
+                sx={{
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 3
+                }}
             >
 
                 <Typography variant="h4">
@@ -76,10 +83,11 @@ function OwnerDealsPage() {
 
                 </Typography>
 
-                <Button variant="contained">
-
+                <Button
+                    variant="contained"
+                    onClick={() => navigate("/owner/deals/new")}
+                >
                     New Deal
-
                 </Button>
 
             </Stack>
@@ -95,7 +103,11 @@ function OwnerDealsPage() {
 
                         <Stack
                             direction="row"
-                            justifyContent="space-between"
+                            spacing={2}
+                            sx={{
+                                justifyContent: "space-between",
+                                alignItems: "center"
+                            }}
                         >
 
                             <Typography variant="h6">
@@ -111,7 +123,7 @@ function OwnerDealsPage() {
 
                         </Stack>
 
-                        <Typography sx={{ mt: 1 }}>
+                        <Typography sx={{ mt: 2 }}>
 
                             {deal.description}
 
@@ -122,6 +134,12 @@ function OwnerDealsPage() {
                             sx={{ mt: 2 }}
                         >
 
+                            {deal.startDate} - {deal.endDate}
+
+                        </Typography>
+
+                        <Typography variant="body2">
+
                             {deal.startTime} - {deal.endTime}
 
                         </Typography>
@@ -129,18 +147,21 @@ function OwnerDealsPage() {
                         <Stack
                             direction="row"
                             spacing={2}
-                            sx={{ mt: 2 }}
+                            sx={{ mt: 3 }}
                         >
 
                             <Button
                                 variant="outlined"
+                                onClick={() =>
+                                    navigate(`/owner/deals/edit/${deal.id}`)
+                                }
                             >
                                 Edit
                             </Button>
 
                             <Button
-                                color="error"
                                 variant="outlined"
+                                color="error"
                                 onClick={() => deleteDeal(deal.id)}
                             >
                                 Delete

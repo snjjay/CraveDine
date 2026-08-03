@@ -41,6 +41,17 @@ class OwnerDealService {
         await api.delete(`/deal/${id}`);
 
     }
+
+    async getById(id: number): Promise<Deal> {
+
+        const response =
+            await api.get<Deal>(`/deal/${id}`);
+
+        return response.data;
+
+    }
+
+    
 }
 
 export default new OwnerDealService();

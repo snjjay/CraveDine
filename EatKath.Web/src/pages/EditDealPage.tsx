@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import {
     Button,
+    CircularProgress,
     Container,
     MenuItem,
     Paper,
@@ -11,27 +12,28 @@ import {
     Typography
 } from "@mui/material";
 
-import OwnerRestaurantService from "../services/OwnerRestaurantService";
 import OwnerDealService from "../services/OwnerDealService";
+import type { UpdateDeal } from "../types/UpdateDeal";
 
-import type { DealForm } from "../types/DealForm";
+function EditDealPage() {
 
-function CreateDealPage() {
+    const { id } = useParams();
 
     const navigate = useNavigate();
 
-    const [deal, setDeal] = useState<DealForm>({
-        restaurantId: 0,
+    const [loading, setLoading] = useState(true);
+
+    const [deal, setDeal] = useState<UpdateDeal>({
         title: "",
         description: "",
-        discountPercentage: 20,
+        discountPercentage: 0,
         offerType: 1,
         promoImageUrl: "",
         termsAndConditions: "",
         startDate: "",
         endDate: "",
-        startTime: "18:00",
-        endTime: "21:00",
+        startTime: "",
+        endTime: "",
         maximumGuests: 20,
         dailyRedemptionLimit: 100,
         isActive: true
@@ -39,76 +41,66 @@ function CreateDealPage() {
 
     useEffect(() => {
 
-        loadRestaurant();
+        loadDeal();
 
     }, []);
 
-    async function loadRestaurant() {
+    async function loadDeal() {
 
-        const restaurant = await OwnerRestaurantService.getMyRestaurant();
+        if (!id)
+            return;
 
-        setDeal(d => ({
-            ...d,
-            restaurantId: restaurant.id
-        }));
+        const data = await OwnerDealService.getById(Number(id));
+
+        setDeal({
+            title: data.title,
+            description: data.description,
+            discountPercentage: data.discountPercentage,
+            offerType: data.offerType,
+            promoImageUrl: data.promoImageUrl,
+            termsAndConditions: data.termsAndConditions,
+            startDate: data.startDate,
+            endDate: data.endDate,
+            startTime: data.startTime.substring(0, 5),
+            endTime: data.endTime.substring(0, 5),
+            maximumGuests: data.maximumGuests,
+            dailyRedemptionLimit: data.dailyRedemptionLimit,
+            isActive: data.isActive
+        });
+
+        setLoading(false);
+
+    }
+
+    async function save() {
+
+        if (!id)
+            return;
+
+        await OwnerDealService.update(Number(id), {
+
+            ...deal,
+
+            startTime:
+                deal.startTime.length === 5
+                    ? `${deal.startTime}:00`
+                    : deal.startTime,
+
+            endTime:
+                deal.endTime.length === 5
+                    ? `${deal.endTime}:00`
+                    : deal.endTime
+
+        });
+
+        alert("Deal updated.");
+
+        navigate("/owner/deals");
 
     }
 
-    async function saveDeal() {
-
-        try {
-
-            const request = {
-
-                ...deal,
-
-                startTime:
-                    deal.startTime.length === 5
-                        ? `${deal.startTime}:00`
-                        : deal.startTime,
-
-                endTime:
-                    deal.endTime.length === 5
-                        ? `${deal.endTime}:00`
-                        : deal.endTime
-
-            };
-
-            console.log(request);
-
-            await OwnerDealService.create(request);
-
-            alert("Deal created successfully.");
-
-            navigate("/owner/deals");
-
-        }
-        catch (error: any) {
-
-            console.error(error);
-
-            if (error.response) {
-
-                console.log(error.response.data);
-
-                alert(
-                    JSON.stringify(
-                        error.response.data,
-                        null,
-                        2
-                    )
-                );
-
-            }
-            else {
-
-                alert(error.message);
-
-            }
-
-        }
-
-    }
+    if (loading)
+        return <CircularProgress />;
 
     return (
 
@@ -120,7 +112,7 @@ function CreateDealPage() {
                     variant="h4"
                     sx={{ mb: 3 }}
                 >
-                    Create Deal
+                    Edit Deal
                 </Typography>
 
                 <Stack spacing={2}>
@@ -179,11 +171,7 @@ function CreateDealPage() {
                     <TextField
                         label="Start Date"
                         type="date"
-                        slotProps={{
-                            inputLabel: {
-                                shrink: true
-                            }
-                        }}
+                        slotProps={{ inputLabel: { shrink: true } }}
                         value={deal.startDate}
                         onChange={(e) =>
                             setDeal({
@@ -196,11 +184,7 @@ function CreateDealPage() {
                     <TextField
                         label="End Date"
                         type="date"
-                        slotProps={{
-                            inputLabel: {
-                                shrink: true
-                            }
-                        }}
+                        slotProps={{ inputLabel: { shrink: true } }}
                         value={deal.endDate}
                         onChange={(e) =>
                             setDeal({
@@ -213,11 +197,7 @@ function CreateDealPage() {
                     <TextField
                         label="Start Time"
                         type="time"
-                        slotProps={{
-                            inputLabel: {
-                                shrink: true
-                            }
-                        }}
+                        slotProps={{ inputLabel: { shrink: true } }}
                         value={deal.startTime}
                         onChange={(e) =>
                             setDeal({
@@ -230,11 +210,7 @@ function CreateDealPage() {
                     <TextField
                         label="End Time"
                         type="time"
-                        slotProps={{
-                            inputLabel: {
-                                shrink: true
-                            }
-                        }}
+                        slotProps={{ inputLabel: { shrink: true } }}
                         value={deal.endTime}
                         onChange={(e) =>
                             setDeal({
@@ -272,12 +248,11 @@ function CreateDealPage() {
                         direction="row"
                         spacing={2}
                     >
-
                         <Button
                             variant="contained"
-                            onClick={saveDeal}
+                            onClick={save}
                         >
-                            Save
+                            Save Changes
                         </Button>
 
                         <Button
@@ -298,4 +273,4 @@ function CreateDealPage() {
 
 }
 
-export default CreateDealPage;
+export default EditDealPage;

@@ -45,7 +45,8 @@ namespace EatKath.API.Controllers
 
         [Authorize(Roles = "Admin,Owner")]
         [HttpPost]
-        public async Task<IActionResult> Create(CreateDealDto dto)
+        public async Task<IActionResult> Create(
+    [FromBody] CreateDealDto dto)
         {
             var deal = await _service.CreateAsync(dto);
 
