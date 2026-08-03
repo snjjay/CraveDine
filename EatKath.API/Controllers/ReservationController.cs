@@ -62,7 +62,6 @@ namespace EatKath.API.Controllers
             return Ok(reservation);
         }
 
-
         // =====================================
         // Customer Creates Reservation
         // =====================================
@@ -80,7 +79,6 @@ namespace EatKath.API.Controllers
                 reservation);
         }
 
-
         // =====================================
         // Confirm Reservation
         // =====================================
@@ -90,6 +88,70 @@ namespace EatKath.API.Controllers
         public async Task<IActionResult> Confirm(int id)
         {
             var updated = await _service.ConfirmReservationAsync(id);
+
+            if (!updated)
+                return NotFound();
+
+            return NoContent();
+        }
+
+        // =====================================
+        // Reject Reservation
+        // =====================================
+
+        [Authorize(Roles = "Owner")]
+        [HttpPut("{id}/reject")]
+        public async Task<IActionResult> Reject(int id)
+        {
+            var updated = await _service.RejectReservationAsync(id);
+
+            if (!updated)
+                return NotFound();
+
+            return NoContent();
+        }
+
+        // =====================================
+        // Customer Arrived
+        // =====================================
+
+        [Authorize(Roles = "Owner")]
+        [HttpPut("{id}/arrived")]
+        public async Task<IActionResult> Arrived(int id)
+        {
+            var updated = await _service.ArriveReservationAsync(id);
+
+            if (!updated)
+                return NotFound();
+
+            return NoContent();
+        }
+
+        // =====================================
+        // Reservation Completed
+        // =====================================
+
+        [Authorize(Roles = "Owner")]
+        [HttpPut("{id}/completed")]
+        public async Task<IActionResult> Completed(int id)
+        {
+            var updated = await _service.CompleteReservationAsync(id);
+
+            if (!updated)
+                return NotFound();
+
+            return NoContent();
+        }
+
+        // =====================================
+        // No Show
+        // =====================================
+
+        [Authorize(Roles = "Owner")]
+        [HttpPut("{id}/no-show")]
+        public async Task<IActionResult> NoShow(int id)
+        {
+            var updated = await _service.NoShowReservationAsync(id);
 
             if (!updated)
                 return NotFound();
@@ -112,9 +174,6 @@ namespace EatKath.API.Controllers
 
             return NoContent();
         }
-
-
-
 
         // =====================================
         // Delete Reservation

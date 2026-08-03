@@ -21,6 +21,38 @@ class OwnerReservationService {
 
     }
 
+    async reject(id: number): Promise<void> {
+
+        await api.put(
+            `/reservation/${id}/reject`
+        );
+
+    }
+
+    async arrived(id: number): Promise<void> {
+
+        await api.put(
+            `/reservation/${id}/arrived`
+        );
+
+    }
+
+    async completed(id: number): Promise<void> {
+
+        await api.put(
+            `/reservation/${id}/completed`
+        );
+
+    }
+
+    async noShow(id: number): Promise<void> {
+
+        await api.put(
+            `/reservation/${id}/no-show`
+        );
+
+    }
+
     async cancel(id: number): Promise<void> {
 
         await api.put(

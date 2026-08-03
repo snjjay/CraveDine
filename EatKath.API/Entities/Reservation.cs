@@ -33,7 +33,7 @@ namespace EatKath.API.Entities
 
         [Required]
         [MaxLength(20)]
-        public string Status { get; set; } = "Pending";
+        public string Status { get; set; } = ReservationStatus.Pending;
 
         [MaxLength(20)]
         public string ConfirmationCode { get; set; } = Guid.NewGuid().ToString("N")[..8].ToUpper();

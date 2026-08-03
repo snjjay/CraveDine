@@ -80,7 +80,7 @@ namespace EatKath.API.Services
             if (reservation == null)
                 return false;
 
-            reservation.Status = "Confirmed";
+            reservation.Status = ReservationStatus.Confirmed;
 
             await _context.SaveChangesAsync();
 
@@ -94,7 +94,63 @@ namespace EatKath.API.Services
             if (reservation == null)
                 return false;
 
-            reservation.Status = "Cancelled";
+            reservation.Status = ReservationStatus.Cancelled;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> RejectReservationAsync(int id)
+        {
+            var reservation = await _context.Reservations.FindAsync(id);
+
+            if (reservation == null)
+                return false;
+
+            reservation.Status = ReservationStatus.Rejected;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> ArriveReservationAsync(int id)
+        {
+            var reservation = await _context.Reservations.FindAsync(id);
+
+            if (reservation == null)
+                return false;
+
+            reservation.Status = ReservationStatus.Arrived;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> CompleteReservationAsync(int id)
+        {
+            var reservation = await _context.Reservations.FindAsync(id);
+
+            if (reservation == null)
+                return false;
+
+            reservation.Status = ReservationStatus.Completed;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> NoShowReservationAsync(int id)
+        {
+            var reservation = await _context.Reservations.FindAsync(id);
+
+            if (reservation == null)
+                return false;
+
+            reservation.Status = ReservationStatus.NoShow;
 
             await _context.SaveChangesAsync();
 

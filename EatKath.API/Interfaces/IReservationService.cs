@@ -18,6 +18,12 @@ namespace EatKath.API.Interfaces
 
         Task<bool> CancelReservationAsync(int id);
 
+        Task<bool> RejectReservationAsync(int id);
 
+        Task<bool> ArriveReservationAsync(int id);
+
+        Task<bool> CompleteReservationAsync(int id);
+
+        Task<bool> NoShowReservationAsync(int id);
     }
 }
