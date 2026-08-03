@@ -13,5 +13,7 @@ namespace EatKath.API.Interfaces
         Task<DealDto> UpdateAsync(int id, UpdateDealDto dto);
 
         Task<bool> DeleteAsync(int id);
+
+        Task<IEnumerable<DealDto>> GetByRestaurantAsync(int restaurantId);
     }
 }

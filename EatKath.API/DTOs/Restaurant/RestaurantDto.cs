@@ -23,5 +23,9 @@
         public int AreaId { get; set; }
 
         public string AreaName { get; set; } = string.Empty;
+
+        public decimal? BestDiscount { get; set; }
+
+        public int ActiveDeals { get; set; }
     }
 }

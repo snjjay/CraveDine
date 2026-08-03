@@ -27,10 +27,33 @@ namespace EatKath.API.Services
 
         public async Task<IEnumerable<RestaurantDto>> GetAllAsync()
         {
-            return await _context.Restaurants
+            var restaurants = await _context.Restaurants
                 .Include(r => r.Area)
-                .ProjectTo<RestaurantDto>(_mapper.ConfigurationProvider)
+                .Include(r => r.Deals)
                 .ToListAsync();
+
+            return restaurants.Select(r => new RestaurantDto
+            {
+                Id = r.Id,
+                Name = r.Name,
+                Description = r.Description,
+                Address = r.Address,
+                PhoneNumber = r.PhoneNumber,
+                Email = r.Email,
+                Website = r.Website,
+                LogoUrl = r.LogoUrl,
+                IsActive = r.IsActive,
+                AreaId = r.AreaId,
+                AreaName = r.Area.Name,
+
+                ActiveDeals = r.Deals.Count(d => d.IsActive),
+
+                BestDiscount = r.Deals
+                    .Where(d => d.IsActive)
+                    .Select(d => (decimal?)d.DiscountPercentage)
+                    .DefaultIfEmpty()
+                    .Max()
+            });
         }
 
         public async Task<RestaurantDto?> GetByIdAsync(int id)

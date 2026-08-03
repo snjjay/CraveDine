@@ -74,5 +74,13 @@ namespace EatKath.API.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("restaurant/{restaurantId}")]
+        public async Task<IActionResult> GetByRestaurant(int restaurantId)
+        {
+            var deals = await _service.GetByRestaurantAsync(restaurantId);
+
+            return Ok(deals);
+        }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using EatKath.API.Data;
 using EatKath.API.DTOs.Deal;
 using EatKath.API.Entities;
 using EatKath.API.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace EatKath.API.Services
 {
@@ -101,6 +103,14 @@ namespace EatKath.API.Services
             await _context.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<IEnumerable<DealDto>> GetByRestaurantAsync(int restaurantId)
+        {
+            return await _context.Deals
+                .Where(d => d.RestaurantId == restaurantId && d.IsActive)
+                .ProjectTo<DealDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
         }
     }
 }
