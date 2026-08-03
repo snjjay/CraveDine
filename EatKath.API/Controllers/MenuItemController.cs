@@ -1,5 +1,6 @@
 ﻿using EatKath.API.DTOs.MenuItem;
 using EatKath.API.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EatKath.API.Controllers
@@ -52,6 +53,7 @@ namespace EatKath.API.Controllers
         }
 
         // POST: api/MenuItem
+        [Authorize(Roles = "Admin,Owner")]
         [HttpPost]
         public async Task<ActionResult<MenuItemDto>> Create(CreateMenuItemDto dto)
         {
@@ -64,6 +66,7 @@ namespace EatKath.API.Controllers
         }
 
         // PUT: api/MenuItem/5
+        [Authorize(Roles = "Admin,Owner")]
         [HttpPut("{id}")]
         public async Task<ActionResult<MenuItemDto>> Update(int id, UpdateMenuItemDto dto)
         {
@@ -75,7 +78,23 @@ namespace EatKath.API.Controllers
             return Ok(item);
         }
 
+        // NEW: Upload menu item image
+        [Authorize(Roles = "Admin,Owner")]
+        [HttpPost("{id}/image")]
+        public async Task<IActionResult> UploadImage(
+            int id,
+            [FromForm] UploadMenuItemImageDto dto)
+        {
+            var url = await _menuItemService.UploadImageAsync(id, dto.File);
+
+            return Ok(new
+            {
+                ImageUrl = url
+            });
+        }
+
         // DELETE: api/MenuItem/5
+        [Authorize(Roles = "Admin,Owner")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -83,6 +102,15 @@ namespace EatKath.API.Controllers
 
             if (!deleted)
                 return NotFound();
+
+            return NoContent();
+        }
+
+        [Authorize(Roles = "Admin,Owner")]
+        [HttpDelete("{id}/image")]
+        public async Task<IActionResult> DeleteImage(int id)
+        {
+            await _menuItemService.DeleteImageAsync(id);
 
             return NoContent();
         }

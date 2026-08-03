@@ -4,8 +4,8 @@ using EatKath.API.DTOs.MenuItem;
 using EatKath.API.Entities;
 using EatKath.API.Interfaces;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace EatKath.API.Services;
 
@@ -15,17 +15,20 @@ public class MenuItemService : IMenuItemService
     private readonly IMapper _mapper;
     private readonly IValidator<CreateMenuItemDto> _createValidator;
     private readonly IValidator<UpdateMenuItemDto> _updateValidator;
-    private readonly ICurrentUserService _currentUser;
+    private readonly FileStorageService _fileStorage;
+
     public MenuItemService(
-         ApplicationDbContext context,
-         IMapper mapper,
-         IValidator<CreateMenuItemDto> createValidator,
-         IValidator<UpdateMenuItemDto> updateValidator)
+        ApplicationDbContext context,
+        IMapper mapper,
+        IValidator<CreateMenuItemDto> createValidator,
+        IValidator<UpdateMenuItemDto> updateValidator,
+        FileStorageService fileStorage)
     {
         _context = context;
         _mapper = mapper;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
+        _fileStorage = fileStorage;
     }
 
     public async Task<IEnumerable<MenuItemDto>> GetAllAsync()
@@ -120,5 +123,39 @@ public class MenuItemService : IMenuItemService
         await _context.SaveChangesAsync();
 
         return true;
+    }
+
+    public async Task<string> UploadImageAsync(int menuItemId, IFormFile file)
+    {
+        var menuItem = await _context.MenuItems.FindAsync(menuItemId);
+
+        if (menuItem == null)
+            throw new Exception("Menu item not found.");
+
+        var imagePath = await _fileStorage.SaveImageAsync(
+            file,
+            $"uploads/menuitems/{menuItemId}",
+            "image");
+
+        menuItem.ImageUrl = imagePath;
+
+        await _context.SaveChangesAsync();
+
+        return imagePath;
+    }
+
+
+    public async Task DeleteImageAsync(int menuItemId)
+    {
+        var menuItem = await _context.MenuItems.FindAsync(menuItemId);
+
+        if (menuItem == null)
+            throw new Exception("Menu item not found.");
+
+        await _fileStorage.DeleteFileAsync(menuItem.ImageUrl);
+
+        menuItem.ImageUrl = string.Empty;
+
+        await _context.SaveChangesAsync();
     }
 }

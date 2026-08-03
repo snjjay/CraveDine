@@ -1,16 +1,15 @@
-﻿namespace EatKath.API.DTOs.MenuItem;
-
-public class UpdateMenuItemDto
+﻿namespace EatKath.API.DTOs.MenuItem
 {
-    public int MenuCategoryId { get; set; }
+    public class UpdateMenuItemDto
+    {
+        public string Name { get; set; } = string.Empty;
 
-    public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
 
-    public string Description { get; set; } = string.Empty;
+        public decimal Price { get; set; }
 
-    public decimal Price { get; set; }
+        public bool IsFeatured { get; set; }
 
-   // public string ImageUrl { get; set; } = string.Empty;
-
-    public bool IsAvailable { get; set; }
+        public bool IsAvailable { get; set; }
+    }
 }

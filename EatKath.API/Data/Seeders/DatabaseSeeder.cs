@@ -26,6 +26,7 @@ namespace EatKath.API.Data.Seeders
             await DealSeeder.SeedAsync(context);
             await MenuCategorySeeder.SeedAsync(context);
             await MenuItemSeeder.SeedAsync(context);
+            await RestaurantImageSeeder.SeedAsync(context);
             await UserFavoriteSeeder.SeedAsync(context);
             await RedemptionSeeder.SeedAsync(context);
 

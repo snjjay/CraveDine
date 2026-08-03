@@ -4,8 +4,10 @@
     {
         public string ImageUrl { get; set; } = string.Empty;
 
-        public bool IsLogo { get; set; }
+        public string? Caption { get; set; }
 
         public int DisplayOrder { get; set; }
+
+        public bool IsPrimary { get; set; }
     }
 }

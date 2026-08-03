@@ -508,3 +508,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
+# Uploaded files
+EatKath.API/wwwroot/uploads/
+# Runtime uploaded files
+wwwroot/uploads/

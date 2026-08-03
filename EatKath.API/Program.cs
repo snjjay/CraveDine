@@ -72,6 +72,7 @@ builder.Services.AddScoped<IUserFavoriteService, UserFavoriteService>();
 builder.Services.AddScoped<IRedemptionService, RedemptionService>();
 builder.Services.AddScoped<IOwnerDashboardService, OwnerDashboardService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<FileStorageService>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 

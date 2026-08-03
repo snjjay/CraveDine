@@ -58,6 +58,20 @@ namespace EatKath.API.Controllers
             return Ok(image);
         }
 
+
+
+        [Authorize(Roles = "Admin,Owner")]
+        [HttpPost("upload")]
+        public async Task<IActionResult> Upload([FromForm] UploadRestaurantImageDto dto)
+        {
+            var image = await _service.UploadAsync(dto.RestaurantId, dto.File);
+
+            return Ok(image);
+        }
+
+
+
+
         [Authorize(Roles = "Admin,Owner")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)

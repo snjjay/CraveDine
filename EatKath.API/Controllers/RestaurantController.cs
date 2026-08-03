@@ -76,5 +76,72 @@ namespace EatKath.API.Controllers
 
             return NoContent();
         }
+
+
+        [Authorize(Roles = "Admin,Owner")]
+        [HttpPost("{id}/logo")]
+        public async Task<IActionResult> UploadLogo(
+         int id,
+         [FromForm] UploadRestaurantFileDto dto)
+            {
+                var url = await _restaurantService.UploadLogoAsync(id, dto.File);
+
+                return Ok(new { LogoUrl = url });
+            }
+
+
+        [Authorize(Roles = "Admin,Owner")]
+        [HttpPost("{id}/cover")]
+        public async Task<IActionResult> UploadCover(
+        int id,
+        [FromForm] UploadRestaurantFileDto dto)
+            {
+                var url = await _restaurantService.UploadCoverAsync(id, dto.File);
+
+                return Ok(new { CoverImageUrl = url });
+            }
+
+
+        [Authorize(Roles = "Admin,Owner")]
+        [HttpPost("{id}/menu-pdf")]
+        public async Task<IActionResult> UploadMenuPdf(
+         int id,
+         [FromForm] UploadRestaurantFileDto dto)
+            {
+                var url = await _restaurantService.UploadMenuPdfAsync(id, dto.File);
+
+                return Ok(new { MenuPdfUrl = url });
+            }
+
+
+        [Authorize(Roles = "Admin,Owner")]
+        [HttpDelete("{id}/logo")]
+        public async Task<IActionResult> DeleteLogo(int id)
+        {
+            await _restaurantService.DeleteLogoAsync(id);
+
+            return NoContent();
+        }
+
+
+        [Authorize(Roles = "Admin,Owner")]
+        [HttpDelete("{id}/cover")]
+        public async Task<IActionResult> DeleteCover(int id)
+        {
+            await _restaurantService.DeleteCoverAsync(id);
+
+            return NoContent();
+        }
+
+
+        [Authorize(Roles = "Admin,Owner")]
+        [HttpDelete("{id}/menu-pdf")]
+        public async Task<IActionResult> DeleteMenuPdf(int id)
+        {
+            await _restaurantService.DeleteMenuPdfAsync(id);
+
+            return NoContent();
+        }
+
     }
 }

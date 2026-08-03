@@ -1,4 +1,5 @@
 ﻿using EatKath.API.DTOs.Restaurant;
+using Microsoft.AspNetCore.Http;
 
 namespace EatKath.API.Services.Interfaces
 {
@@ -13,5 +14,19 @@ namespace EatKath.API.Services.Interfaces
         Task<RestaurantDto?> UpdateAsync(int id, UpdateRestaurantDto dto);
 
         Task<bool> DeleteAsync(int id);
+
+        // Images
+        Task<string> UploadLogoAsync(int restaurantId, IFormFile file);
+
+        Task<string> UploadCoverAsync(int restaurantId, IFormFile file);
+
+        Task<string> UploadMenuPdfAsync(int restaurantId, IFormFile file);
+
+
+        Task DeleteLogoAsync(int restaurantId);
+
+        Task DeleteCoverAsync(int restaurantId);
+
+        Task DeleteMenuPdfAsync(int restaurantId);
     }
 }

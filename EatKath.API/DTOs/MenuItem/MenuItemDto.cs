@@ -1,20 +1,23 @@
-﻿namespace EatKath.API.DTOs.MenuItem;
-
-public class MenuItemDto
+﻿namespace EatKath.API.DTOs.MenuItem
 {
-    public int Id { get; set; }
+    public class MenuItemDto
+    {
+        public int Id { get; set; }
 
-    public int RestaurantId { get; set; }
+        public int RestaurantId { get; set; }
 
-    public int MenuCategoryId { get; set; }
+        public int MenuCategoryId { get; set; }
 
-    public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
-    public string Description { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
 
-    public decimal Price { get; set; }
+        public decimal Price { get; set; }
 
-    //public string ImageUrl { get; set; } = string.Empty;
+        public string? ImageUrl { get; set; }
 
-    public bool IsAvailable { get; set; }
+        public bool IsFeatured { get; set; }
+
+        public bool IsAvailable { get; set; }
+    }
 }
