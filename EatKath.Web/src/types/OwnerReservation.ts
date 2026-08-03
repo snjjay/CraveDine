@@ -18,5 +18,5 @@ export interface OwnerReservation {
 
     guestCount: number;
 
-    status: number;
+    status: string;
 }

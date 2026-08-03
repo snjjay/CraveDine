@@ -1,0 +1,163 @@
+import { useEffect, useState } from "react";
+
+import {
+    Button,
+    Card,
+    CardContent,
+    Chip,
+    CircularProgress,
+    Stack,
+    Typography
+} from "@mui/material";
+
+import OwnerDealService from "../services/OwnerDealService";
+import type { Deal } from "../types/Deal";
+
+function OwnerDealsPage() {
+
+    const [deals, setDeals] = useState<Deal[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+
+        loadDeals();
+
+    }, []);
+
+    async function loadDeals() {
+
+        try {
+
+            const data = await OwnerDealService.getMyDeals();
+
+            setDeals(data);
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+        }
+        finally {
+
+            setLoading(false);
+
+        }
+
+    }
+
+    async function deleteDeal(id: number) {
+
+        if (!confirm("Delete this deal?"))
+            return;
+
+        await OwnerDealService.delete(id);
+
+        loadDeals();
+
+    }
+
+    if (loading)
+        return <CircularProgress />;
+
+    return (
+
+        <>
+
+            <Stack
+                direction="row"
+                justifyContent="space-between"
+                sx={{ mb: 3 }}
+            >
+
+                <Typography variant="h4">
+
+                    My Deals
+
+                </Typography>
+
+                <Button variant="contained">
+
+                    New Deal
+
+                </Button>
+
+            </Stack>
+
+            {deals.map(deal => (
+
+                <Card
+                    key={deal.id}
+                    sx={{ mb: 2 }}
+                >
+
+                    <CardContent>
+
+                        <Stack
+                            direction="row"
+                            justifyContent="space-between"
+                        >
+
+                            <Typography variant="h6">
+
+                                {deal.title}
+
+                            </Typography>
+
+                            <Chip
+                                color="success"
+                                label={`${deal.discountPercentage}% OFF`}
+                            />
+
+                        </Stack>
+
+                        <Typography sx={{ mt: 1 }}>
+
+                            {deal.description}
+
+                        </Typography>
+
+                        <Typography
+                            variant="body2"
+                            sx={{ mt: 2 }}
+                        >
+
+                            {deal.startTime} - {deal.endTime}
+
+                        </Typography>
+
+                        <Stack
+                            direction="row"
+                            spacing={2}
+                            sx={{ mt: 2 }}
+                        >
+
+                            <Button
+                                variant="outlined"
+                            >
+                                Edit
+                            </Button>
+
+                            <Button
+                                color="error"
+                                variant="outlined"
+                                onClick={() => deleteDeal(deal.id)}
+                            >
+                                Delete
+                            </Button>
+
+                        </Stack>
+
+                    </CardContent>
+
+                </Card>
+
+            ))}
+
+        </>
+
+    );
+
+}
+
+export default OwnerDealsPage;

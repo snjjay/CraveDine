@@ -7,6 +7,7 @@ import LoginPage from "../features/auth/LoginPage";
 import RestaurantsPage from "../pages/RestaurantsPage";
 import RestaurantDetailsPage from "../pages/RestaurantDetailsPage";
 import OwnerDashboardPage from "../pages/OwnerDashboardPage";
+import OwnerDealsPage from "../pages/OwnerDealsPage";
 import AdminDashboardPage from "../pages/AdminDashboardPage";
 
 import ProtectedRoute from "../features/auth/ProtectedRoute";
@@ -14,6 +15,7 @@ import ProtectedRoute from "../features/auth/ProtectedRoute";
 function AppRoutes() {
 
     return (
+
         <BrowserRouter>
 
             <Routes>
@@ -45,6 +47,15 @@ function AppRoutes() {
                     />
 
                     <Route
+                        path="/owner/deals"
+                        element={
+                            <ProtectedRoute>
+                                <OwnerDealsPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
                         path="/admin"
                         element={
                             <ProtectedRoute>
@@ -63,7 +74,9 @@ function AppRoutes() {
             </Routes>
 
         </BrowserRouter>
+
     );
+
 }
 
 export default AppRoutes;
