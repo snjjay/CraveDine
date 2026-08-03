@@ -5,17 +5,18 @@ import MainLayout from "../layouts/MainLayout";
 import HomePage from "../pages/HomePage";
 import RestaurantsPage from "../pages/RestaurantsPage";
 import RestaurantDetailsPage from "../pages/RestaurantDetailsPage";
+import MyFavoritesPage from "../pages/MyFavoritesPage";
 
 import OwnerDashboardPage from "../pages/OwnerDashboardPage";
 import OwnerDealsPage from "../pages/OwnerDealsPage";
 import CreateDealPage from "../pages/CreateDealPage";
+import EditDealPage from "../pages/EditDealPage";
+import OwnerRestaurantPage from "../pages/OwnerRestaurantPage";
 
 import AdminDashboardPage from "../pages/AdminDashboardPage";
 
 import LoginPage from "../features/auth/LoginPage";
 import ProtectedRoute from "../features/auth/ProtectedRoute";
-import EditDealPage from "../pages/EditDealPage";
-import OwnerRestaurantPage from "../pages/OwnerRestaurantPage";
 
 function AppRoutes() {
 
@@ -40,6 +41,15 @@ function AppRoutes() {
                     <Route
                         path="/restaurants/:id"
                         element={<RestaurantDetailsPage />}
+                    />
+
+                    <Route
+                        path="/favorites"
+                        element={
+                            <ProtectedRoute>
+                                <MyFavoritesPage />
+                            </ProtectedRoute>
+                        }
                     />
 
                     <Route
@@ -74,7 +84,6 @@ function AppRoutes() {
                         }
                     />
 
-
                     <Route
                         path="/owner/deals/edit/:id"
                         element={
@@ -85,19 +94,19 @@ function AppRoutes() {
                     />
 
                     <Route
-                        path="/admin"
+                        path="/owner/restaurant"
                         element={
                             <ProtectedRoute>
-                                <AdminDashboardPage />
+                                <OwnerRestaurantPage />
                             </ProtectedRoute>
                         }
                     />
 
                     <Route
-                        path="/owner/restaurant"
+                        path="/admin"
                         element={
                             <ProtectedRoute>
-                                <OwnerRestaurantPage />
+                                <AdminDashboardPage />
                             </ProtectedRoute>
                         }
                     />

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 import {
     AppBar,
@@ -10,21 +10,19 @@ import {
     Typography
 } from "@mui/material";
 
-import { Outlet } from "react-router-dom";
-
 import AuthContext from "../features/auth/AuthContext";
 
 function MainLayout() {
 
     const auth = useContext(AuthContext);
 
-    if (!auth) {
+    if (!auth)
         throw new Error("AuthContext not found.");
-    }
 
     const { user, logout } = auth;
 
     return (
+
         <Box>
 
             <AppBar position="static">
@@ -54,6 +52,18 @@ function MainLayout() {
                         Restaurants
                     </Button>
 
+                    {user && (
+
+                        <Button
+                            color="inherit"
+                            component={Link}
+                            to="/favorites"
+                        >
+                            ❤️ Favourites
+                        </Button>
+
+                    )}
+
                     {user ? (
 
                         <Button
@@ -80,11 +90,15 @@ function MainLayout() {
             </AppBar>
 
             <Container sx={{ mt: 4 }}>
+
                 <Outlet />
+
             </Container>
 
         </Box>
+
     );
+
 }
 
 export default MainLayout;

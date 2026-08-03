@@ -27,5 +27,7 @@
         public decimal? BestDiscount { get; set; }
 
         public int ActiveDeals { get; set; }
+
+        public bool IsFavorite { get; set; }
     }
 }
