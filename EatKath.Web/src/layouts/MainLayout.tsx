@@ -61,8 +61,18 @@ function MainLayout() {
                         >
                             ❤️ Favourites
                         </Button>
+                        
 
                     )}
+
+                        <Button
+                            color="inherit"
+                            component={Link}
+                            to="/my-reservations"
+                        >
+                            My Reservations
+                        </Button>
+                    
 
                     {user ? (
 

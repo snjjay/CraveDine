@@ -12,18 +12,23 @@ namespace EatKath.API.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUser;
 
         public ReservationService(
             ApplicationDbContext context,
-            IMapper mapper)
+            IMapper mapper,
+            ICurrentUserService currentUser)
         {
             _context = context;
             _mapper = mapper;
+            _currentUser = currentUser;
         }
 
         public async Task<ReservationDto> CreateAsync(CreateReservationDto dto)
         {
             var reservation = _mapper.Map<Reservation>(dto);
+
+            reservation.UserId = _currentUser.UserId;
 
             _context.Reservations.Add(reservation);
 
@@ -45,6 +50,16 @@ namespace EatKath.API.Services
                 .Include(r => r.Deal)
                     .ThenInclude(d => d.Restaurant)
                 .Where(r => r.Deal.Restaurant.OwnerId == ownerId)
+                .ProjectTo<ReservationDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+        }
+
+
+        public async Task<IEnumerable<ReservationDto>> GetMyReservationsAsync(int userId)
+        {
+            return await _context.Reservations
+                .Where(r => r.UserId == userId)
+                .OrderByDescending(r => r.CreatedAt)
                 .ProjectTo<ReservationDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
         }

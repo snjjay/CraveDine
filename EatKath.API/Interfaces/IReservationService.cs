@@ -14,6 +14,8 @@ namespace EatKath.API.Interfaces
 
         Task<IEnumerable<ReservationDto>> GetOwnerReservationsAsync(int ownerId);
 
+        Task<IEnumerable<ReservationDto>> GetMyReservationsAsync(int userId);
+
         Task<bool> ConfirmReservationAsync(int id);
 
         Task<bool> CancelReservationAsync(int id);

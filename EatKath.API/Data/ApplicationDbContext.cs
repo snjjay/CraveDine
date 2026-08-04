@@ -200,6 +200,23 @@ namespace EatKath.API.Data
                 .Property(x => x.DiscountPercentage)
                 .HasPrecision(18, 2);
 
+
+            // ============================
+            // Reservations
+            // ============================
+
+            modelBuilder.Entity<Reservation>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.Reservations)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Reservation>()
+                .HasOne(x => x.Deal)
+                .WithMany()
+                .HasForeignKey(x => x.DealId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<MenuItem>()
                 .Property(x => x.Price)
                 .HasPrecision(18, 2);

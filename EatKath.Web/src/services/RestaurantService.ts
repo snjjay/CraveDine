@@ -22,6 +22,8 @@ class RestaurantService {
         return response.data;
     }
 
+    
+
     // ------------------------------------------------------
     // GET: /api/restaurant/{id}
     // Get restaurant by id

@@ -48,6 +48,25 @@ namespace EatKath.API.Controllers
         }
 
         // =====================================
+        // Customer - My Reservations
+        // =====================================
+
+        [Authorize(Roles = "Customer")]
+        [HttpGet("my")]
+        public async Task<IActionResult> GetMyReservations()
+        {
+            var userId = int.Parse(
+                User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            var reservations =
+                await _service.GetMyReservationsAsync(userId);
+
+            return Ok(reservations);
+        }
+
+
+
+        // =====================================
         // Get Reservation
         // =====================================
 
@@ -66,9 +85,10 @@ namespace EatKath.API.Controllers
         // Customer Creates Reservation
         // =====================================
 
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         public async Task<IActionResult> Create(
-            [FromBody] CreateReservationDto dto)
+    [FromBody] CreateReservationDto dto)
         {
             var reservation =
                 await _service.CreateAsync(dto);

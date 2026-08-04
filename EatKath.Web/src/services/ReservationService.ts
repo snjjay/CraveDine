@@ -8,6 +8,17 @@ class ReservationService {
     // POST /api/reservation
     // ----------------------------------------
 
+async getMyReservations(): Promise<Reservation[]> {
+
+    const response = await api.get<Reservation[]>(
+        "/reservation/my"
+    );
+
+    return response.data;
+
+}
+
+
     async create(reservation: Reservation): Promise<Reservation> {
 
         const response = await api.post<Reservation>(

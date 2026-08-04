@@ -11,6 +11,10 @@ namespace EatKath.API.Entities
 
         public Deal Deal { get; set; } = null!;
 
+        public int UserId { get; set; }
+
+        public User User { get; set; } = null!;
+
         [Required]
         [MaxLength(100)]
         public string CustomerName { get; set; } = string.Empty;
@@ -39,5 +43,8 @@ namespace EatKath.API.Entities
         public string ConfirmationCode { get; set; } = Guid.NewGuid().ToString("N")[..8].ToUpper();
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+
+
     }
 }

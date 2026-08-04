@@ -28,5 +28,7 @@
         public ICollection<UserFavorite> UserFavorites { get; set; } = new List<UserFavorite>();
 
         public ICollection<Redemption> Redemptions { get; set; } = new List<Redemption>();
+
+        public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
     }
 }

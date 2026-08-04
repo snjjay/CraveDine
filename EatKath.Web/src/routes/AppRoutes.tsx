@@ -17,6 +17,7 @@ import AdminDashboardPage from "../pages/AdminDashboardPage";
 
 import LoginPage from "../features/auth/LoginPage";
 import ProtectedRoute from "../features/auth/ProtectedRoute";
+import MyReservationsPage from "../pages/MyReservationsPage";
 
 function AppRoutes() {
 
@@ -48,6 +49,15 @@ function AppRoutes() {
                         element={
                             <ProtectedRoute>
                                 <MyFavoritesPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/my-reservations"
+                        element={
+                            <ProtectedRoute>
+                                <MyReservationsPage />
                             </ProtectedRoute>
                         }
                     />
