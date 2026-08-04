@@ -18,6 +18,7 @@ import AdminDashboardPage from "../pages/AdminDashboardPage";
 import LoginPage from "../features/auth/LoginPage";
 import ProtectedRoute from "../features/auth/ProtectedRoute";
 import MyReservationsPage from "../pages/MyReservationsPage";
+import OwnerOpeningHoursPage from "../pages/OwnerOpeningHoursPage";
 
 function AppRoutes() {
 
@@ -45,13 +46,13 @@ function AppRoutes() {
                     />
 
                     <Route
-    path="/favorites"
-    element={
-        <ProtectedRoute role="Customer">
-            <MyFavoritesPage />
-        </ProtectedRoute>
-    }
-/>
+                        path="/favorites"
+                        element={
+                            <ProtectedRoute role="Customer">
+                                <MyFavoritesPage />
+                            </ProtectedRoute>
+                        }
+                    />
 
                     <Route
                         path="/my-reservations"
@@ -108,6 +109,15 @@ function AppRoutes() {
                         element={
                             <ProtectedRoute role="Owner">
                                 <OwnerRestaurantPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/owner/opening-hours"
+                        element={
+                            <ProtectedRoute role="Owner">
+                                <OwnerOpeningHoursPage />
                             </ProtectedRoute>
                         }
                     />

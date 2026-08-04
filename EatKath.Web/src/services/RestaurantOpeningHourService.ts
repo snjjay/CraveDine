@@ -20,9 +20,9 @@ class RestaurantOpeningHourService {
     }
 
     async update(
-    id: number,
-    openingHour: UpdateRestaurantOpeningHour
-): Promise<RestaurantOpeningHour> {
+        id: number,
+        openingHour: UpdateRestaurantOpeningHour
+    ): Promise<RestaurantOpeningHour> {
 
         const response =
             await api.put<RestaurantOpeningHour>(
@@ -35,8 +35,8 @@ class RestaurantOpeningHourService {
     }
 
     async create(
-    openingHour: CreateRestaurantOpeningHour
-): Promise<RestaurantOpeningHour> {
+        openingHour: CreateRestaurantOpeningHour
+    ): Promise<RestaurantOpeningHour> {
 
         const response =
             await api.post<RestaurantOpeningHour>(
