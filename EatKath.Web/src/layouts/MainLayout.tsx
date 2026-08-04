@@ -21,6 +21,10 @@ function MainLayout() {
 
     const { user, logout } = auth;
 
+    const isCustomer = user?.role === "Customer";
+    const isOwner = user?.role === "Owner";
+    const isAdmin = user?.role === "Admin";
+
     return (
 
         <Box>
@@ -52,27 +56,51 @@ function MainLayout() {
                         Restaurants
                     </Button>
 
-                    {user && (
+                    {isCustomer && (
 
-                        <Button
-                            color="inherit"
-                            component={Link}
-                            to="/favorites"
-                        >
-                            ❤️ Favourites
-                        </Button>
-                        
+                        <>
+                            <Button
+                                color="inherit"
+                                component={Link}
+                                to="/favorites"
+                            >
+                                ❤️ Favourites
+                            </Button>
+
+                            <Button
+                                color="inherit"
+                                component={Link}
+                                to="/my-reservations"
+                            >
+                                📅 My Reservations
+                            </Button>
+                        </>
 
                     )}
 
+                    {isOwner && (
+
                         <Button
                             color="inherit"
                             component={Link}
-                            to="/my-reservations"
+                            to="/owner"
                         >
-                            My Reservations
+                            🏪 Owner Dashboard
                         </Button>
-                    
+
+                    )}
+
+                    {isAdmin && (
+
+                        <Button
+                            color="inherit"
+                            component={Link}
+                            to="/admin"
+                        >
+                            ⚙️ Admin Dashboard
+                        </Button>
+
+                    )}
 
                     {user ? (
 

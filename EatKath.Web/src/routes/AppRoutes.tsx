@@ -45,18 +45,18 @@ function AppRoutes() {
                     />
 
                     <Route
-                        path="/favorites"
-                        element={
-                            <ProtectedRoute>
-                                <MyFavoritesPage />
-                            </ProtectedRoute>
-                        }
-                    />
+    path="/favorites"
+    element={
+        <ProtectedRoute role="Customer">
+            <MyFavoritesPage />
+        </ProtectedRoute>
+    }
+/>
 
                     <Route
                         path="/my-reservations"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute role="Customer">
                                 <MyReservationsPage />
                             </ProtectedRoute>
                         }
@@ -70,7 +70,7 @@ function AppRoutes() {
                     <Route
                         path="/owner"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute role="Owner">
                                 <OwnerDashboardPage />
                             </ProtectedRoute>
                         }
@@ -79,7 +79,7 @@ function AppRoutes() {
                     <Route
                         path="/owner/deals"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute role="Owner">
                                 <OwnerDealsPage />
                             </ProtectedRoute>
                         }
@@ -88,7 +88,7 @@ function AppRoutes() {
                     <Route
                         path="/owner/deals/new"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute role="Owner">
                                 <CreateDealPage />
                             </ProtectedRoute>
                         }
@@ -97,7 +97,7 @@ function AppRoutes() {
                     <Route
                         path="/owner/deals/edit/:id"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute role="Owner">
                                 <EditDealPage />
                             </ProtectedRoute>
                         }
@@ -106,7 +106,7 @@ function AppRoutes() {
                     <Route
                         path="/owner/restaurant"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute role="Owner">
                                 <OwnerRestaurantPage />
                             </ProtectedRoute>
                         }
@@ -115,7 +115,7 @@ function AppRoutes() {
                     <Route
                         path="/admin"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute role="Admin">
                                 <AdminDashboardPage />
                             </ProtectedRoute>
                         }
