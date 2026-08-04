@@ -215,6 +215,13 @@ function OwnerDashboardPage() {
                             Edit Restaurant
                         </Button>
 
+                        <Button
+                            variant="contained"
+                            onClick={() => navigate("/owner/menu-categories")}
+                        >
+                            Menu Categories
+                        </Button>
+
                     </Stack>
 
                 )}

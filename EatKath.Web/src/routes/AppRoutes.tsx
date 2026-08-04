@@ -19,7 +19,7 @@ import LoginPage from "../features/auth/LoginPage";
 import ProtectedRoute from "../features/auth/ProtectedRoute";
 import MyReservationsPage from "../pages/MyReservationsPage";
 import OwnerOpeningHoursPage from "../pages/OwnerOpeningHoursPage";
-
+import OwnerMenuCategoriesPage from "../pages/OwnerMenuCategoriesPage";
 function AppRoutes() {
 
     return (
@@ -132,6 +132,16 @@ function AppRoutes() {
                     />
 
                 </Route>
+
+
+                <Route
+                    path="/owner/menu-categories"
+                    element={
+                        <ProtectedRoute role="Owner">
+                            <OwnerMenuCategoriesPage />
+                        </ProtectedRoute>
+                    }
+                />
 
             </Routes>
 

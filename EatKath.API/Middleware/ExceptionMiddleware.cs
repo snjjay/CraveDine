@@ -44,6 +44,12 @@ public class ExceptionMiddleware
                     statusCode = HttpStatusCode.Conflict;
                     message = ex.Message;
                     break;
+
+                case BusinessRuleException:
+                    statusCode = HttpStatusCode.BadRequest;
+                    message = ex.Message;
+                    break;
+
             }
 
             context.Response.StatusCode = (int)statusCode;
