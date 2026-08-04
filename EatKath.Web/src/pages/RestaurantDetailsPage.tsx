@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import MenuCategoryService from "../services/MenuCategoryService";
+import MenuItemService from "../services/MenuItemService";
+
+import type { MenuCategory } from "../types/MenuCategory";
+import type { MenuItem } from "../types/MenuItem";
 
 import {
     Card,
@@ -25,6 +30,10 @@ function RestaurantDetailsPage() {
 
     const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
     const [deals, setDeals] = useState<Deal[]>([]);
+    const [categories, setCategories] =  useState<MenuCategory[]>([]);
+
+const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -34,6 +43,7 @@ function RestaurantDetailsPage() {
             loadRestaurant(Number(id));
 
             loadDeals(Number(id));
+            loadMenu(Number(id));
 
         }
 
@@ -68,6 +78,34 @@ function RestaurantDetailsPage() {
         }
 
     }
+
+
+async function loadMenu(id: number) {
+
+    try {
+
+        const categoryData =
+            await MenuCategoryService.getByRestaurant(id);
+
+        setCategories(categoryData);
+
+        const itemData =
+            await MenuItemService.getByRestaurant(id);
+
+        setMenuItems(itemData);
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+
+
 
     if (loading) {
 
@@ -194,6 +232,70 @@ function RestaurantDetailsPage() {
                 ))
 
             )}
+
+            <Divider sx={{ my: 4 }} />
+
+<Typography
+    variant="h5"
+    sx={{ mb: 2 }}
+>
+    Menu
+</Typography>
+
+{categories.map(category => (
+
+    <div key={category.id}>
+
+        <Typography
+            variant="h6"
+            sx={{ mt: 3 }}
+        >
+            {category.name}
+        </Typography>
+
+        {menuItems
+            .filter(item =>
+                item.menuCategoryId === category.id &&
+                item.isAvailable
+            )
+            .map(item => (
+
+                <Card
+                    key={item.id}
+                    sx={{ mt: 1, mb: 1 }}
+                >
+
+                    <CardContent>
+
+                        <Typography variant="subtitle1">
+
+                            {item.isFeatured && "⭐ "}
+                            {item.name}
+
+                        </Typography>
+
+                        <Typography
+                            color="text.secondary"
+                        >
+                            {item.description}
+                        </Typography>
+
+                        <Typography
+                            sx={{ mt: 1 }}
+                            fontWeight="bold"
+                        >
+                            NPR {item.price}
+                        </Typography>
+
+                    </CardContent>
+
+                </Card>
+
+            ))}
+
+    </div>
+
+))}
 
         </>
 
