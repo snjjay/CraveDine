@@ -1,6 +1,8 @@
 import api from "../api/axios";
 
 import type { RestaurantOpeningHour } from "../types/RestaurantOpeningHour";
+import type { CreateRestaurantOpeningHour } from "../types/CreateRestaurantOpeningHour";
+import type { UpdateRestaurantOpeningHour } from "../types/UpdateRestaurantOpeningHour";
 
 class RestaurantOpeningHourService {
 
@@ -18,9 +20,9 @@ class RestaurantOpeningHourService {
     }
 
     async update(
-        id: number,
-        openingHour: RestaurantOpeningHour
-    ): Promise<RestaurantOpeningHour> {
+    id: number,
+    openingHour: UpdateRestaurantOpeningHour
+): Promise<RestaurantOpeningHour> {
 
         const response =
             await api.put<RestaurantOpeningHour>(
@@ -33,8 +35,8 @@ class RestaurantOpeningHourService {
     }
 
     async create(
-        openingHour: RestaurantOpeningHour
-    ): Promise<RestaurantOpeningHour> {
+    openingHour: CreateRestaurantOpeningHour
+): Promise<RestaurantOpeningHour> {
 
         const response =
             await api.post<RestaurantOpeningHour>(
