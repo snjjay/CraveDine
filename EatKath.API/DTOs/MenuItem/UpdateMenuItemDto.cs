@@ -11,5 +11,7 @@
         public bool IsFeatured { get; set; }
 
         public bool IsAvailable { get; set; }
+
+        public int MenuCategoryId { get; set; }
     }
 }

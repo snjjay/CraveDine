@@ -20,6 +20,7 @@ import ProtectedRoute from "../features/auth/ProtectedRoute";
 import MyReservationsPage from "../pages/MyReservationsPage";
 import OwnerOpeningHoursPage from "../pages/OwnerOpeningHoursPage";
 import OwnerMenuCategoriesPage from "../pages/OwnerMenuCategoriesPage";
+import OwnerMenuItemsPage from "../pages/OwnerMenuItemsPage";
 function AppRoutes() {
 
     return (
@@ -132,6 +133,15 @@ function AppRoutes() {
                     />
 
                 </Route>
+
+                <Route
+                    path="/owner/menu-items"
+                    element={
+                        <ProtectedRoute role="Owner">
+                            <OwnerMenuItemsPage />
+                        </ProtectedRoute>
+                    }
+                />
 
 
                 <Route

@@ -222,6 +222,13 @@ function OwnerDashboardPage() {
                             Menu Categories
                         </Button>
 
+                        <Button
+                            variant="contained"
+                            onClick={() => navigate("/owner/menu-items")}
+                        >
+                            Menu Items
+                        </Button>
+
                     </Stack>
 
                 )}
