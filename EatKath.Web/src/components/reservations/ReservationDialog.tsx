@@ -76,26 +76,22 @@ function ReservationDialog({
         }
         catch (error: any) {
 
-            console.error(error);
+    console.error(error);
 
-            if (error.response) {
+    if (error.response?.status === 400) {
 
-                alert(
-                    JSON.stringify(
-                        error.response.data,
-                        null,
-                        2
-                    )
-                );
+        alert(error.response.data);
 
-            }
-            else {
+    }
+    else {
 
-                alert(error.message);
+        alert(
+            "Unable to create reservation. Please try again."
+        );
 
-            }
+    }
 
-        }
+}
 
     }
 

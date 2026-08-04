@@ -33,6 +33,9 @@ function CreateDealPage() {
         startTime: "18:00",
         endTime: "21:00",
         maximumGuests: 20,
+
+        reservationLimit: 1,
+
         dailyRedemptionLimit: 100,
         isActive: true
     });
@@ -246,12 +249,25 @@ function CreateDealPage() {
 
                     <TextField
                         label="Maximum Guests"
+
                         type="number"
                         value={deal.maximumGuests}
                         onChange={(e) =>
                             setDeal({
                                 ...deal,
                                 maximumGuests: Number(e.target.value)
+                            })
+                        }
+                    />
+
+                    <TextField
+                        label="Reservation Limit"
+                        type="number"
+                        value={deal.reservationLimit}
+                        onChange={(e) =>
+                            setDeal({
+                                ...deal,
+                                reservationLimit: Number(e.target.value)
                             })
                         }
                     />

@@ -12,5 +12,6 @@ export interface DealForm {
     endTime: string;
     maximumGuests: number;
     dailyRedemptionLimit: number;
+    reservationLimit: number;
     isActive: boolean;
 }

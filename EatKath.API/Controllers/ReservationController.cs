@@ -87,16 +87,24 @@ namespace EatKath.API.Controllers
 
         [Authorize(Roles = "Customer")]
         [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> Create(
-    [FromBody] CreateReservationDto dto)
-        {
-            var reservation =
-                await _service.CreateAsync(dto);
+            [FromBody] CreateReservationDto dto)
+                {
+                    try
+                    {
+                        var reservation =
+                            await _service.CreateAsync(dto);
 
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = reservation.Id },
-                reservation);
+                        return CreatedAtAction(
+                            nameof(GetById),
+                            new { id = reservation.Id },
+                            reservation);
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(ex.Message);
+                    }
         }
 
         // =====================================

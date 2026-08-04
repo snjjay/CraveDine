@@ -13,6 +13,7 @@ export interface Deal {
     startTime: string;
     endTime: string;
     maximumGuests: number;
+    reservationLimit: number;
     dailyRedemptionLimit: number;
     isActive: boolean;
 }

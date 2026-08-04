@@ -24,6 +24,8 @@ export interface CreateDeal {
 
     maximumGuests: number;
 
+    reservationLimit: number;
+
     dailyRedemptionLimit: number;
 
     isActive: boolean;
