@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import {
     Button,
-    Card,
-    CardContent,
     Chip,
     CircularProgress,
     Paper,
@@ -28,11 +26,14 @@ function OwnerDashboardPage() {
 
     const navigate = useNavigate();
 
-    const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
+    const [restaurant, setRestaurant] =
+        useState<Restaurant | null>(null);
 
-    const [reservations, setReservations] = useState<OwnerReservation[]>([]);
+    const [reservations, setReservations] =
+        useState<OwnerReservation[]>([]);
 
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] =
+        useState(true);
 
     useEffect(() => {
 
@@ -44,23 +45,29 @@ function OwnerDashboardPage() {
 
         try {
 
-            const [restaurantData, reservationData] =
-                await Promise.all([
+            const restaurantData =
+                await OwnerRestaurantService.getMyRestaurant();
 
-                    OwnerRestaurantService.getMyRestaurant(),
-
-                    OwnerReservationService.getAll()
-
-                ]);
+            const reservationData =
+                await OwnerReservationService.getAll();
 
             setRestaurant(restaurantData);
-
             setReservations(reservationData);
 
         }
-        catch (error) {
+        catch (error: any) {
 
-            console.error(error);
+            if (error.response?.status === 404) {
+
+                setRestaurant(null);
+                setReservations([]);
+
+            }
+            else {
+
+                console.error(error);
+
+            }
 
         }
         finally {
@@ -179,35 +186,61 @@ function OwnerDashboardPage() {
 
             </Typography>
 
-            <Stack
-                direction="row"
-                spacing={2}
-            >
+            {restaurant && (
 
-                <Button
-                    variant="contained"
-                    onClick={() => navigate("/owner/deals")}
+                <Stack
+                    direction="row"
+                    spacing={2}
                 >
-                    Manage Deals
-                </Button>
 
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => navigate("/owner/restaurant")}
-                >
-                    Edit Restaurant
-                </Button>
+                    <Button
+                        variant="contained"
+                        onClick={() => navigate("/owner/deals")}
+                    >
+                        Manage Deals
+                    </Button>
 
-            </Stack>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={() => navigate("/owner/restaurant")}
+                    >
+                        Edit Restaurant
+                    </Button>
+
+                </Stack>
+
+            )}
 
         </Stack>
 
+        {!restaurant && (
+
+            <Paper sx={{ p: 4 }}>
+
+                <Typography
+                    variant="h5"
+                    gutterBottom
+                >
+                    No Restaurant Assigned
+                </Typography>
+
+                <Typography>
+
+                    No restaurant has been assigned to your account yet.
+                    Please contact an administrator.
+
+                </Typography>
+
+            </Paper>
+
+        )}
+
         {restaurant && (
 
-            <Card sx={{ mb: 4 }}>
+            <>
 
-                <CardContent>
+                <Paper sx={{ p: 3, mb: 4 }}>
 
                     <Typography variant="h5">
 
@@ -233,189 +266,165 @@ function OwnerDashboardPage() {
 
                     </Typography>
 
-                    <Typography>
+                </Paper>
 
-                        {restaurant.website}
+                <Typography
+                    variant="h5"
+                    sx={{ mb: 2 }}
+                >
+                    Reservations
+                </Typography>
 
-                    </Typography>
+                <TableContainer component={Paper}>
 
-                    <Typography sx={{ mt: 2 }}>
+                    <Table>
 
-                        Active Deals: {restaurant.activeDeals}
+                        <TableHead>
 
-                    </Typography>
+                            <TableRow>
 
-                    <Typography>
+                                <TableCell>Customer</TableCell>
+                                <TableCell>Deal</TableCell>
+                                <TableCell>Date</TableCell>
+                                <TableCell>Time</TableCell>
+                                <TableCell>Guests</TableCell>
+                                <TableCell>Status</TableCell>
+                                <TableCell>Actions</TableCell>
 
-                        Best Discount: {restaurant.bestDiscount ?? 0}%
+                            </TableRow>
 
-                    </Typography>
+                        </TableHead>
 
-                </CardContent>
+                        <TableBody>
 
-            </Card>
+                            {reservations.map((reservation) => (
+
+                                <TableRow key={reservation.id}>
+
+                                    <TableCell>
+                                        {reservation.customerName}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {reservation.dealTitle}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {reservation.reservationDate}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {reservation.reservationTime}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {reservation.guestCount}
+                                    </TableCell>
+
+                                    <TableCell>
+
+                                        <Chip
+                                            label={reservation.status}
+                                            color={getChipColor(reservation.status)}
+                                        />
+
+                                    </TableCell>
+
+                                    <TableCell>
+
+                                        <Stack
+                                            direction="row"
+                                            spacing={1}
+                                            flexWrap="wrap"
+                                        >
+
+                                            {reservation.status === "Pending" && (
+
+                                                <>
+                                                    <Button
+                                                        size="small"
+                                                        variant="contained"
+                                                        color="success"
+                                                        onClick={() => confirmReservation(reservation.id)}
+                                                    >
+                                                        Confirm
+                                                    </Button>
+
+                                                    <Button
+                                                        size="small"
+                                                        variant="contained"
+                                                        color="error"
+                                                        onClick={() => rejectReservation(reservation.id)}
+                                                    >
+                                                        Reject
+                                                    </Button>
+                                                </>
+
+                                            )}
+
+                                            {reservation.status === "Confirmed" && (
+
+                                                <>
+                                                    <Button
+                                                        size="small"
+                                                        variant="contained"
+                                                        color="info"
+                                                        onClick={() => arrivedReservation(reservation.id)}
+                                                    >
+                                                        Arrived
+                                                    </Button>
+
+                                                    <Button
+                                                        size="small"
+                                                        variant="contained"
+                                                        color="warning"
+                                                        onClick={() => noShowReservation(reservation.id)}
+                                                    >
+                                                        No Show
+                                                    </Button>
+
+                                                    <Button
+                                                        size="small"
+                                                        variant="outlined"
+                                                        color="error"
+                                                        onClick={() => cancelReservation(reservation.id)}
+                                                    >
+                                                        Cancel
+                                                    </Button>
+                                                </>
+
+                                            )}
+
+                                            {reservation.status === "Arrived" && (
+
+                                                <Button
+                                                    size="small"
+                                                    variant="contained"
+                                                    color="success"
+                                                    onClick={() => completedReservation(reservation.id)}
+                                                >
+                                                    Completed
+                                                </Button>
+
+                                            )}
+
+                                        </Stack>
+
+                                    </TableCell>
+
+                                </TableRow>
+
+                            ))}
+
+                        </TableBody>
+
+                    </Table>
+
+                </TableContainer>
+
+            </>
 
         )}
-
-        <Typography
-            variant="h5"
-            sx={{ mb: 2 }}
-        >
-            Reservations
-        </Typography>
-
-        <TableContainer component={Paper}>
-
-            <Table>
-
-                <TableHead>
-
-                    <TableRow>
-
-                        <TableCell>Customer</TableCell>
-                        <TableCell>Deal</TableCell>
-                        <TableCell>Date</TableCell>
-                        <TableCell>Time</TableCell>
-                        <TableCell>Guests</TableCell>
-                        <TableCell>Status</TableCell>
-                        <TableCell>Actions</TableCell>
-
-                    </TableRow>
-
-                </TableHead>
-
-                <TableBody>
-
-                    {reservations.map((reservation) => (
-
-                        <TableRow key={reservation.id}>
-
-                            <TableCell>
-                                {reservation.customerName}
-                            </TableCell>
-
-                            <TableCell>
-                                {reservation.dealTitle}
-                            </TableCell>
-
-                            <TableCell>
-                                {reservation.reservationDate}
-                            </TableCell>
-
-                            <TableCell>
-                                {reservation.reservationTime}
-                            </TableCell>
-
-                            <TableCell>
-                                {reservation.guestCount}
-                            </TableCell>
-
-                            <TableCell>
-
-                                <Chip
-                                    label={reservation.status}
-                                    color={getChipColor(reservation.status)}
-                                />
-
-                            </TableCell>
-
-                            <TableCell>
-
-                                <Stack
-                                    direction="row"
-                                    spacing={1}
-                                    flexWrap="wrap"
-                                >
-
-                                    {reservation.status === "Pending" && (
-                                        <>
-                                            <Button
-                                                size="small"
-                                                color="success"
-                                                variant="contained"
-                                                onClick={() =>
-                                                    confirmReservation(reservation.id)
-                                                }
-                                            >
-                                                Confirm
-                                            </Button>
-
-                                            <Button
-                                                size="small"
-                                                color="error"
-                                                variant="contained"
-                                                onClick={() =>
-                                                    rejectReservation(reservation.id)
-                                                }
-                                            >
-                                                Reject
-                                            </Button>
-                                        </>
-                                    )}
-
-                                    {reservation.status === "Confirmed" && (
-                                        <>
-                                            <Button
-                                                size="small"
-                                                color="info"
-                                                variant="contained"
-                                                onClick={() =>
-                                                    arrivedReservation(reservation.id)
-                                                }
-                                            >
-                                                Arrived
-                                            </Button>
-
-                                            <Button
-                                                size="small"
-                                                color="warning"
-                                                variant="contained"
-                                                onClick={() =>
-                                                    noShowReservation(reservation.id)
-                                                }
-                                            >
-                                                No Show
-                                            </Button>
-
-                                            <Button
-                                                size="small"
-                                                color="error"
-                                                variant="outlined"
-                                                onClick={() =>
-                                                    cancelReservation(reservation.id)
-                                                }
-                                            >
-                                                Cancel
-                                            </Button>
-                                        </>
-                                    )}
-
-                                    {reservation.status === "Arrived" && (
-                                        <Button
-                                            size="small"
-                                            color="success"
-                                            variant="contained"
-                                            onClick={() =>
-                                                completedReservation(reservation.id)
-                                            }
-                                        >
-                                            Completed
-                                        </Button>
-                                    )}
-
-                                </Stack>
-
-                            </TableCell>
-
-                        </TableRow>
-
-                    ))}
-
-                </TableBody>
-
-            </Table>
-
-        </TableContainer>
 
     </>
 

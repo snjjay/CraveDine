@@ -26,6 +26,26 @@ namespace EatKath.API.Services
 
         public async Task<ReservationDto> CreateAsync(CreateReservationDto dto)
         {
+            var deal = await _context.Deals
+                .FirstOrDefaultAsync(d => d.Id == dto.DealId);
+
+            if (deal == null)
+                throw new Exception("Deal not found.");
+
+            // Check reservation limit
+            if (deal.ReservationLimit > 0)
+            {
+                var reservationCount = await _context.Reservations
+                    .CountAsync(r =>
+                        r.DealId == dto.DealId &&
+                        r.Status != ReservationStatus.Cancelled &&
+                        r.Status != ReservationStatus.Rejected &&
+                        r.Status != ReservationStatus.NoShow);
+
+                if (reservationCount >= deal.ReservationLimit)
+                    throw new Exception("This deal is fully booked.");
+            }
+
             var reservation = _mapper.Map<Reservation>(dto);
 
             reservation.UserId = _currentUser.UserId;

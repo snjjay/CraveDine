@@ -37,7 +37,11 @@ namespace EatKath.API.Entities
         // Maximum guests allowed for this offer
         public int MaximumGuests { get; set; }
 
-        
+        // Maximum reservations allowed
+        // 0 = Unlimited
+        public int ReservationLimit { get; set; } = 0;
+
+
         // Maximum completed redemptions allowed per day
         // 0 = Unlimited
         public int DailyRedemptionLimit { get; set; } = 0;
