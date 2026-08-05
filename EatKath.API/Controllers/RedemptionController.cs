@@ -18,7 +18,8 @@ namespace EatKath.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Redeem([FromBody] CreateRedemptionDto dto)
+        public async Task<IActionResult> Redeem(
+            [FromBody] CreateRedemptionDto dto)
         {
             var result = await _service.RedeemAsync(dto);
 
@@ -33,9 +34,12 @@ namespace EatKath.API.Controllers
 
         [Authorize(Roles = "Admin,Owner")]
         [HttpGet("restaurant/{restaurantId}")]
-        public async Task<IActionResult> GetRestaurantRedemptions(int restaurantId)
+        public async Task<IActionResult> GetRestaurantRedemptions(
+            int restaurantId)
         {
-            return Ok(await _service.GetRestaurantRedemptionsAsync(restaurantId));
+            return Ok(
+                await _service.GetRestaurantRedemptionsAsync(
+                    restaurantId));
         }
 
         [HttpGet("{id}")]
@@ -49,17 +53,18 @@ namespace EatKath.API.Controllers
             return Ok(result);
         }
 
-
         [Authorize(Roles = "Owner,Admin")]
         [HttpPost("{id}/complete")]
         public async Task<IActionResult> CompleteRedemption(
-        int id,
-        CompleteRedemptionDto dto)
-            {
-                var result = await _service.CompleteRedemptionAsync(id, dto);
+            int id,
+            [FromBody] CompleteRedemptionDto dto)
+        {
+            var result =
+                await _service.CompleteRedemptionAsync(
+                    id,
+                    dto);
 
-                return Ok(result);
-            }
-
+            return Ok(result);
+        }
     }
 }

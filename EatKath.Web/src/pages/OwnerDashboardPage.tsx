@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -5,6 +6,10 @@ import {
     Button,
     Chip,
     CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Paper,
     Stack,
     Table,
@@ -13,11 +18,13 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    TextField,
     Typography
 } from "@mui/material";
 
 import OwnerReservationService from "../services/OwnerReservationService";
 import OwnerRestaurantService from "../services/OwnerRestaurantService";
+import RedemptionService from "../services/RedemptionService";
 
 import type { OwnerReservation } from "../types/OwnerReservation";
 import type { Restaurant } from "../types/Restaurant";
@@ -34,6 +41,12 @@ function OwnerDashboardPage() {
 
     const [loading, setLoading] =
         useState(true);
+
+    const [selectedReservationId, setSelectedReservationId] =
+        useState<number | null>(null);
+
+    const [billAmount, setBillAmount] =
+        useState(0);
 
     useEffect(() => {
 
@@ -52,6 +65,7 @@ function OwnerDashboardPage() {
                 await OwnerReservationService.getAll();
 
             setRestaurant(restaurantData);
+
             setReservations(reservationData);
 
         }
@@ -60,6 +74,7 @@ function OwnerDashboardPage() {
             if (error.response?.status === 404) {
 
                 setRestaurant(null);
+
                 setReservations([]);
 
             }
@@ -78,35 +93,59 @@ function OwnerDashboardPage() {
 
     }
 
-    async function confirmReservation(id: number) {
-
-        await OwnerReservationService.confirm(id);
-
-        loadData();
-
-    }
-
-    async function rejectReservation(id: number) {
-
-        await OwnerReservationService.reject(id);
-
-        loadData();
-
-    }
-
-    async function arrivedReservation(id: number) {
-
-        await OwnerReservationService.arrived(id);
-
-        loadData();
-
-    }
+   
 
     async function completedReservation(id: number) {
 
-        await OwnerReservationService.completed(id);
+        setSelectedReservationId(id);
 
-        loadData();
+        setBillAmount(0);
+
+    }
+
+    async function completeRedemption() {
+
+        if (selectedReservationId === null)
+            return;
+
+        try {
+
+           
+
+            // Complete redemption
+            const reservation = reservations.find(
+                x => x.id === selectedReservationId
+            );
+
+            if (!reservation?.redemptionId) {
+                alert("No redemption found for this reservation.");
+                return;
+            }
+
+            await RedemptionService.complete(
+                reservation.redemptionId,
+                {
+                    billAmount
+                }
+            );
+
+            setSelectedReservationId(null);
+
+            setBillAmount(0);
+
+            await loadData();
+
+        }
+        catch (error: any) {
+
+            console.error(error);
+
+            alert(
+                error.response?.data?.message ??
+                error.message
+            );
+
+        }
 
     }
 
@@ -228,6 +267,8 @@ function OwnerDashboardPage() {
                         >
                             Menu Items
                         </Button>
+
+
 
                     </Stack>
 
@@ -362,72 +403,41 @@ function OwnerDashboardPage() {
                                                 {reservation.status === "Pending" && (
 
                                                     <>
-                                                        <Button
-                                                            size="small"
-                                                            variant="contained"
-                                                            color="success"
-                                                            onClick={() => confirmReservation(reservation.id)}
-                                                        >
-                                                            Confirm
-                                                        </Button>
+    <Button
+        size="small"
+        variant="contained"
+        color="success"
+        onClick={() => completedReservation(reservation.id)}
+    >
+        Redeem Offer
+    </Button>
 
-                                                        <Button
-                                                            size="small"
-                                                            variant="contained"
-                                                            color="error"
-                                                            onClick={() => rejectReservation(reservation.id)}
-                                                        >
-                                                            Reject
-                                                        </Button>
-                                                    </>
+    <Button
+        size="small"
+        variant="contained"
+        color="warning"
+        onClick={() => noShowReservation(reservation.id)}
+    >
+        No Show
+    </Button>
 
-                                                )}
+    <Button
+        size="small"
+        variant="outlined"
+        color="error"
+        onClick={() => cancelReservation(reservation.id)}
+    >
+        Cancel
+    </Button>
+</>
 
-                                                {reservation.status === "Confirmed" && (
-
-                                                    <>
-                                                        <Button
-                                                            size="small"
-                                                            variant="contained"
-                                                            color="info"
-                                                            onClick={() => arrivedReservation(reservation.id)}
-                                                        >
-                                                            Arrived
-                                                        </Button>
-
-                                                        <Button
-                                                            size="small"
-                                                            variant="contained"
-                                                            color="warning"
-                                                            onClick={() => noShowReservation(reservation.id)}
-                                                        >
-                                                            No Show
-                                                        </Button>
-
-                                                        <Button
-                                                            size="small"
-                                                            variant="outlined"
-                                                            color="error"
-                                                            onClick={() => cancelReservation(reservation.id)}
-                                                        >
-                                                            Cancel
-                                                        </Button>
-                                                    </>
+                                                   
 
                                                 )}
 
-                                                {reservation.status === "Arrived" && (
+                                                
 
-                                                    <Button
-                                                        size="small"
-                                                        variant="contained"
-                                                        color="success"
-                                                        onClick={() => completedReservation(reservation.id)}
-                                                    >
-                                                        Completed
-                                                    </Button>
 
-                                                )}
 
                                             </Stack>
 
@@ -446,6 +456,50 @@ function OwnerDashboardPage() {
                 </>
 
             )}
+
+            <Dialog
+                open={selectedReservationId !== null}
+                onClose={() => setSelectedReservationId(null)}
+            >
+                <DialogTitle>
+                    Redeem Offer
+                </DialogTitle>
+
+                <DialogContent>
+
+                    <TextField
+                        fullWidth
+                        label="Original Bill Amount"
+                        type="number"
+                        value={billAmount}
+                        onChange={(e) =>
+                            setBillAmount(Number(e.target.value))
+                        }
+                        sx={{ mt: 2 }}
+                    />
+
+                </DialogContent>
+
+                <DialogActions>
+
+                    <Button
+                        onClick={() =>
+                            setSelectedReservationId(null)
+                        }
+                    >
+                        Cancel
+                    </Button>
+
+                    <Button
+                        variant="contained"
+                        onClick={completeRedemption}
+                    >
+                        Redeem Offer
+                    </Button>
+
+                </DialogActions>
+
+            </Dialog>
 
         </>
 

@@ -30,9 +30,9 @@ function RestaurantDetailsPage() {
 
     const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
     const [deals, setDeals] = useState<Deal[]>([]);
-    const [categories, setCategories] =  useState<MenuCategory[]>([]);
+    const [categories, setCategories] = useState<MenuCategory[]>([]);
 
-const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+    const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 
     const [loading, setLoading] = useState(true);
 
@@ -80,28 +80,28 @@ const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
     }
 
 
-async function loadMenu(id: number) {
+    async function loadMenu(id: number) {
 
-    try {
+        try {
 
-        const categoryData =
-            await MenuCategoryService.getByRestaurant(id);
+            const categoryData =
+                await MenuCategoryService.getByRestaurant(id);
 
-        setCategories(categoryData);
+            setCategories(categoryData);
 
-        const itemData =
-            await MenuItemService.getByRestaurant(id);
+            const itemData =
+                await MenuItemService.getByRestaurant(id);
 
-        setMenuItems(itemData);
+            setMenuItems(itemData);
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+        }
 
     }
-    catch (error) {
-
-        console.error(error);
-
-    }
-
-}
 
 
 
@@ -235,67 +235,67 @@ async function loadMenu(id: number) {
 
             <Divider sx={{ my: 4 }} />
 
-<Typography
-    variant="h5"
-    sx={{ mb: 2 }}
->
-    Menu
-</Typography>
+            <Typography
+                variant="h5"
+                sx={{ mb: 2 }}
+            >
+                Menu
+            </Typography>
 
-{categories.map(category => (
+            {categories.map(category => (
 
-    <div key={category.id}>
+                <div key={category.id}>
 
-        <Typography
-            variant="h6"
-            sx={{ mt: 3 }}
-        >
-            {category.name}
-        </Typography>
+                    <Typography
+                        variant="h6"
+                        sx={{ mt: 3 }}
+                    >
+                        {category.name}
+                    </Typography>
 
-        {menuItems
-            .filter(item =>
-                item.menuCategoryId === category.id &&
-                item.isAvailable
-            )
-            .map(item => (
+                    {menuItems
+                        .filter(item =>
+                            item.menuCategoryId === category.id &&
+                            item.isAvailable
+                        )
+                        .map(item => (
 
-                <Card
-                    key={item.id}
-                    sx={{ mt: 1, mb: 1 }}
-                >
+                            <Card
+                                key={item.id}
+                                sx={{ mt: 1, mb: 1 }}
+                            >
 
-                    <CardContent>
+                                <CardContent>
 
-                        <Typography variant="subtitle1">
+                                    <Typography variant="subtitle1">
 
-                            {item.isFeatured && "⭐ "}
-                            {item.name}
+                                        {item.isFeatured && "⭐ "}
+                                        {item.name}
 
-                        </Typography>
+                                    </Typography>
 
-                        <Typography
-                            color="text.secondary"
-                        >
-                            {item.description}
-                        </Typography>
+                                    <Typography
+                                        color="text.secondary"
+                                    >
+                                        {item.description}
+                                    </Typography>
 
-                        <Typography
-                            sx={{ mt: 1 }}
-                            fontWeight="bold"
-                        >
-                            NPR {item.price}
-                        </Typography>
+                                    <Typography
+                                        sx={{ mt: 1 }}
+                                        fontWeight="bold"
+                                    >
+                                        NPR {item.price}
+                                    </Typography>
 
-                    </CardContent>
+                                </CardContent>
 
-                </Card>
+                            </Card>
+
+                        ))}
+
+                </div>
 
             ))}
-
-    </div>
-
-))}
 
         </>
 

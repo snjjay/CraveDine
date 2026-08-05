@@ -120,6 +120,19 @@ namespace EatKath.API.Services
                 dto.BillAmount - redemption.DiscountAmount;
 
             redemption.Status = RedemptionStatus.Completed;
+
+            var reservation = await _context.Reservations
+    .FirstOrDefaultAsync(r =>
+        r.UserId == redemption.UserId &&
+        r.DealId == redemption.DealId &&
+        r.ReservationDate == redemption.ArrivalDate &&
+        r.ReservationTime == redemption.ArrivalTime);
+
+            if (reservation != null)
+            {
+                reservation.Status = ReservationStatus.Completed;
+            }
+
             redemption.CompletedAt = DateTime.UtcNow;
             redemption.UpdatedAt = DateTime.UtcNow;
 

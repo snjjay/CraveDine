@@ -21,6 +21,7 @@ import MyReservationsPage from "../pages/MyReservationsPage";
 import OwnerOpeningHoursPage from "../pages/OwnerOpeningHoursPage";
 import OwnerMenuCategoriesPage from "../pages/OwnerMenuCategoriesPage";
 import OwnerMenuItemsPage from "../pages/OwnerMenuItemsPage";
+
 function AppRoutes() {
 
     return (
@@ -152,6 +153,8 @@ function AppRoutes() {
                         </ProtectedRoute>
                     }
                 />
+
+                
 
             </Routes>
 

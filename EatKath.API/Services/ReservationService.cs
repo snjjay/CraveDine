@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using EatKath.API.Data;
 using EatKath.API.DTOs.Reservation;
 using EatKath.API.Entities;
+using EatKath.API.Enums;
 using EatKath.API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -49,8 +50,25 @@ namespace EatKath.API.Services
             var reservation = _mapper.Map<Reservation>(dto);
 
             reservation.UserId = _currentUser.UserId;
-
             _context.Reservations.Add(reservation);
+
+            await _context.SaveChangesAsync();
+
+            // Automatically create redemption
+            var redemption = new Redemption
+            {
+                DealId = reservation.DealId,
+                UserId = reservation.UserId,
+                ArrivalDate = reservation.ReservationDate,
+                ArrivalTime = reservation.ReservationTime,
+                GuestCount = reservation.GuestCount,
+                Status = RedemptionStatus.Redeemed,
+                RedeemedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            _context.Redemptions.Add(redemption);
 
             await _context.SaveChangesAsync();
 
@@ -64,14 +82,42 @@ namespace EatKath.API.Services
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<ReservationDto>> GetOwnerReservationsAsync(int ownerId)
+        public async Task<IEnumerable<OwnerReservationDto>> GetOwnerReservationsAsync(int ownerId)
         {
-            return await _context.Reservations
+            var reservations = await _context.Reservations
                 .Include(r => r.Deal)
                     .ThenInclude(d => d.Restaurant)
                 .Where(r => r.Deal.Restaurant.OwnerId == ownerId)
-                .ProjectTo<ReservationDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
+
+            var result = new List<OwnerReservationDto>();
+
+            foreach (var reservation in reservations)
+            {
+                var redemption = await _context.Redemptions
+                    .FirstOrDefaultAsync(r =>
+                        r.UserId == reservation.UserId &&
+                        r.DealId == reservation.DealId &&
+                        r.ArrivalDate == reservation.ReservationDate &&
+                        r.ArrivalTime == reservation.ReservationTime);
+
+                result.Add(new OwnerReservationDto
+                {
+                    Id = reservation.Id,
+                    RedemptionId = redemption?.Id,
+                    DealId = reservation.DealId,
+                    DealTitle = reservation.Deal.Title,
+                    CustomerName = reservation.CustomerName,
+                    PhoneNumber = reservation.PhoneNumber,
+                    Email = reservation.Email,
+                    ReservationDate = reservation.ReservationDate,
+                    ReservationTime = reservation.ReservationTime,
+                    GuestCount = reservation.GuestCount,
+                    Status = reservation.Status
+                });
+            }
+
+            return result;
         }
 
 

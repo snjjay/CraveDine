@@ -240,6 +240,10 @@ namespace EatKath.API.Data
             modelBuilder.Entity<Area>()
                 .HasIndex(x => x.Name)
                 .IsUnique();
+
+
+
+
         }
     }
 }

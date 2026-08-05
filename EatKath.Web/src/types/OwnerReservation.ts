@@ -2,6 +2,8 @@ export interface OwnerReservation {
 
     id: number;
 
+    redemptionId?: number;
+
     dealId: number;
 
     dealTitle: string;
