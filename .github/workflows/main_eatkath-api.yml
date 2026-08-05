@@ -46,20 +46,13 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: .net-app
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_1C157E4706CE43D5A7A247960A2D379F }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_3065A62E7EEF4CBE95CA6FC612BE1DA8 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A5A330EB0CD24317A6C2BF6CAFAD7AFA }}
-
+          name: .net-app      
+     
       - name: Deploy to Azure Web App
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'eatkath-api'
-          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: .
+      
           
