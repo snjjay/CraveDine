@@ -68,7 +68,7 @@ stages:
   jobs:
   - deployment: DeployAPI
     displayName: Deploy EatKath API
-    environment: Production
+    
 
     strategy:
       runOnce:
