@@ -4,12 +4,12 @@ import type { Restaurant } from "../types/Restaurant";
 class RestaurantService {
 
     async getAll(): Promise<Restaurant[]> {
-        const response = await api.get<Restaurant[]>("/Restaurant");
+        const response = await api.get<Restaurant[]>("/Restaurants");
         return response.data;
     }
 
     async getById(id: number): Promise<Restaurant> {
-        const response = await api.get<Restaurant>(`/Restaurant/${id}`);
+        const response = await api.get<Restaurant>(`/Restaurants/${id}`);
         return response.data;
     }
 }
