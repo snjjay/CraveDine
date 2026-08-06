@@ -7,42 +7,79 @@ pool:
 variables:
   buildConfiguration: 'Release'
 
-steps:
+stages:
 
-- task: UseDotNet@2
-  inputs:
-    packageType: 'sdk'
-    version: '8.0.x'
-
-- task: DotNetCoreCLI@2
-  displayName: Restore
-  inputs:
-    command: restore
-    projects: '**/*.sln'
-
-- task: DotNetCoreCLI@2
+# =========================
+# BUILD
+# =========================
+- stage: Build
   displayName: Build
-  inputs:
-    command: build
-    projects: '**/*.sln'
-    arguments: '--configuration $(buildConfiguration)'
 
-- task: DotNetCoreCLI@2
-  displayName: Test
-  inputs:
-    command: test
-    projects: '**/*Tests.csproj'
-    arguments: '--configuration $(buildConfiguration)'
+  jobs:
+  - job: Build
 
-- task: DotNetCoreCLI@2
-  displayName: Publish API
-  inputs:
-    command: publish
-    publishWebProjects: false
-    projects: '**/EatKath.API.csproj'
-    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    steps:
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: drop
+    - task: UseDotNet@2
+      inputs:
+        packageType: sdk
+        version: '8.0.x'
+
+    - task: DotNetCoreCLI@2
+      displayName: Restore
+      inputs:
+        command: restore
+        projects: '**/*.sln'
+
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs:
+        command: build
+        projects: '**/*.sln'
+        arguments: '--configuration $(buildConfiguration)'
+
+    - task: DotNetCoreCLI@2
+      displayName: Test
+      inputs:
+        command: test
+        projects: '**/*Tests.csproj'
+        arguments: '--configuration $(buildConfiguration)'
+
+    - task: DotNetCoreCLI@2
+      displayName: Publish API
+      inputs:
+        command: publish
+        publishWebProjects: false
+        projects: '**/EatKath.API.csproj'
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: drop
+
+# =========================
+# DEPLOY
+# =========================
+- stage: Deploy
+  displayName: Deploy
+  dependsOn: Build
+
+  jobs:
+  - deployment: DeployAPI
+    displayName: Deploy EatKath API
+    environment: Production
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - download: current
+            artifact: drop
+
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: 'EatKath-Azure-ServiceConnection'
+              appName: 'eatkath-api'
+              package: '$(Pipeline.Workspace)/drop/**/*.zip'
