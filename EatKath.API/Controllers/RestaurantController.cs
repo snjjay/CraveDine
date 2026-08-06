@@ -7,11 +7,11 @@ namespace EatKath.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class RestaurantController : ControllerBase
+    public class RestaurantsController : ControllerBase
     {
         private readonly IRestaurantService _restaurantService;
 
-        public RestaurantController(IRestaurantService restaurantService)
+        public RestaurantsController(IRestaurantService restaurantService)
         {
             _restaurantService = restaurantService;
         }
