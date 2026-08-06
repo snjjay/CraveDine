@@ -15,10 +15,11 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Console.WriteLine("========================================");
-Console.WriteLine("Connection String:");
-Console.WriteLine(builder.Configuration.GetConnectionString("DefaultConnection"));
-Console.WriteLine("========================================");
+Console.WriteLine("================================");
+Console.WriteLine("App is starting...");
+Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
+Console.WriteLine($"Connection string exists: {!string.IsNullOrEmpty(builder.Configuration.GetConnectionString("DefaultConnection"))}");
+Console.WriteLine("================================");
 
 // ==========================================================
 // Add Services
