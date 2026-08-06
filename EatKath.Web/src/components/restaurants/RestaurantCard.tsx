@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 import UserFavoriteService from "../../services/UserFavoriteService";
 
 import type { Restaurant } from "../../types/Restaurant";
+import { getImageUrl } from "../../utils/imageUrl";
 
 interface Props {
     restaurant: Restaurant;
@@ -30,9 +31,7 @@ function RestaurantCard({
     onFavoriteChanged
 }: Props) {
 
-    const imageUrl = restaurant.logoUrl
-        ? `https://localhost:7203${restaurant.logoUrl}`
-        : "https://placehold.co/600x300?text=EatKath";
+    const imageUrl = getImageUrl(restaurant.logoUrl);
 
     async function toggleFavorite() {
 

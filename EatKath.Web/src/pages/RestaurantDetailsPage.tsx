@@ -5,7 +5,7 @@ import MenuItemService from "../services/MenuItemService";
 
 import type { MenuCategory } from "../types/MenuCategory";
 import type { MenuItem } from "../types/MenuItem";
-
+import { getImageUrl } from "../utils/imageUrl";
 import {
     Card,
     CardContent,
@@ -127,9 +127,7 @@ function RestaurantDetailsPage() {
 
     }
 
-    const imageUrl = restaurant.logoUrl
-        ? `https://localhost:7203${restaurant.logoUrl}`
-        : "https://placehold.co/1200x400?text=EatKath";
+    const imageUrl = getImageUrl(restaurant.logoUrl);
 
     return (
 
