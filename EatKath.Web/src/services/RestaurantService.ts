@@ -17,7 +17,7 @@ class RestaurantService {
     // ------------------------------------------------------
     async getAll(): Promise<Restaurant[]> {
 
-        const response = await api.get<Restaurant[]>("/restaurant");
+        const response = await api.get<Restaurant[]>("/restaurants");
 
         return response.data;
     }
@@ -30,7 +30,7 @@ class RestaurantService {
     // ------------------------------------------------------
     async getById(id: number): Promise<Restaurant> {
 
-        const response = await api.get<Restaurant>(`/restaurant/${id}`);
+        const response = await api.get<Restaurant>(`/restaurants/${id}`);
 
         return response.data;
     }
