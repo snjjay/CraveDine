@@ -177,45 +177,45 @@ app.MapControllers();
 // Seed Database
 // ==========================================================
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-//    const int maxRetries = 10;
+    const int maxRetries = 10;
 
-//    for (int i = 1; i <= maxRetries; i++)
-//    {
-//        try
-//        {
-//            Console.WriteLine($"Database seed attempt {i}/{maxRetries}...");
+    for (int i = 1; i <= maxRetries; i++)
+    {
+        try
+        {
+            Console.WriteLine($"Database seed attempt {i}/{maxRetries}...");
 
-//            await DatabaseSeeder.SeedAsync(context);
+            await DatabaseSeeder.SeedAsync(context);
 
-//            Console.WriteLine("Database seeded successfully.");
+            Console.WriteLine("Database seeded successfully.");
 
-//            break;
-//        }
-//        catch (Microsoft.Data.SqlClient.SqlException ex)
-//        {
-//            Console.WriteLine($"SQL Server not ready (Attempt {i}/{maxRetries})");
-//            Console.WriteLine(ex);
+            break;
+        }
+        catch (Microsoft.Data.SqlClient.SqlException ex)
+        {
+            Console.WriteLine($"SQL Server not ready (Attempt {i}/{maxRetries})");
+            Console.WriteLine(ex);
 
-//            if (i == maxRetries)
-//                throw;
+            if (i == maxRetries)
+                throw;
 
-//            await Task.Delay(TimeSpan.FromSeconds(5));
-//        }
-//        catch (Exception ex)
-//        {
-//            Console.WriteLine("========================================");
-//            Console.WriteLine("APPLICATION STARTUP ERROR");
-//            Console.WriteLine(ex);
-//            Console.WriteLine("========================================");
+            await Task.Delay(TimeSpan.FromSeconds(5));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("========================================");
+            Console.WriteLine("APPLICATION STARTUP ERROR");
+            Console.WriteLine(ex);
+            Console.WriteLine("========================================");
 
-//            throw;
-//        }
-//    }
-//}
+            throw;
+        }
+    }
+}
 
 Console.WriteLine($"ContentRoot: {app.Environment.ContentRootPath}");
 Console.WriteLine($"WebRoot: {app.Environment.WebRootPath}");
