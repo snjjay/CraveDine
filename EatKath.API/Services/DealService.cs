@@ -58,18 +58,12 @@ namespace EatKath.API.Services
 
             var deal = _mapper.Map<Deal>(dto);
 
-            Console.WriteLine("==================================");
-            Console.WriteLine($"DTO ReservationLimit = {dto.ReservationLimit}");
-            Console.WriteLine($"Entity ReservationLimit = {deal.ReservationLimit}");
-            Console.WriteLine("==================================");
-
             deal.CreatedAt = DateTime.UtcNow;
             deal.UpdatedAt = DateTime.UtcNow;
 
             _context.Deals.Add(deal);
 
             await _context.SaveChangesAsync();
-            Console.WriteLine($"After Save = {deal.ReservationLimit}");
 
             await _context.Entry(deal)
                 .Reference(d => d.Restaurant)

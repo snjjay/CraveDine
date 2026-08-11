@@ -35,6 +35,7 @@ function EditDealPage() {
         startTime: "",
         endTime: "",
         maximumGuests: 20,
+        reservationLimit: 1,
         dailyRedemptionLimit: 100,
         isActive: true
     });
@@ -64,6 +65,7 @@ function EditDealPage() {
             startTime: data.startTime.substring(0, 5),
             endTime: data.endTime.substring(0, 5),
             maximumGuests: data.maximumGuests,
+            reservationLimit: data.reservationLimit,
             dailyRedemptionLimit: data.dailyRedemptionLimit,
             isActive: data.isActive
         });
@@ -228,6 +230,18 @@ function EditDealPage() {
                             setDeal({
                                 ...deal,
                                 maximumGuests: Number(e.target.value)
+                            })
+                        }
+                    />
+
+                    <TextField
+                        label="Reservation Limit"
+                        type="number"
+                        value={deal.reservationLimit}
+                        onChange={(e) =>
+                            setDeal({
+                                ...deal,
+                                reservationLimit: Number(e.target.value)
                             })
                         }
                     />

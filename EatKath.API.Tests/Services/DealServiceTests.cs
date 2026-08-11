@@ -70,6 +70,7 @@ public class DealServiceTests
             StartTime = new TimeOnly(12, 0),
             EndTime = new TimeOnly(15, 0),
             MaximumGuests = 4,
+            ReservationLimit = 5,
             DailyRedemptionLimit = 100,
             IsActive = true
         };
@@ -86,9 +87,11 @@ public class DealServiceTests
 
         result.Should().NotBeNull();
         result.Title.Should().Be("20% Lunch Discount");
+        result.ReservationLimit.Should().Be(5);
 
         _context.Deals.Count().Should().Be(1);
         _context.Deals.First().Title.Should().Be("20% Lunch Discount");
+        _context.Deals.First().ReservationLimit.Should().Be(5);
     }
 
 

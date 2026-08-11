@@ -22,6 +22,8 @@ export interface UpdateDeal {
 
     maximumGuests: number;
 
+    reservationLimit: number;
+
     dailyRedemptionLimit: number;
 
     isActive: boolean;
