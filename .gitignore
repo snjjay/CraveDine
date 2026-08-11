@@ -514,3 +514,6 @@ dist-ssr
 EatKath.API/wwwroot/uploads/
 # Runtime uploaded files
 wwwroot/uploads/
+
+
+.claude/settings.json
