@@ -26,6 +26,9 @@ Entity Framework Core
 Azure SQL
 ```
 
+![CraveDine Architecture](docs/architecture/cravedine-architecture.png)
+
+
 
 ## 🧰 Technology Stack
 
