@@ -8,6 +8,25 @@ CraveDine is a full-stack restaurant deals platform built with modern
 Restaurants can create and manage time-based discounts, while customers
 can discover available restaurant deals.
 
+
+
+## ✨ Key Features
+
+- Restaurant owner portal for managing restaurants and deals
+- Time-based restaurant discounts
+- Customer deal discovery and reservation workflow
+- Deal availability and reservation limits
+- JWT authentication and role-based authorization
+- RESTful ASP.NET Core Web API
+- React + TypeScript frontend
+- Entity Framework Core with Azure SQL
+- Automated API testing
+- Docker containerisation
+- Azure cloud deployment
+- CI/CD pipelines for frontend and backend
+
+
+
 ## 🏗️ Architecture
 
 ```text
