@@ -94,3 +94,19 @@ Azure Container Registry — Docker images
 ## 📌 Project Status
 
 Portfolio MVP — Active Development
+
+
+
+## 📸 Application Screenshots
+
+### Customer Application
+![Customer Application](docs/FrontEndRawState.png)
+![Customer Application](docs/RestaruantReserveScreen.png)
+
+### API — Swagger
+![Swagger API](docs/Swagger-Api.png)
+
+### Azure Deployment
+![Azure Deployment](docs/azure-deployment-api.png)
+![Azure Deployment](docs/azure-deploymentWeb.png)
+
