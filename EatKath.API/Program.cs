@@ -1,5 +1,7 @@
+using Azure.Core;
 using EatKath.API.Data;
 using EatKath.API.Data.Seeders;
+using EatKath.API.Entities;
 using EatKath.API.Interfaces;
 using EatKath.API.Mappings;
 using EatKath.API.Middleware;
@@ -11,7 +13,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System;
 using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +32,7 @@ Console.WriteLine("================================");
 builder.Services.AddControllers();
 
 // ==========================================================
-// CORS
+// CORS:"Who is allowed to talk to CraveDine API?"
 // ==========================================================
 //
 // Allow the React application (Vite) running on
@@ -50,18 +54,30 @@ builder.Services.AddCors(options =>
 });
 
 // ==========================================================
-// Database
+// Database:"Where is my database?
 // ==========================================================
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ==========================================================
-// Dependency Injection
-// ==========================================================
 
-builder.Services.AddScoped<IAreaService, AreaService>();
+// ==========================================================
+// Dependency Injection (DI)
+// ==========================================================
+//
+// Think: "I need a key ? someone gives me the key."
+//
+// I don't make the key myself.
+// I simply ask for what I need, and .NET gives it to me.
+//
+// Example:
+// IDealService = "I need a DealService"
+// DealService  = "Here is the DealService"
+//
+// Program.cs = the place where we tell .NET what to give me.
+// ==========================================================
+builder.Services.AddScoped<IAreaService, AreaService>();  //AddScoped<INTERFACE, REAL CLASS>();  "If somebody asks for LEFT, give them RIGHT."
 builder.Services.AddScoped<ICuisineService, CuisineService>();
 builder.Services.AddScoped<IDiningTypeService, DiningTypeService>();
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
@@ -78,16 +94,16 @@ builder.Services.AddScoped<IOwnerDashboardService, OwnerDashboardService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<FileStorageService>();
 
-builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddAutoMapper(typeof(MappingProfile));  //"Enable automatic conversion between my DTOs and entities.  //Deal Entity> AutoMapper> DealDto
 
-builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpContextAccessor(); //"Allow my services to find information about the current HTTP request/user."// Useful when CurrentUserService needs to know: "Who is currently logged in?"
 
-builder.Services.AddValidatorsFromAssemblyContaining<CreateAreaValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateAreaValidator>(); // "Find and register my validation rules. // Create Area request.>Validator>Is this data valid?
 
 builder.Services.AddScoped<IReservationService, ReservationService>();
 
 // ==========================================================
-// Swagger
+// Swagger: Give me a screen where I can see and test my APIs
 // ==========================================================
 
 builder.Services.AddEndpointsApiExplorer();
@@ -120,7 +136,8 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // ==========================================================
-// JWT Authentication
+// JWT Authentication: How do I know who you are?
+// User logs> JWT token> React stores token>React calls API with token>API checks token>"Yes, this user is authenticated."
 // ==========================================================
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -146,13 +163,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 // ==========================================================
-// Build Application
+// Build Application: Okay, I've given you all my instructions. Now build my application
 // ==========================================================
 
 var app = builder.Build();
 
 // ==========================================================
-// Configure Middleware
+// Configure Middleware :What happens to every request?
+
+//app.UseSwagger();
+//app.UseHttpsRedirection();
+//app.UseCors("ReactPolicy");
+//app.UseAuthentication();
+//app.UseAuthorization();
+//app.UseMiddleware<ExceptionMiddleware>();
+//app.UseStaticFiles();
+//app.MapControllers();
+
+//Imagine a request coming into EatKath: REQUEST>HTTPS check> CORS>Authentication>Authorization>Exception handling>Controller>RESPONSE                   
+//Each middleware gets a chance to do something.
 // ==========================================================
 
 //if (app.Environment.IsDevelopment())
@@ -165,23 +194,23 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 // Always redirect HTTP -> HTTPS
-app.UseHttpsRedirection();
+app.UseHttpsRedirection(); //Use HTTPS, not insecure HTTP.
 
 // Always allow React frontend
-app.UseCors("ReactPolicy");
+app.UseCors("ReactPolicy"); //Apply my CORS door rules.
 
-app.UseAuthentication();
+app.UseAuthentication(); //Check who this user is
 
-app.UseAuthorization();
+app.UseAuthorization(); // Check whether this user is allowed to do this.
 
-app.UseMiddleware<ExceptionMiddleware>();
+app.UseMiddleware<ExceptionMiddleware>(); //If something crashes, handle the error properly
 
-app.UseStaticFiles();
+app.UseStaticFiles(); //Allow the application to serve files such as uploaded images
 
-app.MapControllers();
+app.MapControllers(); // Now connect incoming API URLs to my controllers POST /api/deals to Deal Controller
 
 // ==========================================================
-// Seed Database
+// Seed Database:make sure the database has the initial data it needs
 // ==========================================================
 
 using (var scope = app.Services.CreateScope())
@@ -210,7 +239,7 @@ using (var scope = app.Services.CreateScope())
             if (i == maxRetries)
                 throw;
 
-            await Task.Delay(TimeSpan.FromSeconds(5));
+            await Task.Delay(TimeSpan.FromSeconds(5)); //Maybe SQL Server isn't ready yet. Wait 5 seconds and try again
         }
         catch (Exception ex)
         {
@@ -226,4 +255,54 @@ using (var scope = app.Services.CreateScope())
 
 Console.WriteLine($"ContentRoot: {app.Environment.ContentRootPath}");
 Console.WriteLine($"WebRoot: {app.Environment.WebRootPath}");
-app.Run();
+app.Run(); //Start the web application and begin accepting requests
+
+
+
+// ==========================================================
+//              EATKATH - PROGRAM.CS ROADMAP
+// ==========================================================
+//
+// PROGRAM.CS
+// ?
+// ??? 1. Imports
+// ?      "What tools do I need?"
+// ?
+// ??? 2. Builder
+// ?      "Start setting up EatKath"
+// ?
+// ??? 3. Controllers
+// ?      "I have API controllers"
+// ?
+// ??? 4. CORS
+// ?      "Who can talk to my API?"
+// ?
+// ??? 5. Database
+// ?      "Where is my database?"
+// ?
+// ??? 6. Dependency Injection
+// ?      "If something needs something, give it to them"
+// ?
+// ??? 7. Swagger
+// ?      "Give me an API testing screen"
+// ?
+// ??? 8. Authentication
+// ?      "Who are you?"
+// ?
+// ??? 9. Authorization
+// ?      "Are you allowed?"
+// ?
+// ??? 10. Build
+// ?       "Okay, build the application"
+// ?
+// ??? 11. Middleware
+// ?       "What happens to every request?"
+// ?
+// ??? 12. Database Seed
+// ?       "Put initial data into the database"
+// ?
+// ??? 13. app.Run()
+//         "START EATKATH ??"
+//
+// ==========================================================
+// ==========================================================

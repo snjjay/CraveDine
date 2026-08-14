@@ -1,18 +1,32 @@
-﻿using EatKath.API.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using EatKath.API.Entities; //Your Entities are your database models: Area, Restaurant, User Deal, MenuItem
+using Microsoft.EntityFrameworkCore; //Bring in Entity Framework and my database entities which gives u things like  DbContext DbSet ModelBuilder
 
+
+
+
+//Think of it as the bridge between your Service and SQL Server.
+//The Service doesn't directly talk to SQL Server. It talks through ApplicationDbContext.
 namespace EatKath.API.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : DbContext //ApplicationDbContext = EatKath's connection/bridge to the database.
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+
+        //Constructor — DI again
+        //Remember following in Program.cs
+        //builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        //options.UseSqlServer(
+        //builder.Configuration.GetConnectionString("DefaultConnection")));
+        //That tells .NET: >Create ApplicationDbContext and use SQL Server with this connection string
+        //Program.cs configures the DbContext; DbContext talks to the database.
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) //Constructor — DI again
             : base(options)
         {
         }
 
         // Lookup Tables
+        //DbSet — Your database tables
         public DbSet<Role> Roles => Set<Role>();
-        public DbSet<Area> Areas => Set<Area>();
+        public DbSet<Area> Areas => Set<Area>(); //There is an Areas table containing Area records. So Area Entity>DbSet<Area> > Areas table.
         public DbSet<Cuisine> Cuisines => Set<Cuisine>();
         public DbSet<DiningType> DiningTypes => Set<DiningType>();
 
@@ -36,12 +50,14 @@ namespace EatKath.API.Data
         public DbSet<UserFavorite> UserFavorites => Set<UserFavorite>();
 
         public DbSet<Reservation> Reservations { get; set; }
+
+        //OnModelCreating — Define how tables relate: Tell Entity Framework exactly how my database tables should be designed and related. How are those tables related and what rules do they have?
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             // ============================
-            // Composite Keys
+            // Composite Keys This means the table uses two columns together as the primary key.
             // ============================
 
             modelBuilder.Entity<RestaurantCuisine>()
@@ -54,7 +70,7 @@ namespace EatKath.API.Data
                 .HasKey(x => new { x.UserId, x.RestaurantId });
 
             // ============================
-            // User
+            // User→ Role relationship> e.g One Role can have many Users. RoleId in User is the foreign key.
             // ============================
 
             modelBuilder.Entity<User>()
@@ -64,7 +80,7 @@ namespace EatKath.API.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             // ============================
-            // Restaurant
+            // Restaurant → Owner>One owner can have many restaurants.
             // ============================
 
             modelBuilder.Entity<Restaurant>()
@@ -80,14 +96,14 @@ namespace EatKath.API.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             // ============================
-            // Restaurant Images
+            // Restaurant Images:One Restaurant can have many Images.
             // ============================
 
             modelBuilder.Entity<RestaurantImage>()
                 .HasOne(x => x.Restaurant)
                 .WithMany(x => x.Images)
                 .HasForeignKey(x => x.RestaurantId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade); //Cascade :Restaurant deleted>Its images are automatically deleted
 
             // ============================
             // Restaurant Opening Hours
@@ -101,6 +117,7 @@ namespace EatKath.API.Data
 
             // ============================
             // Restaurant Cuisine
+            //This is your joining table: Restaurant>RestaurantCuisine>Cuisine. This allows One restaurant → many cuisines and One cuisine → many restaurants. That's a many-to-many relationship.
             // ============================
 
             modelBuilder.Entity<RestaurantCuisine>()
@@ -128,7 +145,7 @@ namespace EatKath.API.Data
                 .HasForeignKey(x => x.DiningTypeId);
 
             // ============================
-            // Menu
+            // Menu: One Restaurant has many MenuItems
             // ============================
 
             modelBuilder.Entity<MenuItem>()
@@ -136,7 +153,8 @@ namespace EatKath.API.Data
                 .WithMany(x => x.MenuItems)
                 .HasForeignKey(x => x.RestaurantId)
                 .OnDelete(DeleteBehavior.NoAction);
-
+            
+            //One MenuCategory has many MenuItems.
             modelBuilder.Entity<MenuItem>()
                 .HasOne(x => x.MenuCategory)
                 .WithMany(x => x.MenuItems)
@@ -144,7 +162,7 @@ namespace EatKath.API.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             // ============================
-            // Deals
+            // Deals One restaurant can have many deals.
             // ============================
 
             modelBuilder.Entity<Deal>()
@@ -156,13 +174,13 @@ namespace EatKath.API.Data
             // ============================
             // Redemptions
             // ============================
-
+            //One User can have many Redemptions.
             modelBuilder.Entity<Redemption>()
                 .HasOne(x => x.User)
                 .WithMany(x => x.Redemptions)
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
-
+            //One Deal can have many Redemptions.
             modelBuilder.Entity<Redemption>()
                 .HasOne(x => x.Deal)
                 .WithMany(x => x.Redemptions)
@@ -170,7 +188,7 @@ namespace EatKath.API.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             // ============================
-            // User Favorites
+            // User Favorites: many-to-many relationship.
             // ============================
 
             modelBuilder.Entity<UserFavorite>()
@@ -198,11 +216,11 @@ namespace EatKath.API.Data
 
             modelBuilder.Entity<Deal>()
                 .Property(x => x.DiscountPercentage)
-                .HasPrecision(18, 2);
+                .HasPrecision(18, 2); //This is a monetary/decimal value. Store it with 2 decimal places. e.g 25.50
 
 
             // ============================
-            // Reservations
+            // Reservations One User can have many Reservations.
             // ============================
 
             modelBuilder.Entity<Reservation>()
@@ -239,7 +257,7 @@ namespace EatKath.API.Data
 
             modelBuilder.Entity<Area>()
                 .HasIndex(x => x.Name)
-                .IsUnique();
+                .IsUnique(); //Area names must be unique in the database
 
 
 
@@ -247,3 +265,81 @@ namespace EatKath.API.Data
         }
     }
 }
+
+// ==========================================================
+// APPLICATION DB CONTEXT
+// ==========================================================
+//
+// 🗄️ Think: "The bridge between my application and database."
+//
+// Service
+//    ↓
+// ApplicationDbContext
+//    ↓
+// SQL Server
+//
+// ----------------------------------------------------------
+//
+// DbSet = represents a database table.
+//
+// DbSet<Area>         → Areas table
+// DbSet<User>         → Users table
+// DbSet<Restaurant>   → Restaurants table
+// DbSet<Deal>         → Deals table
+// etc.
+//
+// ----------------------------------------------------------
+//
+// OnModelCreating
+//
+// 🏗️ Think: "Tell EF how my database is designed."
+//
+// It defines:
+// - Relationships between tables
+// - Foreign keys
+// - Composite keys
+// - Delete behavior
+// - Decimal precision
+// - Unique indexes
+//
+// ----------------------------------------------------------
+//
+// 🔑 Remember:
+//
+// DbSet            = WHAT tables do I have?
+// OnModelCreating  = HOW are those tables related/rules?
+// DbContext        = BRIDGE between Service and Database
+//
+// ==========================================================
+
+
+
+
+// ==========================================================
+// WHERE DOES ApplicationDbContext FIT?
+// ==========================================================
+//
+// 📱 React
+//    ↓
+// 📦 DTO
+//    ↓
+// 🛂 Validator
+//    ↓
+// 🎯 Controller
+//    ↓
+// ⚙️ Service
+//    ↓
+// 🗄️ ApplicationDbContext  ← YOU ARE HERE
+//    ↓
+// 🗄️ SQL Server Database
+//
+// ApplicationDbContext is the BRIDGE between the Service
+// and the actual database.
+//
+// Service says:
+// "I need Areas from the database."
+//        ↓
+// ApplicationDbContext
+//        ↓
+// "I'll get them from SQL Server."
+//

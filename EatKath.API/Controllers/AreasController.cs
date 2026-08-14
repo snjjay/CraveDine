@@ -5,16 +5,66 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EatKath.API.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
+
+// ==========================================================
+// AreasController
+// ==========================================================
+//
+// 🎯 Think: "Front door of the Areas API."
+//
+// Controller's job:
+// 1. Receive HTTP request
+// 2. Check authentication/authorization
+// 3. Pass the work to AreaService
+// 4. Return HTTP response
+//
+// Controller does NOT contain the main business/database logic.
+// That work belongs in the Service.
+//
+// REQUEST goes DOWN:
+// Client
+//    ↓
+// Controller
+//    ↓
+// Service
+//    ↓
+// Database
+//
+// ANSWER comes BACK UP:
+// Database
+//    ↓
+// Service
+//    ↓
+// Controller
+//    ↓
+// Client
+//
+// HTTP methods:
+// GET    → Read
+// POST   → Create
+// PUT    → Update
+// DELETE → Delete
+//
+// ==========================================================
+
+[ApiController] //This is an API controller for Areas
+[Route("api/[controller]")]  //become /api/Areas
 public class AreasController : ControllerBase
 {
-    private readonly IAreaService _areaService;
 
-    public AreasController(IAreaService areaService)
+    //Dependency Injection: The conroller says I need an AreaService(Sancho) ie IAreaService. It doesn't create one.
+    //.NET knows what to give it
+    //You told .NET in Program.cs:
+    //builder.Services.AddScoped<IAreaService, AreaService>(); //When somebody asks for IAreaService, give them an AreaService
+    // The controller asks for IAreaService; .NET gives it AreaService; the controller stores it in _areaService.
+    
+    private readonly IAreaService _areaService; //I have a place called _areaService where I will keep the AreaService that I need.
+    public AreasController(IAreaService areaService) //I'm saying Give me the AreaService I need // AddScoped<IAreaService, AreaService>() is telling .NET> I know what to give you.
     {
         _areaService = areaService;
     }
+
+    //
 
     // Public - Anyone can view all areas
     [AllowAnonymous]
