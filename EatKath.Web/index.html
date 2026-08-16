@@ -7,7 +7,45 @@
     <title>eatkath-web</title>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div id="root"></div>  <!-- This is the empty space where React will build my application -->
+    <script type="module" src="/src/main.tsx"></script> <!-- In the browser, start my React application from main.tsx -->
   </body>
 </html>
+
+
+<!-- ==========================================================
+     FRONTEND FLOW — STEP 1
+     ==========================================================
+
+     index.html = ENTRY DOOR of the React application.
+
+     Browser first loads this HTML file.
+
+     Important:
+
+     <div id="root"></div>
+     → Empty box where React will place the application.
+
+     <script type="module" src="/src/main.tsx">
+     → Tells the browser:
+       "Start the React application from main.tsx."
+
+     FLOW:
+
+     🌐 Browser
+          ↓
+     1. index.html
+          ↓
+     2. main.tsx
+          ↓
+     3. App.tsx
+          ↓
+     4. AppRoutes.tsx
+          ↓
+     ...
+
+     🔑 Remember:
+     index.html = Entry door
+     main.tsx   = Starts React
+
+     ========================================================== -->

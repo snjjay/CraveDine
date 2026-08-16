@@ -165,3 +165,99 @@ function AppRoutes() {
 }
 
 export default AppRoutes;
+
+
+// ==========================================================
+// FRONTEND FLOW — STEP 4
+// ==========================================================
+//
+// AppRoutes.tsx = ROUTE / PAGE DIRECTORY.
+//
+// Main job:
+// "When the user goes to a URL,
+//  which page should React show?"
+//
+// ----------------------------------------------------------
+//
+// BrowserRouter
+// → Turns on browser-based routing.
+//
+// Routes
+// → Contains the list of application routes.
+//
+// Route
+// → Connects a URL to a React page.
+//
+// Example:
+//
+// /restaurants
+//      ↓
+// RestaurantsPage
+//
+// ----------------------------------------------------------
+//
+// :id means the value can change.
+//
+// /restaurants/:id
+//
+// Examples:
+// /restaurants/10
+// /restaurants/25
+// /restaurants/100
+//
+// All can show RestaurantDetailsPage.
+//
+// ----------------------------------------------------------
+//
+// ProtectedRoute
+// → Checks whether the user has the required role.
+//
+// Example:
+//
+// /owner
+//    ↓
+// ProtectedRoute role="Owner"
+//    ↓
+// Is user an Owner?
+//    ↓
+// Yes → OwnerDashboardPage
+// No  → Block / redirect
+//
+// ----------------------------------------------------------
+//
+// MainLayout
+// → Common layout around pages
+//   such as Header, Navigation and Footer.
+//
+// ----------------------------------------------------------
+//
+// SIMPLE FLOW:
+//
+// User enters URL
+//      ↓
+// AppRoutes
+//      ↓
+// Find matching Route
+//      ↓
+// Check ProtectedRoute if required
+//      ↓
+// Show the Page
+//
+// ----------------------------------------------------------
+//
+// EXAMPLES:
+//
+// "/"                    → HomePage
+// "/restaurants"         → RestaurantsPage
+// "/restaurants/:id"     → RestaurantDetailsPage
+// "/login"               → LoginPage
+// "/favorites"           → Customer only
+// "/owner"               → Owner only
+// "/admin"               → Admin only
+//
+// 🔑 Remember:
+//
+// AppRoutes = "Which page should I show for this URL?"
+// ProtectedRoute = "Is this user allowed to see it?"
+//
+// ==========================================================

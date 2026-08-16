@@ -14,16 +14,16 @@ import AuthContext from "../features/auth/AuthContext";
 
 function MainLayout() {
 
-    const auth = useContext(AuthContext);
+    const auth = useContext(AuthContext); //What is the current user's login information?
 
     if (!auth)
         throw new Error("AuthContext not found.");
 
-    const { user, logout } = auth;
+    const { user, logout } = auth; //user → current logged-in user || logout → function to log the user out
 
-    const isCustomer = user?.role === "Customer";
-    const isOwner = user?.role === "Owner";
-    const isAdmin = user?.role === "Admin";
+    const isCustomer = user?.role === "Customer";  // Is the user a customer?
+    const isOwner = user?.role === "Owner";        // Is the user an owner?
+    const isAdmin = user?.role === "Admin";        // Is the user an admin?
 
     return (
 
@@ -31,7 +31,7 @@ function MainLayout() {
 
             <AppBar position="static">
 
-                <Toolbar>
+                <Toolbar>  {/* creates the top navigation area using Material UI. */}
 
                     <Typography
                         variant="h6"
@@ -51,7 +51,7 @@ function MainLayout() {
                     <Button
                         color="inherit"
                         component={Link}
-                        to="/restaurants"
+                        to="/restaurants"  //Clicking the button goes to /restaurants.
                     >
                         Restaurants
                     </Button>
@@ -129,7 +129,7 @@ function MainLayout() {
 
             <Container sx={{ mt: 4 }}>
 
-                <Outlet />
+                <Outlet /> {/*is basically the placeholder where the selected page gets inserted. MainLayout provides the common page structure. <Outlet /> is where the current route's page appears.*/}
 
             </Container>
 
@@ -140,3 +140,79 @@ function MainLayout() {
 }
 
 export default MainLayout;
+
+// ==========================================================
+// FRONTEND FLOW — STEP 5
+// ==========================================================
+//
+// MainLayout.tsx = COMMON PAGE STRUCTURE.
+//
+// Provides things that appear around many pages,
+// such as the navigation bar.
+//
+// FLOW:
+//
+// 1. index.html
+//      ↓
+// 2. main.tsx
+//      ↓
+// 3. App.tsx
+//      ↓
+// 4. AppRoutes.tsx
+//      ↓
+// 5. MainLayout.tsx  ← HERE
+//      ↓
+// 6. Page
+//
+// ----------------------------------------------------------
+//
+// AuthContext
+// → Gets the current user and logout function.
+//
+// user
+// → Current logged-in user.
+//
+// Role checks:
+//
+// isCustomer → show Customer navigation
+// isOwner    → show Owner navigation
+// isAdmin    → show Admin navigation
+//
+// ----------------------------------------------------------
+//
+// Navigation:
+//
+// Link + to="/restaurants"
+// → Clicking the button goes to /restaurants.
+//
+// AppRoutes then chooses RestaurantsPage.
+//
+// ----------------------------------------------------------
+//
+// <Outlet />
+// → PLACEHOLDER where the current route's page appears.
+//
+// Example:
+//
+// /restaurants
+//      ↓
+// MainLayout
+//      ↓
+// <Outlet />
+//      ↓
+// RestaurantsPage
+//
+// /
+//      ↓
+// MainLayout
+//      ↓
+// <Outlet />
+//      ↓
+// HomePage
+//
+// 🔑 Remember:
+//
+// MainLayout = common structure/navigation
+// Outlet     = place where the selected page appears
+//
+// ==========================================================
