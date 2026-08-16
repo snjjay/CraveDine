@@ -132,3 +132,61 @@ public class MappingProfile : Profile
         CreateMap<CreateReservationDto, Reservation>();
     }
 }
+
+
+// ==========================================================
+// MAPPINGS
+// ==========================================================
+//
+// 🔄 Mapping = converting one object type into another.
+//
+// Mappings folder contains AutoMapper profiles.
+//
+// MappingProfile.cs
+// → General/common mappings
+//
+// RestaurantProfile.cs
+// → Restaurant-related mappings
+//
+// UserProfile.cs
+// → User-related mappings
+//
+// Example:
+//
+// CreateUserDto
+//      ↓
+//   AutoMapper
+//      ↓
+// User Entity
+//
+// User Entity
+//      ↓
+//   AutoMapper
+//      ↓
+// UserDto
+//
+// 🔑 Purpose:
+// Keep DTO ↔ Entity conversions organised.
+// ==========================================================
+//So you don't need to study the three files as three different concepts.
+//They're all doing the same basic job; they're just organised into different profiles.
+
+
+//Where Mapping fits in your architecture
+//React
+// ↓
+//Controller
+// ↓
+//DTO
+// ↓
+//Validator
+// ↓
+//Service
+// ↓
+//🔄 Mapping  ← Mappings folder
+// ↓
+//Entity
+// ↓
+//ApplicationDbContext
+// ↓
+//Database

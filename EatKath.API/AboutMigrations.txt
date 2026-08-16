@@ -1,0 +1,251 @@
+﻿// ==========================================================
+// MIGRATIONS
+// ==========================================================
+//
+// 🛠️ Think: "Instructions for changing the database."
+//
+// When I change my Entities or DbContext:
+//
+// Entity / DbContext
+//       ↓
+// Create Migration
+//       ↓
+// Migration records the change
+//       ↓
+// Apply Migration
+//       ↓
+// SQL Server Database changes
+//
+// Each migration is a record of a database change.
+//
+// Example:
+//
+// InitialCreate
+//      ↓
+// Add Restaurant Images
+//      ↓
+// Add Reservations
+//      ↓
+// Configure Decimal Precision
+//      ↓
+// Add Reservation Limit
+//
+// ApplicationDbContextModelSnapshot.cs
+// → Latest picture of the database model.
+//
+// 🔑 Remember:
+//
+// Entity/DbContext = what the database SHOULD look like
+// Migration        = instructions to change the database
+// Snapshot         = latest model picture
+// ==========================================================
+
+
+//Where they fit
+// ==========================================================
+// Program.cs
+    ↓
+// ApplicationDbContext
+    ↓
+// Entities
+    ↓
+// 🛠️ Migrations  ← YOU ARE HERE
+    ↓
+// SQL Server Database
+// ==========================================================
+
+
+
+
+//Your files
+// ==========================================================
+For example:
+
+//20260725091007_InitialCreate.cs
+
+//means:
+
+//The migration that originally created the database structure.
+
+//Then later you made changes:
+
+//20260725225259_UpdateRestaurantImage...
+//20260726104127_RefactorOfferModel
+//20260726111413_OfferModelRefactor
+//20260727180123_RemoveAdvanceRede...
+//20260728223747_ConfigureDecimalPrecis...
+//20260803024454_AddReservations
+//20260804001238_AddReservationUser
+//20260804014114_AddReservationLimit
+// ==========================================================
+
+
+
+//So what are steps like create is step 1 and update are steps 2 when needed , 
+//how do we do thin in this visual studio project for example if we need to add or remove filed or 
+//delete table or addtable etc u can give your own differnt sitautions
+
+==========================================================
+
+Exactly. Think of migrations as a sequence of database changes.
+
+You normally don't manually edit the migration files. You change your Entity/DbContext, then let EF Core generate the 
+migration.
+
+The basic process
+
+Step 1 — Change your C# model
+==========================================================
+For example, currently:
+
+public class Area
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+You decide you need:
+
+public string Description { get; set; }
+
+
+Step 2 — Create a migration
+==========================================================
+
+In Visual Studio → Package Manager Console:
+
+Add-Migration AddAreaDescription
+
+EF Core looks at your current model and creates a migration describing the change.
+
+
+Step 3 — Apply the migration
+==========================================================
+Update-Database
+
+Now SQL Server gets the new column.
+
+Area.cs
+   ↓
+Add-Migration
+   ↓
+Migration created
+   ↓
+Update-Database
+   ↓
+SQL Server changed
+// ==========================================================
+
+
+
+
+// ==========================================================
+// MIGRATION EXAMPLES
+// ==========================================================
+//
+// 🟢 ADD A FIELD
+//
+// Add property to Entity:
+//
+// public string Description { get; set; }
+//
+// Then:
+//
+// Add-Migration AddAreaDescription
+// Update-Database
+//
+// → Adds Description column to the database.
+//
+// ----------------------------------------------------------
+//
+// 🔴 REMOVE A FIELD
+//
+// Remove property from Entity:
+//
+// public string Description { get; set; }
+//
+// Then:
+//
+// Add-Migration RemoveAreaDescription
+// Update-Database
+//
+// → Removes the column.
+// ⚠️ Existing data in that column can be lost.
+//
+// ----------------------------------------------------------
+//
+// 🔵 ADD A TABLE
+//
+// Create new Entity:
+//
+// public class Coupon { ... }
+//
+// Add to DbContext:
+//
+// DbSet<Coupon> Coupons
+//
+// Then:
+//
+// Add-Migration AddCoupons
+// Update-Database
+//
+// → Creates Coupons table.
+//
+// ----------------------------------------------------------
+//
+// 🗑️ DELETE A TABLE
+//
+// Remove Entity + DbSet:
+//
+// Add-Migration RemoveCoupons
+// Update-Database
+//
+// → Removes the table.
+// ⚠️ Existing table data can be lost.
+//
+// ----------------------------------------------------------
+//
+// ✏️ RENAME A FIELD
+//
+// Rename property:
+//
+// Name → AreaName
+//
+// Then:
+//
+// Add-Migration RenameAreaName
+//
+// ⚠️ CHECK the generated migration first.
+// Make sure EF renames the column rather than
+// deleting the old column and creating a new one.
+//
+// Then:
+//
+// Update-Database
+//
+// ----------------------------------------------------------
+//
+// 🔗 CHANGE A RELATIONSHIP
+//
+// Change Entity / DbContext relationship.
+//
+// Then:
+//
+// Add-Migration ChangeRestaurantRelationship
+// Update-Database
+//
+// → Updates foreign keys/relationships.
+//
+// ==========================================================
+//
+// 🔑 BASIC PATTERN:
+//
+// Change Entity / DbContext
+//        ↓
+// Add-Migration Name
+//        ↓
+// CHECK migration
+//        ↓
+// Update-Database
+//
+// ==========================================================
