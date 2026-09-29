@@ -7,7 +7,6 @@ using EatKath.API.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace EatKath.API.Services
 {
     public class DealService : IDealService
@@ -72,7 +71,9 @@ namespace EatKath.API.Services
             return _mapper.Map<DealDto>(deal);
         }
 
-        public async Task<DealDto> UpdateAsync(int id, UpdateDealDto dto)
+        public async Task<DealDto> UpdateAsync(
+            int id,
+            UpdateDealDto dto)
         {
             var deal = await _context.Deals
                 .Include(d => d.Restaurant)
@@ -98,7 +99,6 @@ namespace EatKath.API.Services
             if (deal == null)
                 return false;
 
-            // Soft delete instead of physically deleting
             deal.IsActive = false;
             deal.UpdatedAt = DateTime.UtcNow;
 
@@ -107,21 +107,36 @@ namespace EatKath.API.Services
             return true;
         }
 
-        public async Task<IEnumerable<DealDto>> GetByRestaurantAsync(int restaurantId)
+        public async Task<IEnumerable<DealDto>> GetByRestaurantAsync(
+            int restaurantId)
         {
             return await _context.Deals
-                .Where(d => d.RestaurantId == restaurantId && d.IsActive)
-                .ProjectTo<DealDto>(_mapper.ConfigurationProvider)
+                .Where(d =>
+                    d.RestaurantId == restaurantId &&
+                    d.IsActive)
+                .ProjectTo<DealDto>(
+                    _mapper.ConfigurationProvider)
                 .ToListAsync();
         }
 
-
-        public async Task<IEnumerable<DealDto>> GetByOwnerAsync(int ownerId)
+        public async Task<IEnumerable<DealDto>> GetByOwnerAsync(
+            int ownerId,
+            int? restaurantId = null)
         {
-            return await _context.Deals
-                .Include(d => d.Restaurant)
-                .Where(d => d.Restaurant.OwnerId == ownerId && d.IsActive)
-                .ProjectTo<DealDto>(_mapper.ConfigurationProvider)
+            var query = _context.Deals
+                .Where(d =>
+                    d.Restaurant.OwnerId == ownerId &&
+                    d.IsActive);
+
+            if (restaurantId.HasValue)
+            {
+                query = query.Where(d =>
+                    d.RestaurantId == restaurantId.Value);
+            }
+
+            return await query
+                .ProjectTo<DealDto>(
+                    _mapper.ConfigurationProvider)
                 .ToListAsync();
         }
     }

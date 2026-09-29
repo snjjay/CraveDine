@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import {
+    useNavigate,
+    useParams,
+    useSearchParams
+} from "react-router-dom";
 
 import {
     Button,
@@ -20,6 +24,11 @@ function EditDealPage() {
     const { id } = useParams();
 
     const navigate = useNavigate();
+
+    const [searchParams] = useSearchParams();
+
+    const restaurantId =
+        Number(searchParams.get("restaurantId")) || null;
 
     const [loading, setLoading] = useState(true);
 
@@ -51,7 +60,8 @@ function EditDealPage() {
         if (!id)
             return;
 
-        const data = await OwnerDealService.getById(Number(id));
+        const data =
+            await OwnerDealService.getById(Number(id));
 
         setDeal({
             title: data.title,
@@ -71,7 +81,6 @@ function EditDealPage() {
         });
 
         setLoading(false);
-
     }
 
     async function save() {
@@ -79,26 +88,39 @@ function EditDealPage() {
         if (!id)
             return;
 
-        await OwnerDealService.update(Number(id), {
+        await OwnerDealService.update(
+            Number(id),
+            {
+                ...deal,
 
-            ...deal,
+                startTime:
+                    deal.startTime.length === 5
+                        ? `${deal.startTime}:00`
+                        : deal.startTime,
 
-            startTime:
-                deal.startTime.length === 5
-                    ? `${deal.startTime}:00`
-                    : deal.startTime,
-
-            endTime:
-                deal.endTime.length === 5
-                    ? `${deal.endTime}:00`
-                    : deal.endTime
-
-        });
+                endTime:
+                    deal.endTime.length === 5
+                        ? `${deal.endTime}:00`
+                        : deal.endTime
+            }
+        );
 
         alert("Deal updated.");
 
-        navigate("/owner/deals");
+        navigate(
+            restaurantId
+                ? `/owner/deals?restaurantId=${restaurantId}`
+                : "/owner/deals"
+        );
+    }
 
+    function cancel() {
+
+        navigate(
+            restaurantId
+                ? `/owner/deals?restaurantId=${restaurantId}`
+                : "/owner/deals"
+        );
     }
 
     if (loading)
@@ -150,7 +172,8 @@ function EditDealPage() {
                         onChange={(e) =>
                             setDeal({
                                 ...deal,
-                                discountPercentage: Number(e.target.value)
+                                discountPercentage:
+                                    Number(e.target.value)
                             })
                         }
                     />
@@ -162,18 +185,30 @@ function EditDealPage() {
                         onChange={(e) =>
                             setDeal({
                                 ...deal,
-                                offerType: Number(e.target.value)
+                                offerType:
+                                    Number(e.target.value)
                             })
                         }
                     >
-                        <MenuItem value={1}>Dine In</MenuItem>
-                        <MenuItem value={2}>Takeaway</MenuItem>
+
+                        <MenuItem value={1}>
+                            Dine In
+                        </MenuItem>
+
+                        <MenuItem value={2}>
+                            Takeaway
+                        </MenuItem>
+
                     </TextField>
 
                     <TextField
                         label="Start Date"
                         type="date"
-                        slotProps={{ inputLabel: { shrink: true } }}
+                        slotProps={{
+                            inputLabel: {
+                                shrink: true
+                            }
+                        }}
                         value={deal.startDate}
                         onChange={(e) =>
                             setDeal({
@@ -186,7 +221,11 @@ function EditDealPage() {
                     <TextField
                         label="End Date"
                         type="date"
-                        slotProps={{ inputLabel: { shrink: true } }}
+                        slotProps={{
+                            inputLabel: {
+                                shrink: true
+                            }
+                        }}
                         value={deal.endDate}
                         onChange={(e) =>
                             setDeal({
@@ -199,7 +238,11 @@ function EditDealPage() {
                     <TextField
                         label="Start Time"
                         type="time"
-                        slotProps={{ inputLabel: { shrink: true } }}
+                        slotProps={{
+                            inputLabel: {
+                                shrink: true
+                            }
+                        }}
                         value={deal.startTime}
                         onChange={(e) =>
                             setDeal({
@@ -212,7 +255,11 @@ function EditDealPage() {
                     <TextField
                         label="End Time"
                         type="time"
-                        slotProps={{ inputLabel: { shrink: true } }}
+                        slotProps={{
+                            inputLabel: {
+                                shrink: true
+                            }
+                        }}
                         value={deal.endTime}
                         onChange={(e) =>
                             setDeal({
@@ -229,7 +276,8 @@ function EditDealPage() {
                         onChange={(e) =>
                             setDeal({
                                 ...deal,
-                                maximumGuests: Number(e.target.value)
+                                maximumGuests:
+                                    Number(e.target.value)
                             })
                         }
                     />
@@ -241,7 +289,8 @@ function EditDealPage() {
                         onChange={(e) =>
                             setDeal({
                                 ...deal,
-                                reservationLimit: Number(e.target.value)
+                                reservationLimit:
+                                    Number(e.target.value)
                             })
                         }
                     />
@@ -253,7 +302,8 @@ function EditDealPage() {
                         onChange={(e) =>
                             setDeal({
                                 ...deal,
-                                dailyRedemptionLimit: Number(e.target.value)
+                                dailyRedemptionLimit:
+                                    Number(e.target.value)
                             })
                         }
                     />
@@ -262,6 +312,7 @@ function EditDealPage() {
                         direction="row"
                         spacing={2}
                     >
+
                         <Button
                             variant="contained"
                             onClick={save}
@@ -270,7 +321,7 @@ function EditDealPage() {
                         </Button>
 
                         <Button
-                            onClick={() => navigate("/owner/deals")}
+                            onClick={cancel}
                         >
                             Cancel
                         </Button>
@@ -282,9 +333,7 @@ function EditDealPage() {
             </Paper>
 
         </Container>
-
     );
-
 }
 
 export default EditDealPage;

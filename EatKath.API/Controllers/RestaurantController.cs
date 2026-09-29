@@ -41,17 +41,14 @@ namespace EatKath.API.Controllers
 
         [Authorize(Roles = "Owner")]
         [HttpGet("my")]
-        public async Task<IActionResult> GetMyRestaurant()
+        public async Task<IActionResult> GetMyRestaurants()
         {
             var ownerId = int.Parse(
                 User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
 
-            var restaurant = await _restaurantService.GetByOwnerIdAsync(ownerId);
+            var restaurants = await _restaurantService.GetByOwnerIdAsync(ownerId);
 
-            if (restaurant == null)
-                return NotFound();
-
-            return Ok(restaurant);
+            return Ok(restaurants);
         }
 
 

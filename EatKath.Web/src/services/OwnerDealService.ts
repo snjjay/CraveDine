@@ -6,10 +6,17 @@ import type { UpdateDeal } from "../types/UpdateDeal";
 
 class OwnerDealService {
 
-    async getMyDeals(): Promise<Deal[]> {
+    async getMyDeals(
+        restaurantId?: number | null
+    ): Promise<Deal[]> {
 
         const response =
-            await api.get<Deal[]>("/deal/my");
+            await api.get<Deal[]>("/deal/my", {
+                params:
+                    restaurantId
+                        ? { restaurantId }
+                        : undefined
+            });
 
         return response.data;
     }
@@ -50,8 +57,6 @@ class OwnerDealService {
         return response.data;
 
     }
-
-    
 }
 
 export default new OwnerDealService();

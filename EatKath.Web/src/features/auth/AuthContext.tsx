@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext } from "react"; //createContext creates a shared place for data that multiple components can access.
 import type { AuthResponse } from "./types";
 
 export interface AuthContextType {

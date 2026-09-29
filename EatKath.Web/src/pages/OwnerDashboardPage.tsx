@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -10,6 +9,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    MenuItem,
     Paper,
     Stack,
     Table,
@@ -33,8 +33,11 @@ function OwnerDashboardPage() {
 
     const navigate = useNavigate();
 
-    const [restaurant, setRestaurant] =
-        useState<Restaurant | null>(null);
+    const [restaurants, setRestaurants] =
+        useState<Restaurant[]>([]);
+
+    const [selectedRestaurantId, setSelectedRestaurantId] =
+        useState<number | null>(null);
 
     const [reservations, setReservations] =
         useState<OwnerReservation[]>([]);
@@ -49,9 +52,7 @@ function OwnerDashboardPage() {
         useState(0);
 
     useEffect(() => {
-
         loadData();
-
     }, []);
 
     async function loadData() {
@@ -59,12 +60,16 @@ function OwnerDashboardPage() {
         try {
 
             const restaurantData =
-                await OwnerRestaurantService.getMyRestaurant();
+                await OwnerRestaurantService.getMyRestaurants();
 
             const reservationData =
                 await OwnerReservationService.getAll();
 
-            setRestaurant(restaurantData);
+            setRestaurants(restaurantData);
+
+            setSelectedRestaurantId(
+                restaurantData[0]?.id ?? null
+            );
 
             setReservations(reservationData);
 
@@ -73,7 +78,9 @@ function OwnerDashboardPage() {
 
             if (error.response?.status === 404) {
 
-                setRestaurant(null);
+                setRestaurants([]);
+
+                setSelectedRestaurantId(null);
 
                 setReservations([]);
 
@@ -93,8 +100,6 @@ function OwnerDashboardPage() {
 
     }
 
-   
-
     async function completedReservation(id: number) {
 
         setSelectedReservationId(id);
@@ -110,15 +115,14 @@ function OwnerDashboardPage() {
 
         try {
 
-           
-
-            // Complete redemption
             const reservation = reservations.find(
                 x => x.id === selectedReservationId
             );
 
             if (!reservation?.redemptionId) {
+
                 alert("No redemption found for this reservation.");
+
                 return;
             }
 
@@ -220,12 +224,10 @@ function OwnerDashboardPage() {
             >
 
                 <Typography variant="h4">
-
                     Owner Dashboard
-
                 </Typography>
 
-                {restaurant && (
+                {restaurants.length > 0 && (
 
                     <Stack
                         direction="row"
@@ -234,14 +236,22 @@ function OwnerDashboardPage() {
 
                         <Button
                             variant="contained"
-                            onClick={() => navigate("/owner/deals")}
+                            onClick={() =>
+                                navigate(
+                                    `/owner/deals?restaurantId=${selectedRestaurantId}`
+                                )
+                            }
                         >
                             Manage Deals
                         </Button>
 
                         <Button
                             variant="contained"
-                            onClick={() => navigate("/owner/opening-hours")}
+                            onClick={() =>
+                                navigate(
+                                    `/owner/opening-hours?restaurantId=${selectedRestaurantId}`
+                                )
+                            }
                         >
                             Opening Hours
                         </Button>
@@ -249,26 +259,36 @@ function OwnerDashboardPage() {
                         <Button
                             variant="contained"
                             color="secondary"
-                            onClick={() => navigate("/owner/restaurant")}
+                            onClick={() =>
+                                navigate(
+                                    `/owner/restaurant?restaurantId=${selectedRestaurantId}`
+                                )
+                            }
                         >
                             Edit Restaurant
                         </Button>
 
                         <Button
                             variant="contained"
-                            onClick={() => navigate("/owner/menu-categories")}
+                            onClick={() =>
+                                navigate(
+                                    `/owner/menu-categories?restaurantId=${selectedRestaurantId}`
+                                )
+                            }
                         >
                             Menu Categories
                         </Button>
 
                         <Button
                             variant="contained"
-                            onClick={() => navigate("/owner/menu-items")}
+                            onClick={() =>
+                                navigate(
+                                    `/owner/menu-items?restaurantId=${selectedRestaurantId}`
+                                )
+                            }
                         >
                             Menu Items
                         </Button>
-
-
 
                     </Stack>
 
@@ -276,7 +296,8 @@ function OwnerDashboardPage() {
 
             </Stack>
 
-            {!restaurant && (
+
+            {restaurants.length === 0 && (
 
                 <Paper sx={{ p: 4 }}>
 
@@ -288,47 +309,86 @@ function OwnerDashboardPage() {
                     </Typography>
 
                     <Typography>
-
                         No restaurant has been assigned to your account yet.
                         Please contact an administrator.
-
                     </Typography>
 
                 </Paper>
 
             )}
 
-            {restaurant && (
+
+            {restaurants.length > 0 && (
 
                 <>
 
-                    <Paper sx={{ p: 3, mb: 4 }}>
+                    <Typography
+                        variant="h5"
+                        sx={{ mb: 2 }}
+                    >
+                        Your Restaurants
+                    </Typography>
 
-                        <Typography variant="h5">
+                    <TextField
+                        select
+                        label="Select Restaurant"
+                        value={selectedRestaurantId ?? ""}
+                        onChange={(e) =>
+                            setSelectedRestaurantId(
+                                Number(e.target.value)
+                            )
+                        }
+                        sx={{
+                            mb: 3,
+                            minWidth: 300
+                        }}
+                    >
 
-                            {restaurant.name}
+                        {restaurants.map((restaurant) => (
 
-                        </Typography>
+                            <MenuItem
+                                key={restaurant.id}
+                                value={restaurant.id}
+                            >
+                                {restaurant.name}
+                            </MenuItem>
 
-                        <Typography>
+                        ))}
 
-                            {restaurant.address}
+                    </TextField>
 
-                        </Typography>
 
-                        <Typography>
+                    <Stack spacing={2} sx={{ mb: 4 }}>
 
-                            {restaurant.phoneNumber}
+                        {restaurants.map((restaurant) => (
 
-                        </Typography>
+                            <Paper
+                                key={restaurant.id}
+                                sx={{ p: 3 }}
+                            >
 
-                        <Typography>
+                                <Typography variant="h5">
+                                    {restaurant.name}
+                                </Typography>
 
-                            {restaurant.email}
+                                <Typography>
+                                    {restaurant.address}
+                                </Typography>
 
-                        </Typography>
+                                <Typography>
+                                    {restaurant.phoneNumber}
+                                </Typography>
 
-                    </Paper>
+                                <Typography>
+                                    {restaurant.email}
+                                </Typography>
+
+                            </Paper>
+
+                        ))}
+
+                    </Stack>
+
 
                     <Typography
                         variant="h5"
@@ -336,6 +396,7 @@ function OwnerDashboardPage() {
                     >
                         Reservations
                     </Typography>
+
 
                     <TableContainer component={Paper}>
 
@@ -356,6 +417,7 @@ function OwnerDashboardPage() {
                                 </TableRow>
 
                             </TableHead>
+
 
                             <TableBody>
 
@@ -387,10 +449,13 @@ function OwnerDashboardPage() {
 
                                             <Chip
                                                 label={reservation.status}
-                                                color={getChipColor(reservation.status)}
+                                                color={getChipColor(
+                                                    reservation.status
+                                                )}
                                             />
 
                                         </TableCell>
+
 
                                         <TableCell>
 
@@ -403,41 +468,51 @@ function OwnerDashboardPage() {
                                                 {reservation.status === "Pending" && (
 
                                                     <>
-    <Button
-        size="small"
-        variant="contained"
-        color="success"
-        onClick={() => completedReservation(reservation.id)}
-    >
-        Redeem Offer
-    </Button>
 
-    <Button
-        size="small"
-        variant="contained"
-        color="warning"
-        onClick={() => noShowReservation(reservation.id)}
-    >
-        No Show
-    </Button>
+                                                        <Button
+                                                            size="small"
+                                                            variant="contained"
+                                                            color="success"
+                                                            onClick={() =>
+                                                                completedReservation(
+                                                                    reservation.id
+                                                                )
+                                                            }
+                                                        >
+                                                            Redeem Offer
+                                                        </Button>
 
-    <Button
-        size="small"
-        variant="outlined"
-        color="error"
-        onClick={() => cancelReservation(reservation.id)}
-    >
-        Cancel
-    </Button>
-</>
 
-                                                   
+                                                        <Button
+                                                            size="small"
+                                                            variant="contained"
+                                                            color="warning"
+                                                            onClick={() =>
+                                                                noShowReservation(
+                                                                    reservation.id
+                                                                )
+                                                            }
+                                                        >
+                                                            No Show
+                                                        </Button>
+
+
+                                                        <Button
+                                                            size="small"
+                                                            variant="outlined"
+                                                            color="error"
+                                                            onClick={() =>
+                                                                cancelReservation(
+                                                                    reservation.id
+                                                                )
+                                                            }
+                                                        >
+                                                            Cancel
+                                                        </Button>
+
+                                                    </>
 
                                                 )}
-
-                                                
-
-
 
                                             </Stack>
 
@@ -457,13 +532,16 @@ function OwnerDashboardPage() {
 
             )}
 
+
             <Dialog
                 open={selectedReservationId !== null}
                 onClose={() => setSelectedReservationId(null)}
             >
+
                 <DialogTitle>
                     Redeem Offer
                 </DialogTitle>
+
 
                 <DialogContent>
 
@@ -480,6 +558,7 @@ function OwnerDashboardPage() {
 
                 </DialogContent>
 
+
                 <DialogActions>
 
                     <Button
@@ -489,6 +568,7 @@ function OwnerDashboardPage() {
                     >
                         Cancel
                     </Button>
+
 
                     <Button
                         variant="contained"

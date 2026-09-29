@@ -216,3 +216,26 @@ Implement complete deal and redemption workflow
 
 Total: 16 tests
 
+
+# Docker Basics
+
+## What is Docker?
+
+Docker is a platform that packages an application and all of its dependencies into a container so it runs consistently on any machine.
+
+## Key Terms
+
+- Image: Blueprint for creating a container.
+- Container: Running instance of an image.
+- Dockerfile: Instructions for building an image.
+- Docker Compose: Runs multiple containers together.
+
+## Benefits
+
+- Eliminates "works on my machine" issues.
+- Consistent environments.
+- Simplifies deployment.
+- Easy to scale.
+- Industry standard for modern applications.
+
+

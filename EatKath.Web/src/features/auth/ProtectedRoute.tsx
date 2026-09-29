@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Navigate } from "react-router-dom";
-import type { ReactNode } from "react";
+import type { ReactNode } from "react"; //ReactNode is a TypeScript type that represents anything React can render on the screen.
 
 import AuthContext from "./AuthContext";
 

@@ -34,6 +34,12 @@ class RestaurantService {
 
         return response.data;
     }
+
+   async getMyRestaurants(): Promise<Restaurant[]> {
+    const response = await api.get<Restaurant[]>("/restaurants/my");
+    return response.data;
+    }
+
 }
 
 export default new RestaurantService();

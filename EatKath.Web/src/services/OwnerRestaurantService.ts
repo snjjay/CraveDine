@@ -92,6 +92,15 @@ class OwnerRestaurantService {
 
     }
 
+    async getMyRestaurants(): Promise<Restaurant[]> {
+
+    const response =
+        await api.get<Restaurant[]>("/restaurants/my");
+
+    return response.data;
+
+    }
+
 }
 
 export default new OwnerRestaurantService();

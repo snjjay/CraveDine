@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext } from "react"; //enables to read shared data from Context.
 import { Link, Outlet } from "react-router-dom";
 
 import {

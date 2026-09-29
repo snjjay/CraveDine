@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+    useNavigate,
+    useSearchParams
+} from "react-router-dom";
 
 import {
     Button,
@@ -11,7 +14,6 @@ import {
     Typography
 } from "@mui/material";
 
-import OwnerRestaurantService from "../services/OwnerRestaurantService";
 import OwnerDealService from "../services/OwnerDealService";
 
 import type { DealForm } from "../types/DealForm";
@@ -20,8 +22,13 @@ function CreateDealPage() {
 
     const navigate = useNavigate();
 
+    const [searchParams] = useSearchParams();
+
+    const restaurantId =
+        Number(searchParams.get("restaurantId")) || 0;
+
     const [deal, setDeal] = useState<DealForm>({
-        restaurantId: 0,
+        restaurantId: restaurantId,
         title: "",
         description: "",
         discountPercentage: 20,
@@ -33,37 +40,36 @@ function CreateDealPage() {
         startTime: "18:00",
         endTime: "21:00",
         maximumGuests: 20,
-
         reservationLimit: 1,
-
         dailyRedemptionLimit: 100,
         isActive: true
     });
 
     useEffect(() => {
 
-        loadRestaurant();
-
-    }, []);
-
-    async function loadRestaurant() {
-
-        const restaurant = await OwnerRestaurantService.getMyRestaurant();
-
         setDeal(d => ({
             ...d,
-            restaurantId: restaurant.id
+            restaurantId
         }));
 
-    }
+    }, [restaurantId]);
 
     async function saveDeal() {
+
+        if (!restaurantId) {
+
+            alert("Restaurant not selected.");
+
+            return;
+        }
 
         try {
 
             const request = {
 
                 ...deal,
+
+                restaurantId,
 
                 startTime:
                     deal.startTime.length === 5
@@ -83,7 +89,9 @@ function CreateDealPage() {
 
             alert("Deal created successfully.");
 
-            navigate("/owner/deals");
+            navigate(
+                `/owner/deals?restaurantId=${restaurantId}`
+            );
 
         }
         catch (error: any) {
@@ -159,7 +167,8 @@ function CreateDealPage() {
                         onChange={(e) =>
                             setDeal({
                                 ...deal,
-                                discountPercentage: Number(e.target.value)
+                                discountPercentage:
+                                    Number(e.target.value)
                             })
                         }
                     />
@@ -171,12 +180,18 @@ function CreateDealPage() {
                         onChange={(e) =>
                             setDeal({
                                 ...deal,
-                                offerType: Number(e.target.value)
+                                offerType:
+                                    Number(e.target.value)
                             })
                         }
                     >
-                        <MenuItem value={1}>Dine In</MenuItem>
-                        <MenuItem value={2}>Takeaway</MenuItem>
+                        <MenuItem value={1}>
+                            Dine In
+                        </MenuItem>
+
+                        <MenuItem value={2}>
+                            Takeaway
+                        </MenuItem>
                     </TextField>
 
                     <TextField
@@ -249,13 +264,13 @@ function CreateDealPage() {
 
                     <TextField
                         label="Maximum Guests"
-
                         type="number"
                         value={deal.maximumGuests}
                         onChange={(e) =>
                             setDeal({
                                 ...deal,
-                                maximumGuests: Number(e.target.value)
+                                maximumGuests:
+                                    Number(e.target.value)
                             })
                         }
                     />
@@ -267,7 +282,8 @@ function CreateDealPage() {
                         onChange={(e) =>
                             setDeal({
                                 ...deal,
-                                reservationLimit: Number(e.target.value)
+                                reservationLimit:
+                                    Number(e.target.value)
                             })
                         }
                     />
@@ -279,7 +295,8 @@ function CreateDealPage() {
                         onChange={(e) =>
                             setDeal({
                                 ...deal,
-                                dailyRedemptionLimit: Number(e.target.value)
+                                dailyRedemptionLimit:
+                                    Number(e.target.value)
                             })
                         }
                     />
@@ -297,7 +314,11 @@ function CreateDealPage() {
                         </Button>
 
                         <Button
-                            onClick={() => navigate("/owner/deals")}
+                            onClick={() =>
+                                navigate(
+                                    `/owner/deals?restaurantId=${restaurantId}`
+                                )
+                            }
                         >
                             Cancel
                         </Button>
@@ -311,7 +332,6 @@ function CreateDealPage() {
         </Container>
 
     );
-
 }
 
 export default CreateDealPage;

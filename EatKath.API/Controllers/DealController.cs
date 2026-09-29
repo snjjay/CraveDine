@@ -25,6 +25,7 @@ namespace EatKath.API.Controllers
         public async Task<IActionResult> GetAll()
         {
             var deals = await _service.GetAllAsync();
+
             return Ok(deals);
         }
 
@@ -46,7 +47,7 @@ namespace EatKath.API.Controllers
         [Authorize(Roles = "Admin,Owner")]
         [HttpPost]
         public async Task<IActionResult> Create(
-    [FromBody] CreateDealDto dto)
+            [FromBody] CreateDealDto dto)
         {
             var deal = await _service.CreateAsync(dto);
 
@@ -58,7 +59,9 @@ namespace EatKath.API.Controllers
 
         [Authorize(Roles = "Admin,Owner")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, UpdateDealDto dto)
+        public async Task<IActionResult> Update(
+            int id,
+            UpdateDealDto dto)
         {
             var deal = await _service.UpdateAsync(id, dto);
 
@@ -77,26 +80,28 @@ namespace EatKath.API.Controllers
             return NoContent();
         }
 
-
         [Authorize(Roles = "Owner")]
         [HttpGet("my")]
-        public async Task<IActionResult> GetMyDeals()
+        public async Task<IActionResult> GetMyDeals(
+            [FromQuery] int? restaurantId)
         {
             var ownerId = int.Parse(
-                User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+                User.FindFirst(
+                    ClaimTypes.NameIdentifier)!.Value);
 
-            var deals = await _service.GetByOwnerAsync(ownerId);
+            var deals = await _service.GetByOwnerAsync(
+                ownerId,
+                restaurantId);
 
             return Ok(deals);
         }
 
-
-
-
         [HttpGet("restaurant/{restaurantId}")]
-        public async Task<IActionResult> GetByRestaurant(int restaurantId)
+        public async Task<IActionResult> GetByRestaurant(
+            int restaurantId)
         {
-            var deals = await _service.GetByRestaurantAsync(restaurantId);
+            var deals =
+                await _service.GetByRestaurantAsync(restaurantId);
 
             return Ok(deals);
         }

@@ -114,21 +114,19 @@ namespace EatKath.API.Services
             };
         }
 
-        public async Task<RestaurantDto?> GetByOwnerIdAsync(int ownerId)
+        public async Task<IEnumerable<RestaurantDto>> GetByOwnerIdAsync(int ownerId)
         {
-            var restaurant = await _context.Restaurants
+            var restaurants = await _context.Restaurants
                 .Include(r => r.Area)
-.Include(r => r.Deals)
-.Include(r => r.RestaurantCuisines)
-    .ThenInclude(rc => rc.Cuisine)
-.Include(r => r.RestaurantDiningTypes)
-    .ThenInclude(rd => rd.DiningType)
-                .FirstOrDefaultAsync(r => r.OwnerId == ownerId);
+                .Include(r => r.Deals)
+                .Include(r => r.RestaurantCuisines)
+                    .ThenInclude(rc => rc.Cuisine)
+                .Include(r => r.RestaurantDiningTypes)
+                    .ThenInclude(rd => rd.DiningType)
+                .Where(r => r.OwnerId == ownerId)
+                .ToListAsync();
 
-            if (restaurant == null)
-                return null;
-
-            return new RestaurantDto
+            return restaurants.Select(restaurant => new RestaurantDto
             {
                 Id = restaurant.Id,
                 Name = restaurant.Name,
@@ -145,19 +143,19 @@ namespace EatKath.API.Services
                 ActiveDeals = restaurant.Deals.Count(d => d.IsActive),
 
                 Cuisines = restaurant.RestaurantCuisines
-                .Select(x => x.Cuisine.Name)
-                .ToList(),
+                    .Select(x => x.Cuisine.Name)
+                    .ToList(),
 
-                            DiningTypes = restaurant.RestaurantDiningTypes
-                .Select(x => x.DiningType.Name)
-                .ToList(),
+                DiningTypes = restaurant.RestaurantDiningTypes
+                    .Select(x => x.DiningType.Name)
+                    .ToList(),
 
                 BestDiscount = restaurant.Deals
                     .Where(d => d.IsActive)
                     .Select(d => (decimal?)d.DiscountPercentage)
                     .DefaultIfEmpty()
                     .Max()
-            };
+            });
         }
 
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import {
     Button,
@@ -17,6 +17,10 @@ import type { Deal } from "../types/Deal";
 function OwnerDealsPage() {
 
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+
+    const restaurantId =
+        Number(searchParams.get("restaurantId")) || null;
 
     const [deals, setDeals] = useState<Deal[]>([]);
     const [loading, setLoading] = useState(true);
@@ -25,13 +29,18 @@ function OwnerDealsPage() {
 
         loadDeals();
 
-    }, []);
+    }, [restaurantId]);
 
     async function loadDeals() {
 
+        setLoading(true);
+
         try {
 
-            const data = await OwnerDealService.getMyDeals();
+            const data =
+                await OwnerDealService.getMyDeals(
+                    restaurantId
+                );
 
             setDeals(data);
 
@@ -46,7 +55,6 @@ function OwnerDealsPage() {
             setLoading(false);
 
         }
-
     }
 
     async function deleteDeal(id: number) {
@@ -57,7 +65,6 @@ function OwnerDealsPage() {
         await OwnerDealService.delete(id);
 
         loadDeals();
-
     }
 
     if (loading)
@@ -78,19 +85,31 @@ function OwnerDealsPage() {
             >
 
                 <Typography variant="h4">
-
                     My Deals
-
                 </Typography>
 
                 <Button
                     variant="contained"
-                    onClick={() => navigate("/owner/deals/new")}
+                    onClick={() =>
+                        navigate(
+                            restaurantId
+                                ? `/owner/deals/new?restaurantId=${restaurantId}`
+                                : "/owner/deals/new"
+                        )
+                    }
                 >
                     New Deal
                 </Button>
 
             </Stack>
+
+            {deals.length === 0 && (
+
+                <Typography>
+                    No deals found for this restaurant.
+                </Typography>
+
+            )}
 
             {deals.map(deal => (
 
@@ -111,9 +130,7 @@ function OwnerDealsPage() {
                         >
 
                             <Typography variant="h6">
-
                                 {deal.title}
-
                             </Typography>
 
                             <Chip
@@ -124,24 +141,18 @@ function OwnerDealsPage() {
                         </Stack>
 
                         <Typography sx={{ mt: 2 }}>
-
                             {deal.description}
-
                         </Typography>
 
                         <Typography
                             variant="body2"
                             sx={{ mt: 2 }}
                         >
-
                             {deal.startDate} - {deal.endDate}
-
                         </Typography>
 
                         <Typography variant="body2">
-
                             {deal.startTime} - {deal.endTime}
-
                         </Typography>
 
                         <Stack
@@ -153,7 +164,11 @@ function OwnerDealsPage() {
                             <Button
                                 variant="outlined"
                                 onClick={() =>
-                                    navigate(`/owner/deals/edit/${deal.id}`)
+                                    navigate(
+                                        restaurantId
+                                            ? `/owner/deals/edit/${deal.id}?restaurantId=${restaurantId}`
+                                            : `/owner/deals/edit/${deal.id}`
+                                    )
                                 }
                             >
                                 Edit
@@ -162,7 +177,9 @@ function OwnerDealsPage() {
                             <Button
                                 variant="outlined"
                                 color="error"
-                                onClick={() => deleteDeal(deal.id)}
+                                onClick={() =>
+                                    deleteDeal(deal.id)
+                                }
                             >
                                 Delete
                             </Button>
@@ -178,7 +195,6 @@ function OwnerDealsPage() {
         </>
 
     );
-
 }
 
 export default OwnerDealsPage;
