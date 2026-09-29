@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import {
     Button,
@@ -23,6 +24,11 @@ import type { RestaurantOpeningHour } from "../types/RestaurantOpeningHour";
 
 function OwnerOpeningHoursPage() {
 
+    const [searchParams] = useSearchParams();
+
+    const restaurantId =
+        Number(searchParams.get("restaurantId")) || null;
+
     const [restaurant, setRestaurant] =
         useState<Restaurant | null>(null);
 
@@ -36,23 +42,49 @@ function OwnerOpeningHoursPage() {
 
         loadData();
 
-    }, []);
+    }, [restaurantId]);
 
     async function loadData() {
 
+        if (!restaurantId) {
+
+            setLoading(false);
+
+            return;
+        }
+
         try {
 
-            const restaurantData =
-                await OwnerRestaurantService.getMyRestaurant();
+            const restaurants =
+                await OwnerRestaurantService.getMyRestaurants();
 
-            setRestaurant(restaurantData);
+            const selectedRestaurant =
+                restaurants.find(
+                    restaurant =>
+                        restaurant.id === restaurantId
+                );
+
+            if (!selectedRestaurant) {
+
+                setRestaurant(null);
+                setHours([]);
+
+                return;
+            }
+
+            setRestaurant(selectedRestaurant);
 
             const openingHours =
                 await RestaurantOpeningHourService.getByRestaurant(
-                    restaurantData.id
+                    restaurantId
                 );
 
             setHours(openingHours);
+
+        }
+        catch (error) {
+
+            console.error(error);
 
         }
         finally {
@@ -60,7 +92,6 @@ function OwnerOpeningHoursPage() {
             setLoading(false);
 
         }
-
     }
 
     async function saveHours() {
@@ -81,41 +112,48 @@ function OwnerOpeningHoursPage() {
 
             }
 
-            alert("Opening hours updated successfully.");
+            alert(
+                "Opening hours updated successfully."
+            );
 
         }
         catch (error: any) {
 
-    console.error(error);
+            console.error(error);
 
-    if (error.response) {
+            if (error.response) {
 
-        alert(
-            JSON.stringify(
-                error.response.data,
-                null,
-                2
-            )
-        );
+                alert(
+                    JSON.stringify(
+                        error.response.data,
+                        null,
+                        2
+                    )
+                );
 
-    }
-    else {
+            }
+            else {
 
-        alert(error.message);
+                alert(error.message);
 
-    }
-
-}
-
+            }
+        }
     }
 
-
-
-
-    if (loading) {
-
+    if (loading)
         return <CircularProgress />;
 
+    if (!restaurantId || !restaurant) {
+
+        return (
+
+            <Typography>
+
+                Restaurant not selected.
+
+            </Typography>
+
+        );
     }
 
     return (
@@ -133,7 +171,7 @@ function OwnerOpeningHoursPage() {
 
                 Restaurant:
                 {" "}
-                {restaurant?.name}
+                {restaurant.name}
 
             </Typography>
 
@@ -148,10 +186,21 @@ function OwnerOpeningHoursPage() {
 
                         <TableRow>
 
-                            <TableCell>Day</TableCell>
-                            <TableCell>Open</TableCell>
-                            <TableCell>Close</TableCell>
-                            <TableCell>Closed</TableCell>
+                            <TableCell>
+                                Day
+                            </TableCell>
+
+                            <TableCell>
+                                Open
+                            </TableCell>
+
+                            <TableCell>
+                                Close
+                            </TableCell>
+
+                            <TableCell>
+                                Closed
+                            </TableCell>
 
                         </TableRow>
 
@@ -161,10 +210,14 @@ function OwnerOpeningHoursPage() {
 
                         {hours.map((hour) => (
 
-                            <TableRow key={hour.id}>
+                            <TableRow
+                                key={hour.id}
+                            >
 
                                 <TableCell>
+
                                     {hour.dayOfWeek}
+
                                 </TableCell>
 
                                 <TableCell>
@@ -172,19 +225,25 @@ function OwnerOpeningHoursPage() {
                                     <TextField
                                         type="time"
                                         size="small"
-                                        value={hour.openTime.substring(0, 5)}
+                                        value={
+                                            hour.openTime
+                                                .substring(0, 5)
+                                        }
                                         onChange={(e) =>
 
-                                            setHours(hours.map(h =>
+                                            setHours(
+                                                hours.map(h =>
 
-                                                h.id === hour.id
-                                                    ? {
-                                                        ...h,
-                                                        openTime: `${e.target.value}:00`
-                                                    }
-                                                    : h
+                                                    h.id === hour.id
+                                                        ? {
+                                                            ...h,
+                                                            openTime:
+                                                                `${e.target.value}:00`
+                                                        }
+                                                        : h
 
-                                            ))
+                                                )
+                                            )
 
                                         }
                                     />
@@ -196,19 +255,25 @@ function OwnerOpeningHoursPage() {
                                     <TextField
                                         type="time"
                                         size="small"
-                                        value={hour.closeTime.substring(0, 5)}
+                                        value={
+                                            hour.closeTime
+                                                .substring(0, 5)
+                                        }
                                         onChange={(e) =>
 
-                                            setHours(hours.map(h =>
+                                            setHours(
+                                                hours.map(h =>
 
-                                                h.id === hour.id
-                                                    ? {
-                                                        ...h,
-                                                        closeTime: `${e.target.value}:00`
-                                                    }
-                                                    : h
+                                                    h.id === hour.id
+                                                        ? {
+                                                            ...h,
+                                                            closeTime:
+                                                                `${e.target.value}:00`
+                                                        }
+                                                        : h
 
-                                            ))
+                                                )
+                                            )
 
                                         }
                                     />
@@ -218,19 +283,24 @@ function OwnerOpeningHoursPage() {
                                 <TableCell>
 
                                     <Checkbox
-                                        checked={hour.isClosed}
+                                        checked={
+                                            hour.isClosed
+                                        }
                                         onChange={(e) =>
 
-                                            setHours(hours.map(h =>
+                                            setHours(
+                                                hours.map(h =>
 
-                                                h.id === hour.id
-                                                    ? {
-                                                        ...h,
-                                                        isClosed: e.target.checked
-                                                    }
-                                                    : h
+                                                    h.id === hour.id
+                                                        ? {
+                                                            ...h,
+                                                            isClosed:
+                                                                e.target.checked
+                                                        }
+                                                        : h
 
-                                            ))
+                                                )
+                                            )
 
                                         }
                                     />
@@ -244,9 +314,10 @@ function OwnerOpeningHoursPage() {
                     </TableBody>
 
                 </Table>
+
                 <Button
                     variant="contained"
-                    sx={{ mt: 3 }}
+                    sx={{ mt: 3, mb: 2, ml: 2 }}
                     onClick={saveHours}
                 >
                     Save Opening Hours
@@ -257,7 +328,6 @@ function OwnerOpeningHoursPage() {
         </>
 
     );
-
 }
 
 export default OwnerOpeningHoursPage;

@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import {
     Button,
     Checkbox,
+    CircularProgress,
     Container,
     FormControlLabel,
     MenuItem as MuiMenuItem,
@@ -21,6 +23,11 @@ import type { MenuCategory } from "../types/MenuCategory";
 import type { MenuItem } from "../types/MenuItem";
 
 function OwnerMenuItemsPage() {
+
+    const [searchParams] = useSearchParams();
+
+    const restaurantId =
+        Number(searchParams.get("restaurantId")) || null;
 
     const [editingId, setEditingId] =
         useState<number | null>(null);
@@ -51,32 +58,74 @@ function OwnerMenuItemsPage() {
     const [price, setPrice] =
         useState(0);
 
+    const [loading, setLoading] =
+        useState(true);
+
     useEffect(() => {
 
         loadData();
 
-    }, []);
+    }, [restaurantId]);
 
     async function loadData() {
 
-        const restaurantData =
-            await OwnerRestaurantService.getMyRestaurant();
+        if (!restaurantId) {
 
-        setRestaurant(restaurantData);
+            setRestaurant(null);
+            setCategories([]);
+            setItems([]);
+            setLoading(false);
 
-        const categoryData =
-            await MenuCategoryService.getByRestaurant(
-                restaurantData.id
-            );
+            return;
+        }
 
-        setCategories(categoryData);
+        try {
 
-        const itemData =
-            await MenuItemService.getByRestaurant(
-                restaurantData.id
-            );
+            const restaurants =
+                await OwnerRestaurantService.getMyRestaurants();
 
-        setItems(itemData);
+            const selectedRestaurant =
+                restaurants.find(
+                    restaurant =>
+                        restaurant.id === restaurantId
+                );
+
+            if (!selectedRestaurant) {
+
+                setRestaurant(null);
+                setCategories([]);
+                setItems([]);
+
+                return;
+            }
+
+            setRestaurant(selectedRestaurant);
+
+            const categoryData =
+                await MenuCategoryService.getByRestaurant(
+                    selectedRestaurant.id
+                );
+
+            setCategories(categoryData);
+
+            const itemData =
+                await MenuItemService.getByRestaurant(
+                    selectedRestaurant.id
+                );
+
+            setItems(itemData);
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+        }
+        finally {
+
+            setLoading(false);
+
+        }
 
     }
 
@@ -215,7 +264,21 @@ function OwnerMenuItemsPage() {
 
     }
 
+    if (loading)
+        return <CircularProgress />;
 
+    if (!restaurantId || !restaurant) {
+
+        return (
+
+            <Typography>
+
+                Restaurant not selected.
+
+            </Typography>
+
+        );
+    }
 
     return (
 
@@ -228,6 +291,14 @@ function OwnerMenuItemsPage() {
                     sx={{ mb: 3 }}
                 >
                     Menu Items
+                </Typography>
+
+                <Typography sx={{ mb: 3 }}>
+
+                    Restaurant:
+                    {" "}
+                    {restaurant.name}
+
                 </Typography>
 
                 <Stack spacing={2}>

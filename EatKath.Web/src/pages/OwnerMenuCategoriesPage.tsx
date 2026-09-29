@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import {
     Button,
+    CircularProgress,
     Container,
     Paper,
     Stack,
@@ -17,6 +19,11 @@ import type { MenuCategory } from "../types/MenuCategory";
 
 function OwnerMenuCategoriesPage() {
 
+    const [searchParams] = useSearchParams();
+
+    const restaurantId =
+        Number(searchParams.get("restaurantId")) || null;
+
     const [editingId, setEditingId] =
         useState<number | null>(null);
 
@@ -30,25 +37,65 @@ function OwnerMenuCategoriesPage() {
 
     const [displayOrder, setDisplayOrder] = useState(1);
 
+    const [loading, setLoading] =
+        useState(true);
+
     useEffect(() => {
 
         loadData();
 
-    }, []);
+    }, [restaurantId]);
 
     async function loadData() {
 
-        const restaurantData =
-            await OwnerRestaurantService.getMyRestaurant();
+        if (!restaurantId) {
 
-        setRestaurant(restaurantData);
+            setRestaurant(null);
+            setCategories([]);
+            setLoading(false);
 
-        const data =
-            await MenuCategoryService.getByRestaurant(
-                restaurantData.id
-            );
+            return;
+        }
 
-        setCategories(data);
+        try {
+
+            const restaurants =
+                await OwnerRestaurantService.getMyRestaurants();
+
+            const selectedRestaurant =
+                restaurants.find(
+                    restaurant =>
+                        restaurant.id === restaurantId
+                );
+
+            if (!selectedRestaurant) {
+
+                setRestaurant(null);
+                setCategories([]);
+
+                return;
+            }
+
+            setRestaurant(selectedRestaurant);
+
+            const data =
+                await MenuCategoryService.getByRestaurant(
+                    selectedRestaurant.id
+                );
+
+            setCategories(data);
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+        }
+        finally {
+
+            setLoading(false);
+
+        }
 
     }
 
@@ -162,8 +209,21 @@ function OwnerMenuCategoriesPage() {
 
     }
 
+    if (loading)
+        return <CircularProgress />;
 
+    if (!restaurantId || !restaurant) {
 
+        return (
+
+            <Typography>
+
+                Restaurant not selected.
+
+            </Typography>
+
+        );
+    }
 
     return (
 
@@ -176,6 +236,14 @@ function OwnerMenuCategoriesPage() {
                     sx={{ mb: 3 }}
                 >
                     Menu Categories
+                </Typography>
+
+                <Typography sx={{ mb: 3 }}>
+
+                    Restaurant:
+                    {" "}
+                    {restaurant.name}
+
                 </Typography>
 
                 <Stack spacing={2}>

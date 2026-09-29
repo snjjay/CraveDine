@@ -16,19 +16,22 @@ public class MenuItemService : IMenuItemService
     private readonly IValidator<CreateMenuItemDto> _createValidator;
     private readonly IValidator<UpdateMenuItemDto> _updateValidator;
     private readonly FileStorageService _fileStorage;
+    private readonly ICurrentUserService _currentUser;
 
     public MenuItemService(
         ApplicationDbContext context,
         IMapper mapper,
         IValidator<CreateMenuItemDto> createValidator,
         IValidator<UpdateMenuItemDto> updateValidator,
-        FileStorageService fileStorage)
+        FileStorageService fileStorage,
+        ICurrentUserService currentUser)
     {
         _context = context;
         _mapper = mapper;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
         _fileStorage = fileStorage;
+        _currentUser = currentUser;
     }
 
     public async Task<IEnumerable<MenuItemDto>> GetAllAsync()
@@ -77,13 +80,27 @@ public class MenuItemService : IMenuItemService
         if (!validation.IsValid)
             throw new ValidationException(validation.Errors);
 
-        var categoryExists = await _context.MenuCategories
-            .AnyAsync(x => x.Id == dto.MenuCategoryId);
+        var category = await _context.MenuCategories
+            .FirstOrDefaultAsync(x => x.Id == dto.MenuCategoryId);
 
-        if (!categoryExists)
+        if (category == null)
             throw new BusinessRuleException("Menu category not found.");
 
+        var restaurant = await _context.Restaurants
+            .FirstOrDefaultAsync(r => r.Id == category.RestaurantId);
+
+        if (restaurant == null)
+            throw new BusinessRuleException("Restaurant not found.");
+
+        if (!_currentUser.IsAdmin &&
+            restaurant.OwnerId != _currentUser.UserId)
+        {
+            throw new BusinessRuleException("You are not authorized to add menu items to this restaurant.");
+        }
+
         var entity = _mapper.Map<MenuItem>(dto);
+
+        entity.RestaurantId = category.RestaurantId;
 
         _context.MenuItems.Add(entity);
 
@@ -104,6 +121,30 @@ public class MenuItemService : IMenuItemService
         if (entity == null)
             return null;
 
+        var restaurant = await _context.Restaurants
+            .FirstOrDefaultAsync(r => r.Id == entity.RestaurantId);
+
+        if (restaurant == null)
+            throw new BusinessRuleException("Restaurant not found.");
+
+        if (!_currentUser.IsAdmin &&
+            restaurant.OwnerId != _currentUser.UserId)
+        {
+            throw new BusinessRuleException("You are not authorized to modify this menu item.");
+        }
+
+        if (dto.MenuCategoryId != entity.MenuCategoryId)
+        {
+            var newCategory = await _context.MenuCategories
+                .FirstOrDefaultAsync(x => x.Id == dto.MenuCategoryId);
+
+            if (newCategory == null)
+                throw new BusinessRuleException("Menu category not found.");
+
+            if (newCategory.RestaurantId != entity.RestaurantId)
+                throw new BusinessRuleException("Menu category does not belong to this restaurant.");
+        }
+
         _mapper.Map(dto, entity);
 
         await _context.SaveChangesAsync();
@@ -117,6 +158,18 @@ public class MenuItemService : IMenuItemService
 
         if (entity == null)
             return false;
+
+        var restaurant = await _context.Restaurants
+            .FirstOrDefaultAsync(r => r.Id == entity.RestaurantId);
+
+        if (restaurant == null)
+            throw new BusinessRuleException("Restaurant not found.");
+
+        if (!_currentUser.IsAdmin &&
+            restaurant.OwnerId != _currentUser.UserId)
+        {
+            throw new BusinessRuleException("You are not authorized to delete this menu item.");
+        }
 
         _context.MenuItems.Remove(entity);
 
