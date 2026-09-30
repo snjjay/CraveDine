@@ -18,6 +18,10 @@
 
         public string LogoUrl { get; set; } = string.Empty;
 
+        public string? CoverImageUrl { get; set; }
+
+        public string? MenuPdfUrl { get; set; }
+
         public bool IsActive { get; set; }
 
         public int AreaId { get; set; }

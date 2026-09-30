@@ -121,13 +121,15 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.CustomerName,
                 opt => opt.MapFrom(src => src.User.FirstName + " " + src.User.LastName));
 
-        CreateMap<CreateRedemptionDto, Redemption>();
-
         // ============================
         // Reservation
         // ============================
 
-        CreateMap<Reservation, ReservationDto>();
+        CreateMap<Reservation, ReservationDto>()
+            .ForMember(dest => dest.DealTitle,
+                opt => opt.MapFrom(src => src.Deal.Title))
+            .ForMember(dest => dest.RestaurantName,
+                opt => opt.MapFrom(src => src.Deal.Restaurant.Name));
 
         CreateMap<CreateReservationDto, Reservation>();
     }

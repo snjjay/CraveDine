@@ -16,8 +16,10 @@ import OwnerRestaurantPage from "../pages/OwnerRestaurantPage";
 import AdminDashboardPage from "../pages/AdminDashboardPage";
 
 import LoginPage from "../features/auth/LoginPage";
+import RegisterPage from "../features/auth/RegisterPage";
 import ProtectedRoute from "../features/auth/ProtectedRoute";
 import MyReservationsPage from "../pages/MyReservationsPage";
+import MyRedemptionsPage from "../pages/MyRedemptionsPage";
 import OwnerOpeningHoursPage from "../pages/OwnerOpeningHoursPage";
 import OwnerMenuCategoriesPage from "../pages/OwnerMenuCategoriesPage";
 import OwnerMenuItemsPage from "../pages/OwnerMenuItemsPage";
@@ -66,8 +68,22 @@ function AppRoutes() {
                     />
 
                     <Route
+                        path="/my-redemptions"
+                        element={
+                            <ProtectedRoute role="Customer">
+                                <MyRedemptionsPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
                         path="/login"
                         element={<LoginPage />}
+                    />
+
+                    <Route
+                        path="/register"
+                        element={<RegisterPage />}
                     />
 
                     <Route

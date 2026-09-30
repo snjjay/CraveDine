@@ -14,15 +14,27 @@ namespace EatKath.API.Services
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly FileStorageService _fileStorage;
+        private readonly ICurrentUserService _currentUser;
 
         public RestaurantService(
             ApplicationDbContext context,
             IMapper mapper,
-            FileStorageService fileStorage)
+            FileStorageService fileStorage,
+            ICurrentUserService currentUser)
         {
             _context = context;
             _mapper = mapper;
             _fileStorage = fileStorage;
+            _currentUser = currentUser;
+        }
+
+        private void EnsureOwnership(Restaurant restaurant, string action)
+        {
+            if (!_currentUser.IsAdmin &&
+                restaurant.OwnerId != _currentUser.UserId)
+            {
+                throw new BusinessRuleException($"You are not authorized to {action} this restaurant.");
+            }
         }
 
         public async Task<IEnumerable<RestaurantDto>> GetAllAsync()
@@ -46,6 +58,8 @@ namespace EatKath.API.Services
                 Email = r.Email,
                 Website = r.Website,
                 LogoUrl = r.LogoUrl,
+                CoverImageUrl = r.CoverImageUrl,
+                MenuPdfUrl = r.MenuPdfUrl,
                 IsActive = r.IsActive,
                 AreaId = r.AreaId,
                 AreaName = r.Area.Name,
@@ -92,6 +106,8 @@ namespace EatKath.API.Services
                 Email = restaurant.Email,
                 Website = restaurant.Website,
                 LogoUrl = restaurant.LogoUrl,
+                CoverImageUrl = restaurant.CoverImageUrl,
+                MenuPdfUrl = restaurant.MenuPdfUrl,
                 IsActive = restaurant.IsActive,
                 AreaId = restaurant.AreaId,
                 AreaName = restaurant.Area.Name,
@@ -136,6 +152,8 @@ namespace EatKath.API.Services
                 Email = restaurant.Email,
                 Website = restaurant.Website,
                 LogoUrl = restaurant.LogoUrl,
+                CoverImageUrl = restaurant.CoverImageUrl,
+                MenuPdfUrl = restaurant.MenuPdfUrl,
                 IsActive = restaurant.IsActive,
                 AreaId = restaurant.AreaId,
                 AreaName = restaurant.Area.Name,
@@ -164,6 +182,11 @@ namespace EatKath.API.Services
         {
             var restaurant = _mapper.Map<Restaurant>(dto);
 
+            if (!_currentUser.IsAdmin)
+            {
+                restaurant.OwnerId = _currentUser.UserId;
+            }
+
             _context.Restaurants.Add(restaurant);
 
             await _context.SaveChangesAsync();
@@ -189,6 +212,8 @@ namespace EatKath.API.Services
             if (restaurant == null)
                 return null;
 
+            EnsureOwnership(restaurant, "update");
+
             _mapper.Map(dto, restaurant);
 
             await _context.SaveChangesAsync();
@@ -207,6 +232,8 @@ namespace EatKath.API.Services
                 Email = restaurant.Email,
                 Website = restaurant.Website,
                 LogoUrl = restaurant.LogoUrl,
+                CoverImageUrl = restaurant.CoverImageUrl,
+                MenuPdfUrl = restaurant.MenuPdfUrl,
                 IsActive = restaurant.IsActive,
                 AreaId = restaurant.AreaId,
                 AreaName = restaurant.Area.Name,
@@ -236,6 +263,18 @@ namespace EatKath.API.Services
             if (restaurant == null)
                 return false;
 
+            EnsureOwnership(restaurant, "delete");
+
+            var hasDependentRecords =
+                await _context.MenuItems.AnyAsync(m => m.RestaurantId == id) ||
+                await _context.Redemptions.AnyAsync(r => r.Deal.RestaurantId == id);
+
+            if (hasDependentRecords)
+            {
+                throw new BusinessRuleException(
+                    "Cannot delete this restaurant because it has existing menu items or redeemed deals.");
+            }
+
             _context.Restaurants.Remove(restaurant);
 
             await _context.SaveChangesAsync();
@@ -252,7 +291,9 @@ namespace EatKath.API.Services
             var restaurant = await _context.Restaurants.FindAsync(restaurantId);
 
             if (restaurant == null)
-                throw new Exception("Restaurant not found.");
+                throw new NotFoundException("Restaurant not found.");
+
+            EnsureOwnership(restaurant, "modify");
 
             var path = await _fileStorage.SaveImageAsync(
                 file,
@@ -275,7 +316,9 @@ namespace EatKath.API.Services
             var restaurant = await _context.Restaurants.FindAsync(restaurantId);
 
             if (restaurant == null)
-                throw new Exception("Restaurant not found.");
+                throw new NotFoundException("Restaurant not found.");
+
+            EnsureOwnership(restaurant, "modify");
 
             var path = await _fileStorage.SaveImageAsync(
                 file,
@@ -298,7 +341,9 @@ namespace EatKath.API.Services
             var restaurant = await _context.Restaurants.FindAsync(restaurantId);
 
             if (restaurant == null)
-                throw new Exception("Restaurant not found.");
+                throw new NotFoundException("Restaurant not found.");
+
+            EnsureOwnership(restaurant, "modify");
 
             var path = await _fileStorage.SavePdfAsync(
                 file,
@@ -318,7 +363,9 @@ namespace EatKath.API.Services
             var restaurant = await _context.Restaurants.FindAsync(restaurantId);
 
             if (restaurant == null)
-                throw new Exception("Restaurant not found.");
+                throw new NotFoundException("Restaurant not found.");
+
+            EnsureOwnership(restaurant, "modify");
 
             await _fileStorage.DeleteFileAsync(restaurant.LogoUrl);
 
@@ -334,7 +381,9 @@ namespace EatKath.API.Services
             var restaurant = await _context.Restaurants.FindAsync(restaurantId);
 
             if (restaurant == null)
-                throw new Exception("Restaurant not found.");
+                throw new NotFoundException("Restaurant not found.");
+
+            EnsureOwnership(restaurant, "modify");
 
             await _fileStorage.DeleteFileAsync(restaurant.CoverImageUrl);
 
@@ -349,7 +398,9 @@ namespace EatKath.API.Services
             var restaurant = await _context.Restaurants.FindAsync(restaurantId);
 
             if (restaurant == null)
-                throw new Exception("Restaurant not found.");
+                throw new NotFoundException("Restaurant not found.");
+
+            EnsureOwnership(restaurant, "modify");
 
             await _fileStorage.DeleteFileAsync(restaurant.MenuPdfUrl);
 

@@ -47,7 +47,7 @@ namespace EatKath.API.Services
                 .AnyAsync(u => u.Email == dto.Email);
 
             if (exists)
-                throw new Exception("Email already exists.");
+                throw new BusinessRuleException("Email already exists.");
 
             var user = _mapper.Map<User>(dto);
             user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
@@ -79,7 +79,7 @@ namespace EatKath.API.Services
                 .AnyAsync(u => u.Email == dto.Email && u.Id != id);
 
             if (emailExists)
-                throw new Exception("Email already exists.");
+                throw new BusinessRuleException("Email already exists.");
 
             _mapper.Map(dto, user);
 
@@ -100,6 +100,17 @@ namespace EatKath.API.Services
 
             if (user == null)
                 return false;
+
+            var hasDependentRecords =
+                await _context.Reservations.AnyAsync(r => r.UserId == id) ||
+                await _context.Redemptions.AnyAsync(r => r.UserId == id) ||
+                await _context.Restaurants.AnyAsync(r => r.OwnerId == id);
+
+            if (hasDependentRecords)
+            {
+                throw new BusinessRuleException(
+                    "Cannot delete this user because they have existing reservations, redemptions, or restaurants.");
+            }
 
             _context.Users.Remove(user);
 

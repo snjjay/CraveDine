@@ -70,6 +70,7 @@ namespace EatKath.API.Controllers
         // Get Reservation
         // =====================================
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -87,24 +88,16 @@ namespace EatKath.API.Controllers
 
         [Authorize(Roles = "Customer")]
         [HttpPost]
-        [HttpPost]
         public async Task<IActionResult> Create(
             [FromBody] CreateReservationDto dto)
-                {
-                    try
-                    {
-                        var reservation =
-                            await _service.CreateAsync(dto);
+        {
+            var reservation =
+                await _service.CreateAsync(dto);
 
-                        return CreatedAtAction(
-                            nameof(GetById),
-                            new { id = reservation.Id },
-                            reservation);
-                    }
-                    catch (Exception ex)
-                    {
-                        return BadRequest(ex.Message);
-                    }
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = reservation.Id },
+                reservation);
         }
 
         // =====================================
@@ -199,6 +192,22 @@ namespace EatKath.API.Controllers
 
             if (!updated)
                 return NotFound();
+
+            return NoContent();
+        }
+
+        // =====================================
+        // Customer Cancels Own Reservation
+        // =====================================
+
+        [Authorize(Roles = "Customer")]
+        [HttpPut("{id}/cancel-mine")]
+        public async Task<IActionResult> CancelMine(int id)
+        {
+            var userId = int.Parse(
+                User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            await _service.CancelMyReservationAsync(id, userId);
 
             return NoContent();
         }

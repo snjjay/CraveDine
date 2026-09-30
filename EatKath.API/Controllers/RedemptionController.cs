@@ -17,15 +17,6 @@ namespace EatKath.API.Controllers
             _service = service;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Redeem(
-            [FromBody] CreateRedemptionDto dto)
-        {
-            var result = await _service.RedeemAsync(dto);
-
-            return Ok(result);
-        }
-
         [HttpGet("my-history")]
         public async Task<IActionResult> GetMyHistory()
         {

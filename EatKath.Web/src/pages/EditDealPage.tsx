@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 
 import OwnerDealService from "../services/OwnerDealService";
+import { useNotification } from "../features/notifications/NotificationContext";
 import type { UpdateDeal } from "../types/UpdateDeal";
 
 function EditDealPage() {
@@ -24,6 +25,8 @@ function EditDealPage() {
     const { id } = useParams();
 
     const navigate = useNavigate();
+
+    const { notify } = useNotification();
 
     const [searchParams] = useSearchParams();
 
@@ -105,7 +108,7 @@ function EditDealPage() {
             }
         );
 
-        alert("Deal updated.");
+        notify("Deal updated.", "success");
 
         navigate(
             restaurantId

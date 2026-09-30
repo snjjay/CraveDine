@@ -235,6 +235,22 @@ namespace EatKath.API.Data
                 .HasForeignKey(x => x.DealId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // ============================
+            // Redemption -> Reservation (optional)
+            // A Redemption auto-created from a Reservation points back
+            // to it exactly; this is left null only for pre-existing/
+            // legacy rows that predate this link. SetNull (not
+            // Cascade/Restrict) so that deleting a Reservation never
+            // deletes or blocks deleting its Redemption - it just
+            // detaches the link.
+            // ============================
+
+            modelBuilder.Entity<Redemption>()
+                .HasOne(x => x.Reservation)
+                .WithMany()
+                .HasForeignKey(x => x.ReservationId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             modelBuilder.Entity<MenuItem>()
                 .Property(x => x.Price)
                 .HasPrecision(18, 2);
@@ -259,8 +275,22 @@ namespace EatKath.API.Data
                 .HasIndex(x => x.Name)
                 .IsUnique(); //Area names must be unique in the database
 
-
-
+            // A customer may only have one ACTIVE reservation for the
+            // same deal/date/time. Enforced at the database level as a
+            // backstop to the application-level check in
+            // ReservationService.CreateAsync, which alone cannot
+            // prevent two concurrent requests from both passing the
+            // check before either has inserted (Phase 5O investigation).
+            // Filtered so Cancelled/Rejected/NoShow reservations are
+            // excluded, allowing rebooking after cancellation.
+            // SQL Server filtered-index predicates do not accept "NOT IN"
+            // (verified against LocalDB: raises "Incorrect syntax near
+            // 'NOT'."). The chained inequality form below was verified
+            // directly against LocalDB before use here.
+            modelBuilder.Entity<Reservation>()
+                .HasIndex(x => new { x.UserId, x.DealId, x.ReservationDate, x.ReservationTime })
+                .IsUnique()
+                .HasFilter("[Status] <> N'Cancelled' AND [Status] <> N'Rejected' AND [Status] <> N'NoShow'");
 
         }
     }

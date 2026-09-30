@@ -3,6 +3,10 @@ export interface Reservation {
 
     dealId: number;
 
+    dealTitle?: string;
+
+    restaurantName?: string;
+
     customerName: string;
 
     phoneNumber: string;

@@ -37,7 +37,7 @@ namespace EatKath.API.Services
                 .AnyAsync(u => u.Email == dto.Email);
 
             if (existingUser)
-                throw new Exception("Email already exists.");
+                throw new BusinessRuleException("Email already exists.");
 
             // Automatically assign the User role
             var userRole = await _context.Roles
@@ -48,7 +48,7 @@ namespace EatKath.API.Services
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Email = dto.Email,
-                PhoneNumber = dto.PhoneNumber,
+                PhoneNumber = dto.PhoneNumber ?? string.Empty,
                 RoleId = userRole.Id,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
@@ -75,10 +75,10 @@ namespace EatKath.API.Services
                 .FirstOrDefaultAsync(u => u.Email == dto.Email);
 
             if (user == null)
-                throw new Exception("Invalid email or password.");
+                throw new AuthenticationException("Invalid email or password.");
 
             if (!user.IsActive)
-                throw new Exception("User account is inactive.");
+                throw new AuthenticationException("User account is inactive.");
 
             var isPasswordValid = VerifyPassword(
                 user,
@@ -86,7 +86,7 @@ namespace EatKath.API.Services
                 user.PasswordHash);
 
             if (!isPasswordValid)
-                throw new Exception("Invalid email or password.");
+                throw new AuthenticationException("Invalid email or password.");
 
             return GenerateJwtToken(user);
         }

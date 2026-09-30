@@ -74,6 +74,14 @@ function MainLayout() {
                             >
                                 📅 My Reservations
                             </Button>
+
+                            <Button
+                                color="inherit"
+                                component={Link}
+                                to="/my-redemptions"
+                            >
+                                🎟️ My Redemptions
+                            </Button>
                         </>
 
                     )}
@@ -113,13 +121,25 @@ function MainLayout() {
 
                     ) : (
 
-                        <Button
-                            color="inherit"
-                            component={Link}
-                            to="/login"
-                        >
-                            Login
-                        </Button>
+                        <>
+
+                            <Button
+                                color="inherit"
+                                component={Link}
+                                to="/login"
+                            >
+                                Login
+                            </Button>
+
+                            <Button
+                                color="inherit"
+                                component={Link}
+                                to="/register"
+                            >
+                                Sign Up
+                            </Button>
+
+                        </>
 
                     )}
 

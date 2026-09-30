@@ -16,19 +16,22 @@ namespace EatKath.API.Services
         private readonly IValidator<CreateRestaurantImageDto> _createValidator;
         private readonly IValidator<UpdateRestaurantImageDto> _updateValidator;
         private readonly FileStorageService _fileStorage;
+        private readonly ICurrentUserService _currentUser;
 
         public RestaurantImageService(
             ApplicationDbContext context,
             IMapper mapper,
             IValidator<CreateRestaurantImageDto> createValidator,
             IValidator<UpdateRestaurantImageDto> updateValidator,
-            FileStorageService fileStorage)
+            FileStorageService fileStorage,
+            ICurrentUserService currentUser)
         {
             _context = context;
             _mapper = mapper;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
             _fileStorage = fileStorage;
+            _currentUser = currentUser;
         }
 
         public async Task<IEnumerable<RestaurantImageDto>> GetAllAsync()
@@ -67,11 +70,17 @@ namespace EatKath.API.Services
             if (!validation.IsValid)
                 throw new ValidationException(validation.Errors);
 
-            var restaurantExists = await _context.Restaurants
-                .AnyAsync(x => x.Id == dto.RestaurantId);
+            var restaurant = await _context.Restaurants
+                .FirstOrDefaultAsync(x => x.Id == dto.RestaurantId);
 
-            if (!restaurantExists)
-                throw new Exception("Restaurant not found.");
+            if (restaurant == null)
+                throw new NotFoundException("Restaurant not found.");
+
+            if (!_currentUser.IsAdmin &&
+                restaurant.OwnerId != _currentUser.UserId)
+            {
+                throw new BusinessRuleException("You are not authorized to add images to this restaurant.");
+            }
 
             var entity = _mapper.Map<RestaurantImage>(dto);
 
@@ -89,10 +98,18 @@ namespace EatKath.API.Services
             if (!validation.IsValid)
                 throw new ValidationException(validation.Errors);
 
-            var entity = await _context.RestaurantImages.FindAsync(id);
+            var entity = await _context.RestaurantImages
+                .Include(x => x.Restaurant)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (entity == null)
                 return null;
+
+            if (!_currentUser.IsAdmin &&
+                entity.Restaurant.OwnerId != _currentUser.UserId)
+            {
+                throw new BusinessRuleException("You are not authorized to modify images for this restaurant.");
+            }
 
             _mapper.Map(dto, entity);
 
@@ -103,10 +120,18 @@ namespace EatKath.API.Services
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var entity = await _context.RestaurantImages.FindAsync(id);
+            var entity = await _context.RestaurantImages
+                .Include(x => x.Restaurant)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (entity == null)
                 return false;
+
+            if (!_currentUser.IsAdmin &&
+                entity.Restaurant.OwnerId != _currentUser.UserId)
+            {
+                throw new BusinessRuleException("You are not authorized to delete images from this restaurant.");
+            }
 
             await _fileStorage.DeleteFileAsync(entity.ImageUrl);
 
@@ -122,7 +147,13 @@ namespace EatKath.API.Services
             var restaurant = await _context.Restaurants.FindAsync(restaurantId);
 
             if (restaurant == null)
-                throw new Exception("Restaurant not found.");
+                throw new NotFoundException("Restaurant not found.");
+
+            if (!_currentUser.IsAdmin &&
+                restaurant.OwnerId != _currentUser.UserId)
+            {
+                throw new BusinessRuleException("You are not authorized to upload images to this restaurant.");
+            }
 
             var imagePath = await _fileStorage.SaveImageAsync(
                 file,

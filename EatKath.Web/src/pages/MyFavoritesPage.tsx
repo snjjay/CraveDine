@@ -7,10 +7,14 @@ import {
 } from "@mui/material";
 
 import UserFavoriteService from "../services/UserFavoriteService";//Bring the UserFavoriteService code from the services folder so I can use it in this page.
+import { getImageUrl } from "../utils/imageUrl";
+import { useNotification } from "../features/notifications/NotificationContext";
 
 import type { UserFavorite } from "../types/UserFavorite"; //Bring me the description/shape of what a UserFavorite looks like..
 
 function MyFavoritesPage() {
+
+    const { notify } = useNotification();
 
     //Create a box called favorites where I will store the restaurants returned by the API.
     const [favorites, setFavorites] = useState<UserFavorite[]>([]);
@@ -50,9 +54,16 @@ function MyFavoritesPage() {
             setFavorites(data);// Put the restaurants returned by the API into the favorites box. Put API data into React state
 
         }
-        catch (error) {
+        catch (error: any) {
 
             console.error(error);
+
+            notify(
+                error.response?.data?.Message ??
+                error.message ??
+                "Failed to load your favorites. Please try again.",
+                "error"
+            );
 
         }
         finally {
@@ -87,7 +98,7 @@ function MyFavoritesPage() {
                     >
 
                         <img
-                            src={`https://localhost:7203${f.logoUrl}`}
+                            src={getImageUrl(f.logoUrl)}
                             alt={f.restaurantName}
                             style={{
                                 width: "100%",

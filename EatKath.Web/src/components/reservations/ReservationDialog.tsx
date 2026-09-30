@@ -11,22 +11,32 @@ import {
 } from "@mui/material";
 
 import ReservationService from "../../services/ReservationService";
+import { useNotification } from "../../features/notifications/NotificationContext";
 import type { Reservation } from "../../types/Reservation";
+import type { Deal } from "../../types/Deal";
 
 interface Props {
     open: boolean;
     onClose: () => void;
-    dealId: number;
+    deal: Deal;
+}
+
+// TimeOnly values come back from the API as "HH:mm:ss";
+// the native time input only works in "HH:mm".
+function toInputTime(value: string) {
+    return value.length >= 5 ? value.slice(0, 5) : value;
 }
 
 function ReservationDialog({
     open,
     onClose,
-    dealId
+    deal
 }: Props) {
 
+    const { notify } = useNotification();
+
     const [reservation, setReservation] = useState<Reservation>({
-        dealId,
+        dealId: deal.id,
         customerName: "",
         phoneNumber: "",
         email: "",
@@ -35,10 +45,12 @@ function ReservationDialog({
         guestCount: 2
     });
 
+    const [submitting, setSubmitting] = useState(false);
+
     useEffect(() => {
 
         setReservation({
-            dealId,
+            dealId: deal.id,
             customerName: "",
             phoneNumber: "",
             email: "",
@@ -47,9 +59,48 @@ function ReservationDialog({
             guestCount: 2
         });
 
-    }, [dealId, open]);
+        setSubmitting(false);
+
+    }, [deal.id, open]);
+
+    const minTime = toInputTime(deal.startTime);
+    const maxTime = toInputTime(deal.endTime);
+
+    const guestCountError =
+        reservation.guestCount < 1 ||
+        reservation.guestCount > deal.maximumGuests;
+
+    const dateError =
+        reservation.reservationDate < deal.startDate ||
+        reservation.reservationDate > deal.endDate;
+
+    const timeError =
+        reservation.reservationTime < minTime ||
+        reservation.reservationTime > maxTime;
+
+    const canSubmit =
+        !submitting &&
+        !guestCountError &&
+        !dateError &&
+        !timeError;
 
     async function handleSubmit() {
+
+        if (submitting)
+            return;
+
+        if (guestCountError || dateError || timeError) {
+
+            notify(
+                "Please fix the highlighted fields before submitting.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        setSubmitting(true);
 
         try {
 
@@ -63,35 +114,30 @@ function ReservationDialog({
                         : reservation.reservationTime
             };
 
-            console.log(request);
-
             const result = await ReservationService.create(request);
 
-            console.log(result);
-
-            alert("Reservation created successfully!");
+            notify(
+                `Reservation created successfully. Confirmation code: ${result.confirmationCode}`,
+                "success"
+            );
 
             onClose();
 
         }
         catch (error: any) {
 
-    console.error(error);
+            console.error(error);
 
-    if (error.response?.status === 400) {
+            notify(
+                error.response?.data?.Message ??
+                error.message ??
+                "Unable to create reservation. Please try again.",
+                "error"
+            );
 
-        alert(error.response.data);
+            setSubmitting(false);
 
-    }
-    else {
-
-        alert(
-            "Unable to create reservation. Please try again."
-        );
-
-    }
-
-}
+        }
 
     }
 
@@ -157,9 +203,19 @@ function ReservationDialog({
                         slotProps={{
                             inputLabel: {
                                 shrink: true
+                            },
+                            htmlInput: {
+                                min: deal.startDate,
+                                max: deal.endDate
                             }
                         }}
                         value={reservation.reservationDate}
+                        error={reservation.reservationDate !== "" && dateError}
+                        helperText={
+                            reservation.reservationDate !== "" && dateError
+                                ? `Must be between ${deal.startDate} and ${deal.endDate}.`
+                                : " "
+                        }
                         onChange={(e) =>
                             setReservation({
                                 ...reservation,
@@ -174,9 +230,19 @@ function ReservationDialog({
                         slotProps={{
                             inputLabel: {
                                 shrink: true
+                            },
+                            htmlInput: {
+                                min: minTime,
+                                max: maxTime
                             }
                         }}
                         value={reservation.reservationTime}
+                        error={reservation.reservationTime !== "" && timeError}
+                        helperText={
+                            reservation.reservationTime !== "" && timeError
+                                ? `Must be between ${minTime} and ${maxTime}.`
+                                : " "
+                        }
                         onChange={(e) =>
                             setReservation({
                                 ...reservation,
@@ -189,7 +255,19 @@ function ReservationDialog({
                         label="Guests"
                         type="number"
                         fullWidth
+                        slotProps={{
+                            htmlInput: {
+                                min: 1,
+                                max: deal.maximumGuests
+                            }
+                        }}
                         value={reservation.guestCount}
+                        error={guestCountError}
+                        helperText={
+                            guestCountError
+                                ? `Must be between 1 and ${deal.maximumGuests} guests.`
+                                : " "
+                        }
                         onChange={(e) =>
                             setReservation({
                                 ...reservation,
@@ -204,15 +282,19 @@ function ReservationDialog({
 
             <DialogActions>
 
-                <Button onClick={onClose}>
+                <Button
+                    onClick={onClose}
+                    disabled={submitting}
+                >
                     Cancel
                 </Button>
 
                 <Button
                     variant="contained"
                     onClick={handleSubmit}
+                    disabled={!canSubmit}
                 >
-                    Confirm Reservation
+                    {submitting ? "Reserving..." : "Confirm Reservation"}
                 </Button>
 
             </DialogActions>

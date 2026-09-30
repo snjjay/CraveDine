@@ -18,11 +18,14 @@ import {
 
 import OwnerRestaurantService from "../services/OwnerRestaurantService";
 import RestaurantOpeningHourService from "../services/RestaurantOpeningHourService";
+import { useNotification } from "../features/notifications/NotificationContext";
 
 import type { Restaurant } from "../types/Restaurant";
 import type { RestaurantOpeningHour } from "../types/RestaurantOpeningHour";
 
 function OwnerOpeningHoursPage() {
+
+    const { notify } = useNotification();
 
     const [searchParams] = useSearchParams();
 
@@ -112,8 +115,9 @@ function OwnerOpeningHoursPage() {
 
             }
 
-            alert(
-                "Opening hours updated successfully."
+            notify(
+                "Opening hours updated successfully.",
+                "success"
             );
 
         }
@@ -121,22 +125,12 @@ function OwnerOpeningHoursPage() {
 
             console.error(error);
 
-            if (error.response) {
-
-                alert(
-                    JSON.stringify(
-                        error.response.data,
-                        null,
-                        2
-                    )
-                );
-
-            }
-            else {
-
-                alert(error.message);
-
-            }
+            notify(
+                error.response?.data?.Message ??
+                error.message ??
+                "Something went wrong. Please try again.",
+                "error"
+            );
         }
     }
 

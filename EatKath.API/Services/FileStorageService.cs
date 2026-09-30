@@ -27,7 +27,7 @@ namespace EatKath.API.Services
             };
 
             if (!allowedExtensions.Contains(extension))
-                throw new Exception("Only JPG, PNG and WEBP images are allowed.");
+                throw new BusinessRuleException("Only JPG, PNG and WEBP images are allowed.");
 
             return await SaveFileAsync(file, folder, fileName);
         }
@@ -40,7 +40,7 @@ namespace EatKath.API.Services
             var extension = Path.GetExtension(file.FileName).ToLower();
 
             if (extension != ".pdf")
-                throw new Exception("Only PDF files are allowed.");
+                throw new BusinessRuleException("Only PDF files are allowed.");
 
             return await SaveFileAsync(file, folder, fileName);
         }

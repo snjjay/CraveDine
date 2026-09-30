@@ -25,6 +25,7 @@ import {
 import OwnerReservationService from "../services/OwnerReservationService";
 import OwnerRestaurantService from "../services/OwnerRestaurantService";
 import RedemptionService from "../services/RedemptionService";
+import { useNotification } from "../features/notifications/NotificationContext";
 
 import type { OwnerReservation } from "../types/OwnerReservation";
 import type { Restaurant } from "../types/Restaurant";
@@ -32,6 +33,8 @@ import type { Restaurant } from "../types/Restaurant";
 function OwnerDashboardPage() {
 
     const navigate = useNavigate();
+
+    const { notify } = useNotification();
 
     const [restaurants, setRestaurants] =
         useState<Restaurant[]>([]);
@@ -121,7 +124,7 @@ function OwnerDashboardPage() {
 
             if (!reservation?.redemptionId) {
 
-                alert("No redemption found for this reservation.");
+                notify("No redemption found for this reservation.", "warning");
 
                 return;
             }
@@ -144,9 +147,11 @@ function OwnerDashboardPage() {
 
             console.error(error);
 
-            alert(
-                error.response?.data?.message ??
-                error.message
+            notify(
+                error.response?.data?.Message ??
+                error.message ??
+                "Something went wrong. Please try again.",
+                "error"
             );
 
         }

@@ -6,6 +6,7 @@
 //
 // Backend:
 // LoginDto          -> LoginRequest
+// RegisterDto       -> RegisterRequest
 // AuthResponseDto   -> AuthResponse
 //
 // ==========================================================
@@ -14,6 +15,15 @@
 export interface LoginRequest {
     email: string;
     password: string;
+}
+
+// Request sent to the API
+export interface RegisterRequest {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    phoneNumber?: string;
 }
 
 // Response returned by the API

@@ -183,7 +183,19 @@ public class MenuItemService : IMenuItemService
         var menuItem = await _context.MenuItems.FindAsync(menuItemId);
 
         if (menuItem == null)
-            throw new Exception("Menu item not found.");
+            throw new NotFoundException("Menu item not found.");
+
+        var restaurant = await _context.Restaurants
+            .FirstOrDefaultAsync(r => r.Id == menuItem.RestaurantId);
+
+        if (restaurant == null)
+            throw new BusinessRuleException("Restaurant not found.");
+
+        if (!_currentUser.IsAdmin &&
+            restaurant.OwnerId != _currentUser.UserId)
+        {
+            throw new BusinessRuleException("You are not authorized to upload an image for this menu item.");
+        }
 
         var imagePath = await _fileStorage.SaveImageAsync(
             file,
@@ -203,7 +215,19 @@ public class MenuItemService : IMenuItemService
         var menuItem = await _context.MenuItems.FindAsync(menuItemId);
 
         if (menuItem == null)
-            throw new Exception("Menu item not found.");
+            throw new NotFoundException("Menu item not found.");
+
+        var restaurant = await _context.Restaurants
+            .FirstOrDefaultAsync(r => r.Id == menuItem.RestaurantId);
+
+        if (restaurant == null)
+            throw new BusinessRuleException("Restaurant not found.");
+
+        if (!_currentUser.IsAdmin &&
+            restaurant.OwnerId != _currentUser.UserId)
+        {
+            throw new BusinessRuleException("You are not authorized to delete the image for this menu item.");
+        }
 
         await _fileStorage.DeleteFileAsync(menuItem.ImageUrl);
 

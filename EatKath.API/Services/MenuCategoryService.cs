@@ -77,8 +77,7 @@ public class MenuCategoryService : IMenuCategoryService
         if (!_currentUser.IsAdmin &&
             restaurant.OwnerId != _currentUser.UserId)
         {
-            throw new BusinessRuleException(
-    $"Restaurant OwnerId = {restaurant.OwnerId}, Current UserId = {_currentUser.UserId}, IsAdmin = {_currentUser.IsAdmin}");
+            throw new BusinessRuleException("You are not authorized to modify this restaurant.");
         }
 
         var exists = await _context.MenuCategories.AnyAsync(x =>
@@ -123,9 +122,6 @@ public class MenuCategoryService : IMenuCategoryService
 
         // Admin can manage any restaurant.
         // Restaurant owners can only manage their own restaurant.
-        Console.WriteLine($"Restaurant OwnerId: {restaurant.OwnerId}");
-        Console.WriteLine($"Current UserId: {_currentUser.UserId}");
-        Console.WriteLine($"Is Admin: {_currentUser.IsAdmin}");
         if (!_currentUser.IsAdmin &&
             restaurant.OwnerId != _currentUser.UserId)
         {

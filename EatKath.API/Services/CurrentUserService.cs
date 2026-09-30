@@ -17,21 +17,8 @@ namespace EatKath.API.Services
         {
             get
             {
-                var claims = _httpContextAccessor.HttpContext?.User?.Claims;
-
-                Console.WriteLine("========== JWT Claims ==========");
-
-                foreach (var claim in claims ?? Enumerable.Empty<Claim>())
-                {
-                    Console.WriteLine($"{claim.Type} = {claim.Value}");
-                }
-
-                Console.WriteLine("================================");
-
                 var userId = _httpContextAccessor.HttpContext?.User?
                     .FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-                Console.WriteLine($"NameIdentifier = {userId}");
 
                 return int.TryParse(userId, out var id) ? id : 0;
             }

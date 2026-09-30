@@ -7,20 +7,27 @@ import type { MenuCategory } from "../types/MenuCategory";
 import type { MenuItem } from "../types/MenuItem";
 import { getImageUrl } from "../utils/imageUrl";
 import {
+    Avatar,
+    Box,
+    Button,
     Card,
     CardContent,
     CardMedia,
     CircularProgress,
     Divider,
+    Grid,
     Link,
     Typography
 } from "@mui/material";
 
 import RestaurantService from "../services/RestaurantService";
 import DealService from "../services/DealService";
+import RestaurantImageService from "../services/RestaurantImageService";
+import { useNotification } from "../features/notifications/NotificationContext";
 
 import type { Restaurant } from "../types/Restaurant";
 import type { Deal } from "../types/Deal";
+import type { RestaurantImage } from "../types/RestaurantImage";
 
 import DealCard from "../components/deals/DealCard";
 
@@ -28,11 +35,16 @@ function RestaurantDetailsPage() {
 
     const { id } = useParams();
 
+    const { notify } = useNotification();
+
     const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
     const [deals, setDeals] = useState<Deal[]>([]);
     const [categories, setCategories] = useState<MenuCategory[]>([]);
 
     const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+
+    const [galleryImages, setGalleryImages] = useState<RestaurantImage[]>([]);
+    const [galleryLoading, setGalleryLoading] = useState(true);
 
     const [loading, setLoading] = useState(true);
 
@@ -44,6 +56,7 @@ function RestaurantDetailsPage() {
 
             loadDeals(Number(id));
             loadMenu(Number(id));
+            loadGallery(Number(id));
 
         }
 
@@ -104,6 +117,34 @@ function RestaurantDetailsPage() {
     }
 
 
+    async function loadGallery(id: number) {
+
+        try {
+
+            const data = await RestaurantImageService.getByRestaurant(id);
+
+            setGalleryImages(data);
+
+        }
+        catch (error: any) {
+
+            console.error(error);
+
+            notify(
+                error.response?.data?.Message ??
+                error.message ??
+                "Failed to load restaurant gallery. Please try again.",
+                "error"
+            );
+
+        }
+        finally {
+
+            setGalleryLoading(false);
+
+        }
+
+    }
 
 
 
@@ -127,7 +168,8 @@ function RestaurantDetailsPage() {
 
     }
 
-    const imageUrl = getImageUrl(restaurant.logoUrl);
+    const coverUrl = getImageUrl(restaurant.coverImageUrl);
+    const logoUrl = getImageUrl(restaurant.logoUrl);
 
     return (
 
@@ -135,14 +177,35 @@ function RestaurantDetailsPage() {
 
             <Card sx={{ mb: 4 }}>
 
-                <CardMedia
-                    component="img"
-                    height="300"
-                    image={imageUrl}
-                    alt={restaurant.name}
-                />
+                <Box sx={{ position: "relative" }}>
 
-                <CardContent>
+                    <CardMedia
+                        component="img"
+                        height="300"
+                        image={coverUrl}
+                        alt={restaurant.name}
+                    />
+
+                    {restaurant.logoUrl && (
+
+                        <Avatar
+                            src={logoUrl}
+                            alt={`${restaurant.name} logo`}
+                            sx={{
+                                width: 80,
+                                height: 80,
+                                border: "3px solid white",
+                                position: "absolute",
+                                bottom: -40,
+                                left: 16
+                            }}
+                        />
+
+                    )}
+
+                </Box>
+
+                <CardContent sx={{ pt: 6 }}>
 
                     <Typography variant="h4">
 
@@ -197,6 +260,20 @@ function RestaurantDetailsPage() {
 
                     </Typography>
 
+                    {restaurant.menuPdfUrl && (
+
+                        <Button
+                            variant="outlined"
+                            href={getImageUrl(restaurant.menuPdfUrl)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            sx={{ mt: 2 }}
+                        >
+                            View Menu
+                        </Button>
+
+                    )}
+
                 </CardContent>
 
             </Card>
@@ -228,6 +305,57 @@ function RestaurantDetailsPage() {
                     />
 
                 ))
+
+            )}
+
+            <Divider sx={{ my: 4 }} />
+
+            <Typography
+                variant="h5"
+                sx={{ mb: 2 }}
+            >
+                Gallery
+            </Typography>
+
+            {galleryLoading ? (
+
+                <CircularProgress size={24} />
+
+            ) : galleryImages.length === 0 ? (
+
+                <Typography color="text.secondary">
+
+                    No gallery images available.
+
+                </Typography>
+
+            ) : (
+
+                <Grid container spacing={2}>
+
+                    {galleryImages.map(image => (
+
+                        <Grid
+                            key={image.id}
+                            size={{ xs: 12, sm: 6, md: 4 }}
+                        >
+
+                            <Card>
+
+                                <CardMedia
+                                    component="img"
+                                    height="180"
+                                    image={getImageUrl(image.imageUrl)}
+                                    alt={image.caption ?? restaurant.name}
+                                />
+
+                            </Card>
+
+                        </Grid>
+
+                    ))}
+
+                </Grid>
 
             )}
 

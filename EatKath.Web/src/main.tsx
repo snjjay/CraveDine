@@ -7,15 +7,18 @@ import App from "./App";
 import { theme } from "./theme/theme";
 
 import AuthProvider from "./features/auth/AuthProvider";
+import NotificationProvider from "./features/notifications/NotificationProvider";
 
 createRoot(document.getElementById("root")!).render( //Find <div id='root'> from index.html and put my React application inside it
     <StrictMode>
         <ThemeProvider theme={theme}>
             <CssBaseline />
 
-            <AuthProvider>
-                <App /> {/* Start App, but give it access to authentication information */}
-            </AuthProvider>
+            <NotificationProvider>
+                <AuthProvider>
+                    <App /> {/* Start App, but give it access to authentication information */}
+                </AuthProvider>
+            </NotificationProvider>
 
         </ThemeProvider>
     </StrictMode>

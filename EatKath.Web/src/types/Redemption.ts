@@ -4,7 +4,7 @@ export interface Redemption {
 
     dealTitle: string;
 
-    userName: string;
+    customerName: string;
 
     arrivalDate: string;
 
@@ -14,10 +14,14 @@ export interface Redemption {
 
     status: string;
 
-    billAmount?: number;
+    billAmount: number | null;
 
-    discountAmount?: number;
+    discountAmount: number | null;
 
-    finalAmount?: number;
+    finalAmount: number | null;
+
+    redeemedAt: string;
+
+    completedAt?: string;
 
 }

@@ -1,5 +1,6 @@
 ﻿using EatKath.API.DTOs.MenuCategory;
 using EatKath.API.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EatKath.API.Controllers
@@ -44,6 +45,7 @@ namespace EatKath.API.Controllers
         }
 
         // POST: api/MenuCategory
+        [Authorize(Roles = "Admin,Owner")]
         [HttpPost]
         public async Task<ActionResult<MenuCategoryDto>> Create(CreateMenuCategoryDto dto)
         {
@@ -56,6 +58,7 @@ namespace EatKath.API.Controllers
         }
 
         // PUT: api/MenuCategory/5
+        [Authorize(Roles = "Admin,Owner")]
         [HttpPut("{id}")]
         public async Task<ActionResult<MenuCategoryDto>> Update(int id, UpdateMenuCategoryDto dto)
         {
@@ -68,6 +71,7 @@ namespace EatKath.API.Controllers
         }
 
         // DELETE: api/MenuCategory/5
+        [Authorize(Roles = "Admin,Owner")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

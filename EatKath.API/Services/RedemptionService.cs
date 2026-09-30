@@ -4,7 +4,6 @@ using EatKath.API.DTOs.Redemption;
 using EatKath.API.Entities;
 using EatKath.API.Enums;
 using EatKath.API.Interfaces;
-using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 namespace EatKath.API.Services
@@ -14,84 +13,15 @@ namespace EatKath.API.Services
         private readonly ApplicationDbContext _context;
         private readonly ICurrentUserService _currentUser;
         private readonly IMapper _mapper;
-        private readonly IValidator<CreateRedemptionDto> _validator;
 
         public RedemptionService(
             ApplicationDbContext context,
             ICurrentUserService currentUser,
-            IMapper mapper,
-            IValidator<CreateRedemptionDto> validator)
+            IMapper mapper)
         {
             _context = context;
             _currentUser = currentUser;
             _mapper = mapper;
-            _validator = validator;
-        }
-
-        public async Task<RedemptionDto> RedeemAsync(CreateRedemptionDto dto)
-        {
-            var validation = await _validator.ValidateAsync(dto);
-
-            if (!validation.IsValid)
-                throw new ValidationException(validation.Errors);
-
-            var deal = await _context.Deals
-                .Include(d => d.Restaurant)
-                .FirstOrDefaultAsync(d => d.Id == dto.DealId);
-
-            if (deal == null)
-                throw new Exception("Offer not found.");
-
-            if (!deal.IsActive)
-                throw new Exception("Offer is inactive.");
-
-            if (dto.ArrivalDate < deal.StartDate ||
-                dto.ArrivalDate > deal.EndDate)
-                {
-                    throw new Exception("Offer is not available on the selected arrival date.");
-                }
-
-            // NEW: Validate arrival time is within the offer time
-            if (dto.ArrivalTime < deal.StartTime ||
-                dto.ArrivalTime > deal.EndTime)
-            {
-                throw new Exception("Arrival time must be within the offer time.");
-            }
-
-            if (!deal.Restaurant.IsActive)
-                throw new Exception("Restaurant is inactive.");
-
-            if (dto.GuestCount > deal.MaximumGuests)
-                throw new Exception($"Maximum {deal.MaximumGuests} guests allowed.");
-
-            var redemption = new Redemption
-            {
-                DealId = deal.Id,
-                UserId = _currentUser.UserId,
-                ArrivalDate = dto.ArrivalDate,
-                ArrivalTime = dto.ArrivalTime,
-                GuestCount = dto.GuestCount,
-
-                Status = RedemptionStatus.Redeemed,
-
-                RedeemedAt = DateTime.UtcNow,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
-
-            _context.Redemptions.Add(redemption);
-
-            await _context.SaveChangesAsync();
-
-            await _context.Entry(redemption)
-                .Reference(r => r.Deal)
-                .LoadAsync();
-
-            await _context.Entry(redemption)
-                .Reference(r => r.User)
-                .LoadAsync();
-
-            return _mapper.Map<RedemptionDto>(redemption);
         }
 
         public async Task<RedemptionDto> CompleteRedemptionAsync(
@@ -100,14 +30,49 @@ namespace EatKath.API.Services
         {
             var redemption = await _context.Redemptions
                 .Include(r => r.Deal)
+                    .ThenInclude(d => d.Restaurant)
                 .Include(r => r.User)
                 .FirstOrDefaultAsync(r => r.Id == redemptionId);
 
             if (redemption == null)
-                throw new Exception("Redemption not found.");
+                throw new NotFoundException("Redemption not found.");
 
             if (redemption.Status == RedemptionStatus.Completed)
-                throw new Exception("Redemption has already been completed.");
+                throw new BusinessRuleException("Redemption has already been completed.");
+
+            if (!_currentUser.IsAdmin &&
+                redemption.Deal.Restaurant.OwnerId != _currentUser.UserId)
+            {
+                throw new BusinessRuleException("You are not authorized to complete redemptions for this restaurant.");
+            }
+
+            // Every redemption created by the current flow
+            // (ReservationService.CreateAsync) carries the exact
+            // ReservationId link. Only pre-existing/legacy rows can have
+            // ReservationId == null (e.g. seed data); those have no
+            // reservation to validate against, so they are completed
+            // without any reservation-status check - guessing at a
+            // matching reservation by UserId/DealId/date/time is no
+            // longer done, since that match is inherently ambiguous and
+            // could silently touch an unrelated reservation.
+            Reservation? reservation = null;
+
+            if (redemption.ReservationId.HasValue)
+            {
+                reservation = await _context.Reservations
+                    .FirstOrDefaultAsync(r => r.Id == redemption.ReservationId.Value);
+
+                // Active MVP lifecycle: a reservation-linked redemption
+                // may only be completed while its reservation is still
+                // Pending (Pending -> Completed is the only active
+                // completion transition; Confirmed/Arrived/Rejected are
+                // not active workflow states, and NoShow/Cancelled/
+                // Completed are terminal).
+                if (reservation == null || reservation.Status != ReservationStatus.Pending)
+                {
+                    throw new BusinessRuleException("This redemption cannot be completed because the reservation is not pending.");
+                }
+            }
 
             redemption.BillAmount = dto.BillAmount;
 
@@ -120,13 +85,6 @@ namespace EatKath.API.Services
                 dto.BillAmount - redemption.DiscountAmount;
 
             redemption.Status = RedemptionStatus.Completed;
-
-            var reservation = await _context.Reservations
-    .FirstOrDefaultAsync(r =>
-        r.UserId == redemption.UserId &&
-        r.DealId == redemption.DealId &&
-        r.ReservationDate == redemption.ArrivalDate &&
-        r.ReservationTime == redemption.ArrivalTime);
 
             if (reservation != null)
             {
@@ -155,6 +113,16 @@ namespace EatKath.API.Services
 
         public async Task<IEnumerable<RedemptionDto>> GetRestaurantRedemptionsAsync(int restaurantId)
         {
+            var restaurant = await _context.Restaurants
+                .FirstOrDefaultAsync(x => x.Id == restaurantId);
+
+            if (restaurant != null &&
+                !_currentUser.IsAdmin &&
+                restaurant.OwnerId != _currentUser.UserId)
+            {
+                throw new BusinessRuleException("You are not authorized to view redemptions for this restaurant.");
+            }
+
             var items = await _context.Redemptions
                 .Include(r => r.Deal)
                 .Include(r => r.User)
@@ -169,10 +137,17 @@ namespace EatKath.API.Services
         {
             var redemption = await _context.Redemptions
                 .Include(r => r.Deal)
+                    .ThenInclude(d => d.Restaurant)
                 .Include(r => r.User)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             if (redemption == null)
+                return null;
+
+            var isOwnRedemption = redemption.UserId == _currentUser.UserId;
+            var isOwnRestaurant = redemption.Deal.Restaurant.OwnerId == _currentUser.UserId;
+
+            if (!_currentUser.IsAdmin && !isOwnRedemption && !isOwnRestaurant)
                 return null;
 
             return _mapper.Map<RedemptionDto>(redemption);

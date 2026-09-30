@@ -29,6 +29,10 @@ export interface Restaurant {
 
     logoUrl: string;
 
+    coverImageUrl?: string;
+
+    menuPdfUrl?: string;
+
     isActive: boolean;
 
     areaId: number;

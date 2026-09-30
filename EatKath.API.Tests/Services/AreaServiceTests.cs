@@ -147,6 +147,94 @@ public class AreaServiceTests
         _context.Areas.Count().Should().Be(0);
     }
 
+
+    // -----------------------------
+    // DeleteAsync
+    // -----------------------------
+
+    [TestMethod]
+    public async Task DeleteAsync_ShouldReturnFalse_WhenAreaDoesNotExist()
+    {
+        // -----------------------------
+        // Act
+        // -----------------------------
+
+        var result = await _service.DeleteAsync(9999);
+
+        // -----------------------------
+        // Assert
+        // -----------------------------
+
+        result.Should().BeFalse();
+    }
+
+    [TestMethod]
+    public async Task DeleteAsync_ShouldSucceed_WhenAreaHasNoRestaurants()
+    {
+        // -----------------------------
+        // Arrange
+        // -----------------------------
+
+        var area = new Area
+        {
+            Name = "Thamel"
+        };
+
+        _context.Areas.Add(area);
+        await _context.SaveChangesAsync();
+
+        // -----------------------------
+        // Act
+        // -----------------------------
+
+        var result = await _service.DeleteAsync(area.Id);
+
+        // -----------------------------
+        // Assert
+        // -----------------------------
+
+        result.Should().BeTrue();
+        _context.Areas.Count().Should().Be(0);
+    }
+
+    [TestMethod]
+    public async Task DeleteAsync_ShouldThrowBusinessRuleException_WhenAreaHasRestaurants()
+    {
+        // -----------------------------
+        // Arrange
+        // -----------------------------
+
+        var area = new Area
+        {
+            Name = "Thamel"
+        };
+
+        _context.Areas.Add(area);
+        await _context.SaveChangesAsync();
+
+        var restaurant = new Restaurant
+        {
+            Name = "Spice Kitchen",
+            OwnerId = 1,
+            AreaId = area.Id,
+            IsActive = true
+        };
+
+        _context.Restaurants.Add(restaurant);
+        await _context.SaveChangesAsync();
+
+        // -----------------------------
+        // Act & Assert
+        // -----------------------------
+
+        var ex = await Assert.ThrowsExceptionAsync<BusinessRuleException>(
+            () => _service.DeleteAsync(area.Id));
+
+        ex.Message.Should().Be("Cannot delete this area because it has restaurants assigned to it.");
+
+        _context.Areas.Count().Should().Be(1);
+    }
+
 }
 
 

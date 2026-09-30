@@ -1,7 +1,7 @@
 
 //AuthService = the worker that sends login requests to the backend.
 import api from "../api/axios";
-import type { LoginRequest, AuthResponse } from "../features/auth/types";
+import type { LoginRequest, RegisterRequest, AuthResponse } from "../features/auth/types";
 
 // ==========================================================
 // AUTHENTICATION SERVICE
@@ -40,6 +40,26 @@ class AuthService {
         );
 
         return response.data; //Take the data returned by the API and give it back to LoginPage.
+    }
+
+    // ------------------------------------------------------
+    // Register
+    //
+    // POST:
+    //      /api/auth/register
+    //
+    // Returns:
+    //      JWT Token
+    //      User Information
+    // ------------------------------------------------------
+    async register(request: RegisterRequest): Promise<AuthResponse> {
+
+        const response = await api.post<AuthResponse>(
+            "/auth/register",
+            request
+        );
+
+        return response.data;
     }
 }
 

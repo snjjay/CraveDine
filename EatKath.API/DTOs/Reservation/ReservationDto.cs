@@ -6,6 +6,10 @@
 
         public int DealId { get; set; }
 
+        public string DealTitle { get; set; } = string.Empty;
+
+        public string RestaurantName { get; set; } = string.Empty;
+
         public string CustomerName { get; set; } = string.Empty;
 
         public string PhoneNumber { get; set; } = string.Empty;

@@ -106,6 +106,8 @@ function RestaurantsPage() {
 
     const filteredRestaurants = restaurants.filter(r => {
 
+        const isActive = r.isActive;
+
         const keyword = search.trim().toLowerCase();
 
         const matchesSearch =
@@ -136,7 +138,8 @@ function RestaurantsPage() {
 
             r.diningTypes.includes(selectedDiningType);
 
-        return matchesSearch &&
+        return isActive &&
+            matchesSearch &&
             matchesArea &&
             matchesCuisine &&
             matchesDiningType;

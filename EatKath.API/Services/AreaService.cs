@@ -132,6 +132,14 @@ public class AreaService : IAreaService //AreaService is the actual class that p
             return false;
         }
 
+        var hasRestaurants = await _context.Restaurants.AnyAsync(r => r.AreaId == id);
+
+        if (hasRestaurants)
+        {
+            throw new BusinessRuleException(
+                "Cannot delete this area because it has restaurants assigned to it.");
+        }
+
         _context.Areas.Remove(area);
 
         await _context.SaveChangesAsync();

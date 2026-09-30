@@ -31,9 +31,17 @@ namespace EatKath.API.Entities
 
         public DateTime? CompletedAt { get; set; }
 
+        // Set whenever this Redemption was auto-created from a
+        // Reservation (ReservationService.CreateAsync), which is the
+        // only current creation path. Null only for pre-existing/legacy
+        // rows that predate this link (e.g. seed data).
+        public int? ReservationId { get; set; }
+
         // Navigation Properties
         public Deal Deal { get; set; } = null!;
 
         public User User { get; set; } = null!;
+
+        public Reservation? Reservation { get; set; }
     }
 }

@@ -5,6 +5,17 @@ import type { CompleteRedemption } from "../types/CompleteRedemption";
 
 class RedemptionService {
 
+    async getMyHistory(): Promise<Redemption[]> {
+
+        const response =
+            await api.get<Redemption[]>(
+                "/Redemption/my-history"
+            );
+
+        return response.data;
+
+    }
+
     async getRestaurantRedemptions(
         restaurantId: number
     ): Promise<Redemption[]> {

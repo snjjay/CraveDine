@@ -263,6 +263,9 @@ namespace EatKath.API.Migrations
                     b.Property<DateTime>("RedeemedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("ReservationId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -275,6 +278,8 @@ namespace EatKath.API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DealId");
+
+                    b.HasIndex("ReservationId");
 
                     b.HasIndex("UserId");
 
@@ -335,7 +340,9 @@ namespace EatKath.API.Migrations
 
                     b.HasIndex("DealId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "DealId", "ReservationDate", "ReservationTime")
+                        .IsUnique()
+                        .HasFilter("[Status] <> N'Cancelled' AND [Status] <> N'Rejected' AND [Status] <> N'NoShow'");
 
                     b.ToTable("Reservations");
                 });
@@ -634,6 +641,11 @@ namespace EatKath.API.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("EatKath.API.Entities.Reservation", "Reservation")
+                        .WithMany()
+                        .HasForeignKey("ReservationId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("EatKath.API.Entities.User", "User")
                         .WithMany("Redemptions")
                         .HasForeignKey("UserId")
@@ -641,6 +653,8 @@ namespace EatKath.API.Migrations
                         .IsRequired();
 
                     b.Navigation("Deal");
+
+                    b.Navigation("Reservation");
 
                     b.Navigation("User");
                 });

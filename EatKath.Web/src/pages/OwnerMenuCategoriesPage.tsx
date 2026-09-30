@@ -13,11 +13,14 @@ import {
 
 import OwnerRestaurantService from "../services/OwnerRestaurantService";
 import MenuCategoryService from "../services/MenuCategoryService";
+import { useNotification } from "../features/notifications/NotificationContext";
 
 import type { Restaurant } from "../types/Restaurant";
 import type { MenuCategory } from "../types/MenuCategory";
 
 function OwnerMenuCategoriesPage() {
+
+    const { notify } = useNotification();
 
     const [searchParams] = useSearchParams();
 
@@ -151,22 +154,12 @@ function OwnerMenuCategoriesPage() {
 
             console.error(error);
 
-            if (error.response) {
-
-                alert(
-                    JSON.stringify(
-                        error.response.data,
-                        null,
-                        2
-                    )
-                );
-
-            }
-            else {
-
-                alert(error.message);
-
-            }
+            notify(
+                error.response?.data?.Message ??
+                error.message ??
+                "Something went wrong. Please try again.",
+                "error"
+            );
 
         }
 
@@ -188,22 +181,12 @@ function OwnerMenuCategoriesPage() {
 
             console.error(error);
 
-            if (error.response) {
-
-                alert(
-                    JSON.stringify(
-                        error.response.data,
-                        null,
-                        2
-                    )
-                );
-
-            }
-            else {
-
-                alert(error.message);
-
-            }
+            notify(
+                error.response?.data?.Message ??
+                error.message ??
+                "Something went wrong. Please try again.",
+                "error"
+            );
 
         }
 

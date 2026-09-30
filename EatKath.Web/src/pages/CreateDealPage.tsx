@@ -15,10 +15,13 @@ import {
 } from "@mui/material";
 
 import OwnerDealService from "../services/OwnerDealService";
+import { useNotification } from "../features/notifications/NotificationContext";
 
 import type { DealForm } from "../types/DealForm";
 
 function CreateDealPage() {
+
+    const { notify } = useNotification();
 
     const navigate = useNavigate();
 
@@ -58,7 +61,7 @@ function CreateDealPage() {
 
         if (!restaurantId) {
 
-            alert("Restaurant not selected.");
+            notify("Restaurant not selected.", "warning");
 
             return;
         }
@@ -87,7 +90,7 @@ function CreateDealPage() {
 
             await OwnerDealService.create(request);
 
-            alert("Deal created successfully.");
+            notify("Deal created successfully.", "success");
 
             navigate(
                 `/owner/deals?restaurantId=${restaurantId}`
@@ -98,24 +101,12 @@ function CreateDealPage() {
 
             console.error(error);
 
-            if (error.response) {
-
-                console.log(error.response.data);
-
-                alert(
-                    JSON.stringify(
-                        error.response.data,
-                        null,
-                        2
-                    )
-                );
-
-            }
-            else {
-
-                alert(error.message);
-
-            }
+            notify(
+                error.response?.data?.Message ??
+                error.message ??
+                "Something went wrong. Please try again.",
+                "error"
+            );
 
         }
 

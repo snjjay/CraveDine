@@ -63,13 +63,39 @@ function DealCard({ deal }: Props) {
                         Valid: {deal.startDate} - {deal.endDate}
                     </Typography>
 
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => setOpen(true)}
-                    >
-                        Reserve
-                    </Button>
+                    {deal.isActive ? (
+
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => setOpen(true)}
+                        >
+                            Reserve
+                        </Button>
+
+                    ) : (
+
+                        <Stack
+                            direction="row"
+                            spacing={2}
+                            alignItems="center"
+                        >
+
+                            <Chip
+                                label="Unavailable"
+                                color="default"
+                            />
+
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                            >
+                                This deal is currently unavailable for reservations.
+                            </Typography>
+
+                        </Stack>
+
+                    )}
 
                 </CardContent>
 
@@ -78,7 +104,7 @@ function DealCard({ deal }: Props) {
             <ReservationDialog
                 open={open}
                 onClose={() => setOpen(false)}
-                dealId={deal.id}
+                deal={deal}
             />
         </>
     );

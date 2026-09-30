@@ -26,6 +26,8 @@ namespace EatKath.API.Interfaces
 
         Task<bool> CancelReservationAsync(int id);
 
+        Task<bool> CancelMyReservationAsync(int reservationId, int userId);
+
         Task<bool> DeleteAsync(int id);
     }
 }

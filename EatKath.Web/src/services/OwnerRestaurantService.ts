@@ -8,7 +8,7 @@ class OwnerRestaurantService {
     async getMyRestaurant(): Promise<Restaurant> {
 
         const response =
-            await api.get<Restaurant>("/restaurant/my");
+            await api.get<Restaurant>("/restaurants/my");
 
         return response.data;
 
@@ -21,7 +21,7 @@ class OwnerRestaurantService {
 
         const response =
             await api.put<Restaurant>(
-                `/restaurant/${id}`,
+                `/restaurants/${id}`,
                 restaurant
             );
 
@@ -39,7 +39,7 @@ class OwnerRestaurantService {
         formData.append("file", file);
 
         await api.post(
-            `/restaurant/${id}/logo`,
+            `/restaurants/${id}/logo`,
             formData,
             {
                 headers: {
@@ -60,7 +60,7 @@ class OwnerRestaurantService {
         formData.append("file", file);
 
         await api.post(
-            `/restaurant/${id}/cover`,
+            `/restaurants/${id}/cover`,
             formData,
             {
                 headers: {
@@ -81,7 +81,7 @@ class OwnerRestaurantService {
         formData.append("file", file);
 
         await api.post(
-            `/restaurant/${id}/menu-pdf`,
+            `/restaurants/${id}/menu-pdf`,
             formData,
             {
                 headers: {

@@ -184,14 +184,11 @@ var app = builder.Build();
 //Each middleware gets a chance to do something.
 // ==========================================================
 
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
-
-app.UseSwagger();
-app.UseSwaggerUI();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 // Always redirect HTTP -> HTTPS
 app.UseHttpsRedirection(); //Use HTTPS, not insecure HTTP.

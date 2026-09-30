@@ -14,15 +14,18 @@ namespace EatKath.API.Services
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ICurrentUserService _currentUser;
 
         public DealService(
             ApplicationDbContext context,
             IMapper mapper,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            ICurrentUserService currentUser)
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
+            _currentUser = currentUser;
         }
 
         public async Task<IEnumerable<DealDto>> GetAllAsync()
@@ -53,7 +56,13 @@ namespace EatKath.API.Services
                 .FirstOrDefaultAsync(r => r.Id == dto.RestaurantId);
 
             if (restaurant == null)
-                throw new Exception("Restaurant not found.");
+                throw new NotFoundException("Restaurant not found.");
+
+            if (!_currentUser.IsAdmin &&
+                restaurant.OwnerId != _currentUser.UserId)
+            {
+                throw new BusinessRuleException("You are not authorized to add deals to this restaurant.");
+            }
 
             var deal = _mapper.Map<Deal>(dto);
 
@@ -80,7 +89,13 @@ namespace EatKath.API.Services
                 .FirstOrDefaultAsync(d => d.Id == id);
 
             if (deal == null)
-                throw new Exception("Deal not found.");
+                throw new NotFoundException("Deal not found.");
+
+            if (!_currentUser.IsAdmin &&
+                deal.Restaurant.OwnerId != _currentUser.UserId)
+            {
+                throw new BusinessRuleException("You are not authorized to modify this deal.");
+            }
 
             _mapper.Map(dto, deal);
 
@@ -94,10 +109,17 @@ namespace EatKath.API.Services
         public async Task<bool> DeleteAsync(int id)
         {
             var deal = await _context.Deals
+                .Include(d => d.Restaurant)
                 .FirstOrDefaultAsync(d => d.Id == id);
 
             if (deal == null)
                 return false;
+
+            if (!_currentUser.IsAdmin &&
+                deal.Restaurant.OwnerId != _currentUser.UserId)
+            {
+                throw new BusinessRuleException("You are not authorized to delete this deal.");
+            }
 
             deal.IsActive = false;
             deal.UpdatedAt = DateTime.UtcNow;

@@ -66,6 +66,16 @@ async getMyReservations(): Promise<Reservation[]> {
 
         await api.delete(`/reservation/${id}`);
     }
+
+    // ----------------------------------------
+    // Customer Cancels Own Reservation
+    // PUT /api/reservation/{id}/cancel-mine
+    // ----------------------------------------
+
+    async cancelMine(id: number): Promise<void> {
+
+        await api.put(`/reservation/${id}/cancel-mine`);
+    }
 }
 
 export default new ReservationService();

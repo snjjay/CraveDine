@@ -4,8 +4,6 @@ namespace EatKath.API.Interfaces
 {
     public interface IRedemptionService
     {
-        Task<RedemptionDto> RedeemAsync(CreateRedemptionDto dto);
-
         Task<RedemptionDto> CompleteRedemptionAsync(
             int redemptionId,
             CompleteRedemptionDto dto);

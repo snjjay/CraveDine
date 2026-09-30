@@ -14,17 +14,20 @@ namespace EatKath.API.Services
         private readonly IMapper _mapper;
         private readonly IValidator<CreateRestaurantOpeningHourDto> _createValidator;
         private readonly IValidator<UpdateRestaurantOpeningHourDto> _updateValidator;
+        private readonly ICurrentUserService _currentUser;
 
         public RestaurantOpeningHourService(
             ApplicationDbContext context,
             IMapper mapper,
             IValidator<CreateRestaurantOpeningHourDto> createValidator,
-            IValidator<UpdateRestaurantOpeningHourDto> updateValidator)
+            IValidator<UpdateRestaurantOpeningHourDto> updateValidator,
+            ICurrentUserService currentUser)
         {
             _context = context;
             _mapper = mapper;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
+            _currentUser = currentUser;
         }
 
         public async Task<IEnumerable<RestaurantOpeningHourDto>> GetAllAsync()
@@ -63,11 +66,17 @@ namespace EatKath.API.Services
             if (!validation.IsValid)
                 throw new ValidationException(validation.Errors);
 
-            var restaurantExists = await _context.Restaurants
-                .AnyAsync(x => x.Id == dto.RestaurantId);
+            var restaurant = await _context.Restaurants
+                .FirstOrDefaultAsync(x => x.Id == dto.RestaurantId);
 
-            if (!restaurantExists)
-                throw new Exception("Restaurant not found.");
+            if (restaurant == null)
+                throw new NotFoundException("Restaurant not found.");
+
+            if (!_currentUser.IsAdmin &&
+                restaurant.OwnerId != _currentUser.UserId)
+            {
+                throw new BusinessRuleException("You are not authorized to add opening hours for this restaurant.");
+            }
 
             var entity = _mapper.Map<RestaurantOpeningHour>(dto);
 
@@ -85,10 +94,18 @@ namespace EatKath.API.Services
             if (!validation.IsValid)
                 throw new ValidationException(validation.Errors);
 
-            var entity = await _context.RestaurantOpeningHours.FindAsync(id);
+            var entity = await _context.RestaurantOpeningHours
+                .Include(x => x.Restaurant)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (entity == null)
                 return null;
+
+            if (!_currentUser.IsAdmin &&
+                entity.Restaurant.OwnerId != _currentUser.UserId)
+            {
+                throw new BusinessRuleException("You are not authorized to modify this restaurant's opening hours.");
+            }
 
             _mapper.Map(dto, entity);
 
@@ -99,10 +116,18 @@ namespace EatKath.API.Services
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var entity = await _context.RestaurantOpeningHours.FindAsync(id);
+            var entity = await _context.RestaurantOpeningHours
+                .Include(x => x.Restaurant)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (entity == null)
                 return false;
+
+            if (!_currentUser.IsAdmin &&
+                entity.Restaurant.OwnerId != _currentUser.UserId)
+            {
+                throw new BusinessRuleException("You are not authorized to delete this restaurant's opening hours.");
+            }
 
             _context.RestaurantOpeningHours.Remove(entity);
 

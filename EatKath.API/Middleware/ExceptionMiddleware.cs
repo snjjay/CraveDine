@@ -89,6 +89,16 @@ public class ExceptionMiddleware
                     message = ex.Message;
                     break;
 
+                case NotFoundException:
+                    statusCode = HttpStatusCode.NotFound;
+                    message = ex.Message;
+                    break;
+
+                case AuthenticationException:
+                    statusCode = HttpStatusCode.Unauthorized;
+                    message = ex.Message;
+                    break;
+
             }
 
             context.Response.StatusCode = (int)statusCode;

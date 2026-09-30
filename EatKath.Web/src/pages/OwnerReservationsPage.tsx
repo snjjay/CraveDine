@@ -17,11 +17,14 @@ import {
 
 import OwnerRestaurantService from "../services/OwnerRestaurantService";
 import RedemptionService from "../services/RedemptionService";
+import { useNotification } from "../features/notifications/NotificationContext";
 
 import type { Restaurant } from "../types/Restaurant";
 import type { Redemption } from "../types/Redemption";
 
 function OwnerReservationsPage() {
+
+   const { notify } = useNotification();
 
    const [, setRestaurant] =
     useState<Restaurant | null>(null);
@@ -97,22 +100,12 @@ async function completeRedemption() {
 
         console.error(error);
 
-        if (error.response) {
-
-            alert(
-                JSON.stringify(
-                    error.response.data,
-                    null,
-                    2
-                )
-            );
-
-        }
-        else {
-
-            alert(error.message);
-
-        }
+        notify(
+            error.response?.data?.Message ??
+            error.message ??
+            "Something went wrong. Please try again.",
+            "error"
+        );
 
     }
 
@@ -160,13 +153,13 @@ async function completeRedemption() {
 
                             <Typography variant="h6">
 
-                                Reservation #{r.id}
+                                Redemption #{r.id}
 
                             </Typography>
 
                             <Typography>
 
-                                Customer: {r.userName}
+                                Customer: {r.customerName}
 
                             </Typography>
 

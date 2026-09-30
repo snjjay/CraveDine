@@ -2,6 +2,7 @@
 using EatKath.API.Data;
 using EatKath.API.DTOs.UserFavorite;
 using EatKath.API.Entities;
+using EatKath.API.Exceptions;
 using EatKath.API.Interfaces;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -56,7 +57,7 @@ namespace EatKath.API.Services
                 x.RestaurantId == dto.RestaurantId);
 
             if (exists)
-                throw new Exception("Restaurant already added to favourites.");
+                throw new DuplicateEntityException("Restaurant already added to favourites.");
 
             _context.UserFavorites.Add(new UserFavorite
             {
