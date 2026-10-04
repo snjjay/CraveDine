@@ -78,8 +78,9 @@ function MainLayout() {
     const isDesktop = useMediaQuery(useTheme().breakpoints.up("md"));
     const accountMenuOpen = Boolean(accountAnchor) && isDesktop;
 
-    // Account identity: the full name (header label and menu) and
-    // initials from the signed-in user's first name and surname.
+    // Account identity: the full name (account menu and the button's
+    // aria-label) and avatar initials from the signed-in user's first
+    // name and surname.
     const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(" ");
     const initials = [user?.firstName, user?.lastName]
         .map(name => name?.trim().charAt(0) ?? "")
@@ -268,22 +269,14 @@ function MainLayout() {
                                         }
                                     }}
                                 >
+                                    {/* Avatar + arrow only; the name and email are in
+                                        the menu (and in the button's aria-label). */}
                                     <Avatar
                                         aria-hidden
-                                        sx={{ width: 30, height: 30, mr: 1, bgcolor: "primary.main", fontSize: "0.8125rem", fontWeight: 700 }}
+                                        sx={{ width: 30, height: 30, bgcolor: "primary.main", fontSize: "0.8125rem", fontWeight: 700 }}
                                     >
                                         {initials || <PersonOutlineIcon fontSize="small" />}
                                     </Avatar>
-                                    {/* One name label: the same full name the menu shows. */}
-                                    <Box
-                                        component="span"
-                                        title={fullName}
-                                        // Narrower cap on small desktops so long names
-                                        // can't push the header past the screen edge.
-                                        sx={{ maxWidth: { md: 110, lg: 180 }, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
-                                    >
-                                        {fullName}
-                                    </Box>
                                 </Button>
                             ) : user ? (
                                 <>
