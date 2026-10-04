@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using EatKath.API.Constants;
 using EatKath.API.Data;
 using EatKath.API.DTOs.Restaurant;
+using EatKath.API.DTOs.RestaurantOpeningHour;
 using EatKath.API.Entities;
 using EatKath.API.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -58,6 +60,7 @@ namespace EatKath.API.Services
                 Email = r.Email,
                 Website = r.Website,
                 LogoUrl = r.LogoUrl,
+                CurrencyCode = r.CurrencyCode,
                 CoverImageUrl = r.CoverImageUrl,
                 MenuPdfUrl = r.MenuPdfUrl,
                 IsActive = r.IsActive,
@@ -91,6 +94,7 @@ namespace EatKath.API.Services
                 .ThenInclude(rc => rc.Cuisine)
             .Include(r => r.RestaurantDiningTypes)
                 .ThenInclude(rd => rd.DiningType)
+            .Include(r => r.OpeningHours)
                             .FirstOrDefaultAsync(r => r.Id == id);
 
             if (restaurant == null)
@@ -106,6 +110,7 @@ namespace EatKath.API.Services
                 Email = restaurant.Email,
                 Website = restaurant.Website,
                 LogoUrl = restaurant.LogoUrl,
+                CurrencyCode = restaurant.CurrencyCode,
                 CoverImageUrl = restaurant.CoverImageUrl,
                 MenuPdfUrl = restaurant.MenuPdfUrl,
                 IsActive = restaurant.IsActive,
@@ -126,7 +131,23 @@ namespace EatKath.API.Services
 
                 DiningTypes = restaurant.RestaurantDiningTypes
         .Select(x => x.DiningType.Name)
-        .ToList()
+        .ToList(),
+
+                // Scoped to this exact restaurant only (loaded via
+                // Include against the single entity matched above) -
+                // no other restaurant's data can leak through here.
+                OpeningHours = restaurant.OpeningHours
+                    .OrderBy(h => h.DayOfWeek)
+                    .Select(h => new RestaurantOpeningHourDto
+                    {
+                        Id = h.Id,
+                        RestaurantId = h.RestaurantId,
+                        DayOfWeek = h.DayOfWeek,
+                        OpenTime = h.OpenTime,
+                        CloseTime = h.CloseTime,
+                        IsClosed = h.IsClosed
+                    })
+                    .ToList()
             };
         }
 
@@ -152,6 +173,7 @@ namespace EatKath.API.Services
                 Email = restaurant.Email,
                 Website = restaurant.Website,
                 LogoUrl = restaurant.LogoUrl,
+                CurrencyCode = restaurant.CurrencyCode,
                 CoverImageUrl = restaurant.CoverImageUrl,
                 MenuPdfUrl = restaurant.MenuPdfUrl,
                 IsActive = restaurant.IsActive,
@@ -180,6 +202,11 @@ namespace EatKath.API.Services
 
         public async Task<RestaurantDto> CreateAsync(CreateRestaurantDto dto)
         {
+            if (!SupportedCurrencies.Codes.Contains(dto.CurrencyCode))
+            {
+                throw new BusinessRuleException($"'{dto.CurrencyCode}' is not a supported currency.");
+            }
+
             var restaurant = _mapper.Map<Restaurant>(dto);
 
             if (!_currentUser.IsAdmin)
@@ -189,6 +216,16 @@ namespace EatKath.API.Services
 
             _context.Restaurants.Add(restaurant);
 
+            // Every new restaurant gets a default Monday-Sunday opening
+            // hours schedule, so the Owner Opening Hours page always has
+            // rows to display/edit instead of an empty table. Linked via
+            // the Restaurant navigation property (not RestaurantId
+            // directly) so EF Core resolves the new restaurant's
+            // identity value as part of this same SaveChangesAsync()
+            // call - both inserts commit together.
+            _context.RestaurantOpeningHours.AddRange(
+                BuildDefaultOpeningHours(restaurant));
+
             await _context.SaveChangesAsync();
 
             await _context.Entry(restaurant)
@@ -196,6 +233,55 @@ namespace EatKath.API.Services
                 .LoadAsync();
 
             return _mapper.Map<RestaurantDto>(restaurant);
+        }
+
+        // -----------------------------
+        // Mirrors the generic (non-bakery/non-cafe) default schedule
+        // from RestaurantOpeningHourSeeder.cs: Mon-Thu 10:00-21:00,
+        // Fri-Sat 10:00-22:00, Sun 11:00-20:00, never closed. The
+        // seeder's bakery/cafe name-based overrides are demo-data
+        // flourishes, not a convention a brand-new restaurant's name
+        // can reliably be matched against, so only the generic default
+        // is reused here.
+        // -----------------------------
+        private static List<RestaurantOpeningHour> BuildDefaultOpeningHours(Restaurant restaurant)
+        {
+            var openingHours = new List<RestaurantOpeningHour>();
+
+            for (int day = 0; day < 7; day++)
+            {
+                var dayOfWeek = (DayOfWeek)day;
+
+                var openingHour = new RestaurantOpeningHour
+                {
+                    Restaurant = restaurant,
+                    DayOfWeek = dayOfWeek,
+                    IsClosed = false
+                };
+
+                switch (dayOfWeek)
+                {
+                    case DayOfWeek.Friday:
+                    case DayOfWeek.Saturday:
+                        openingHour.OpenTime = new TimeOnly(10, 0);
+                        openingHour.CloseTime = new TimeOnly(22, 0);
+                        break;
+
+                    case DayOfWeek.Sunday:
+                        openingHour.OpenTime = new TimeOnly(11, 0);
+                        openingHour.CloseTime = new TimeOnly(20, 0);
+                        break;
+
+                    default:
+                        openingHour.OpenTime = new TimeOnly(10, 0);
+                        openingHour.CloseTime = new TimeOnly(21, 0);
+                        break;
+                }
+
+                openingHours.Add(openingHour);
+            }
+
+            return openingHours;
         }
 
         public async Task<RestaurantDto?> UpdateAsync(int id, UpdateRestaurantDto dto)
@@ -213,6 +299,31 @@ namespace EatKath.API.Services
                 return null;
 
             EnsureOwnership(restaurant, "update");
+
+            if (!SupportedCurrencies.Codes.Contains(dto.CurrencyCode))
+            {
+                throw new BusinessRuleException($"'{dto.CurrencyCode}' is not a supported currency.");
+            }
+
+            // Changing currency after real money has been recorded
+            // against this restaurant would silently relabel those
+            // historical amounts under a different currency. A
+            // completed Redemption (BillAmount set) is the only place
+            // a real monetary amount is ever recorded, so that is the
+            // narrowest accurate signal that "transactions exist" -
+            // Pending/Cancelled redemptions and reservations carry no
+            // monetary amount and are not blocked.
+            if (!string.Equals(restaurant.CurrencyCode, dto.CurrencyCode, StringComparison.OrdinalIgnoreCase))
+            {
+                var hasMonetaryTransactions = await _context.Redemptions
+                    .AnyAsync(r => r.Deal.RestaurantId == id && r.BillAmount != null);
+
+                if (hasMonetaryTransactions)
+                {
+                    throw new BusinessRuleException(
+                        "Cannot change currency because this restaurant already has completed transactions with recorded monetary amounts.");
+                }
+            }
 
             _mapper.Map(dto, restaurant);
 
@@ -232,6 +343,7 @@ namespace EatKath.API.Services
                 Email = restaurant.Email,
                 Website = restaurant.Website,
                 LogoUrl = restaurant.LogoUrl,
+                CurrencyCode = restaurant.CurrencyCode,
                 CoverImageUrl = restaurant.CoverImageUrl,
                 MenuPdfUrl = restaurant.MenuPdfUrl,
                 IsActive = restaurant.IsActive,

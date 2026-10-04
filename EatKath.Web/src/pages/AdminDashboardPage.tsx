@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
+    Button,
     Card,
     CardContent,
     CircularProgress,
     Grid,
+    Stack,
     Typography
 } from "@mui/material";
 
@@ -53,6 +56,8 @@ function StatCard({ label, value }: StatCardProps) {
 }
 
 function AdminDashboardPage() {
+
+    const navigate = useNavigate();
 
     const { notify } = useNotification();
 
@@ -140,12 +145,28 @@ function AdminDashboardPage() {
 
         <>
 
-            <Typography
-                variant="h4"
-                sx={{ mb: 3 }}
+            <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 3
+                }}
             >
-                Admin Dashboard
-            </Typography>
+
+                <Typography variant="h4">
+                    Admin Dashboard
+                </Typography>
+
+                <Button
+                    variant="contained"
+                    onClick={() => navigate("/admin/users")}
+                >
+                    Manage Users
+                </Button>
+
+            </Stack>
 
             <Grid
                 container

@@ -17,6 +17,31 @@ namespace EatKath.API.Controllers
             _service = service;
         }
 
+        // Customer claims a walk-in offer. No Reservation is created.
+        [Authorize(Roles = "Customer")]
+        [HttpPost]
+        public async Task<IActionResult> Redeem(
+            [FromBody] CreateRedemptionDto dto)
+        {
+            var result = await _service.RedeemAsync(dto);
+
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Customer")]
+        [HttpPut("{id}/cancel-mine")]
+        public async Task<IActionResult> CancelMine(int id)
+        {
+            return Ok(await _service.CancelMyRedemptionAsync(id));
+        }
+
+        [Authorize(Roles = "Owner,Admin")]
+        [HttpPut("{id}/cancel")]
+        public async Task<IActionResult> Cancel(int id)
+        {
+            return Ok(await _service.CancelRedemptionAsync(id));
+        }
+
         [HttpGet("my-history")]
         public async Task<IActionResult> GetMyHistory()
         {

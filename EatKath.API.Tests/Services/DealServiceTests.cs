@@ -38,11 +38,13 @@ public class DealServiceTests
         _currentUser.Setup(x => x.UserId).Returns(1);
         _currentUser.Setup(x => x.IsAdmin).Returns(true);
 
+        // "Now" for availability tests: 10 Nov 2026, 10:00.
         _service = new DealService(
             _context,
             _mapper,
             _httpContextAccessor.Object,
-            _currentUser.Object);
+            _currentUser.Object,
+            new FixedTimeProvider(new DateTime(2026, 11, 10, 10, 0, 0)));
     }
 
 
@@ -546,5 +548,142 @@ public class DealServiceTests
 
         result.Should().BeTrue();
         _context.Deals.First().IsActive.Should().BeFalse();
+    }
+
+    // =========================================================
+    // GetByRestaurantAsync - walk-in offer availability
+    // (clock fixed at 10 Nov 2026)
+    // =========================================================
+
+    private async Task<Deal> SeedAvailabilityDealAsync(
+        DateOnly startDate,
+        DateOnly endDate,
+        int reservationLimit,
+        int dailyRedemptionLimit)
+    {
+        var restaurant = new Restaurant { Name = "Momo House", IsActive = true };
+
+        _context.Restaurants.Add(restaurant);
+        await _context.SaveChangesAsync();
+
+        var deal = new Deal
+        {
+            RestaurantId = restaurant.Id,
+            Title = "25% Off - Dine In",
+            DiscountPercentage = 25,
+            StartDate = startDate,
+            EndDate = endDate,
+            StartTime = new TimeOnly(12, 0),
+            EndTime = new TimeOnly(14, 0),
+            MaximumGuests = 4,
+            ReservationLimit = reservationLimit,
+            DailyRedemptionLimit = dailyRedemptionLimit,
+            IsActive = true
+        };
+
+        _context.Deals.Add(deal);
+        await _context.SaveChangesAsync();
+
+        return deal;
+    }
+
+    private async Task SeedClaimAsync(Deal deal, DateOnly date, RedemptionStatus status)
+    {
+        _context.Redemptions.Add(new Redemption
+        {
+            DealId = deal.Id,
+            UserId = 1,
+            ArrivalDate = date,
+            ArrivalTime = new TimeOnly(12, 0),
+            GuestCount = 2,
+            Status = status
+        });
+
+        await _context.SaveChangesAsync();
+    }
+
+    [TestMethod]
+    public async Task GetByRestaurantAsync_ShouldReturnLowerOfTotalAndDailyRemaining_ForToday()
+    {
+        // Total 10 with 3 active claims -> 7; daily 3 with 2 active
+        // claims today -> 1. Cancelled claims do not count.
+        var today = new DateOnly(2026, 11, 10);
+        var deal = await SeedAvailabilityDealAsync(
+            new DateOnly(2026, 11, 1), new DateOnly(2026, 11, 30), 10, 3);
+
+        await SeedClaimAsync(deal, today, RedemptionStatus.Redeemed);
+        await SeedClaimAsync(deal, today, RedemptionStatus.Completed);
+        await SeedClaimAsync(deal, today, RedemptionStatus.Cancelled);
+        await SeedClaimAsync(deal, today.AddDays(1), RedemptionStatus.Redeemed);
+
+        var result = (await _service.GetByRestaurantAsync(deal.RestaurantId)).Single();
+
+        result.AvailabilityDate.Should().Be(today);
+        result.RemainingOffers.Should().Be(1);
+        result.IsSoldOut.Should().BeFalse();
+    }
+
+    [TestMethod]
+    public async Task GetByRestaurantAsync_ShouldBeSoldOut_OnlyWhenTotalLimitIsUsedUp()
+    {
+        var today = new DateOnly(2026, 11, 10);
+
+        // Daily limit used up today, total still available -> not sold out.
+        var dailyFull = await SeedAvailabilityDealAsync(
+            new DateOnly(2026, 11, 1), new DateOnly(2026, 11, 30), 5, 1);
+        await SeedClaimAsync(dailyFull, today, RedemptionStatus.Redeemed);
+
+        var dailyResult = (await _service.GetByRestaurantAsync(dailyFull.RestaurantId)).Single();
+
+        dailyResult.RemainingOffers.Should().Be(0);
+        dailyResult.IsSoldOut.Should().BeFalse();
+
+        // Total limit used up -> sold out.
+        var totalFull = await SeedAvailabilityDealAsync(
+            new DateOnly(2026, 11, 1), new DateOnly(2026, 11, 30), 1, 0);
+        await SeedClaimAsync(totalFull, today.AddDays(2), RedemptionStatus.Completed);
+
+        var totalResult = (await _service.GetByRestaurantAsync(totalFull.RestaurantId)).Single();
+
+        totalResult.RemainingOffers.Should().Be(0);
+        totalResult.IsSoldOut.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public async Task GetByRestaurantAsync_ShouldReturnNullRemaining_WhenUnlimited()
+    {
+        var deal = await SeedAvailabilityDealAsync(
+            new DateOnly(2026, 11, 1), new DateOnly(2026, 11, 30), 0, 0);
+
+        var result = (await _service.GetByRestaurantAsync(deal.RestaurantId)).Single();
+
+        result.RemainingOffers.Should().BeNull();
+        result.AvailabilityDate.Should().Be(new DateOnly(2026, 11, 10));
+    }
+
+    [TestMethod]
+    public async Task GetByRestaurantAsync_ShouldUseStartDate_WhenDealHasNotStarted()
+    {
+        var startDate = new DateOnly(2026, 11, 20);
+        var deal = await SeedAvailabilityDealAsync(startDate, new DateOnly(2026, 11, 30), 0, 5);
+
+        await SeedClaimAsync(deal, startDate, RedemptionStatus.Redeemed);
+
+        var result = (await _service.GetByRestaurantAsync(deal.RestaurantId)).Single();
+
+        result.AvailabilityDate.Should().Be(startDate);
+        result.RemainingOffers.Should().Be(4);
+    }
+
+    [TestMethod]
+    public async Task GetByRestaurantAsync_ShouldReturnZeroRemaining_WhenDealHasEnded()
+    {
+        var deal = await SeedAvailabilityDealAsync(
+            new DateOnly(2026, 10, 1), new DateOnly(2026, 10, 31), 0, 0);
+
+        var result = (await _service.GetByRestaurantAsync(deal.RestaurantId)).Single();
+
+        result.RemainingOffers.Should().Be(0);
+        result.AvailabilityDate.Should().BeNull();
     }
 }

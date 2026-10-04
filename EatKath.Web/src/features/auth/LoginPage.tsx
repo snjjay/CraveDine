@@ -2,9 +2,12 @@
 //the user/token → gives them to AuthProvider → user is now logged in.
 
 
-import { useContext } from "react";
+import { useContext, useState } from "react";
+
+import axios from "axios";
 
 import {
+    Alert,
     Button,
     Container,
     Paper,
@@ -19,6 +22,35 @@ import AuthService from "../../services/AuthService";
 import AuthContext from "./AuthContext";
 import type { LoginRequest } from "./types";
 import { useNavigate } from "react-router-dom";
+
+// Turns a failed login request into a safe, user-friendly message.
+// Never shows raw server text, stack traces or request details.
+function getLoginErrorMessage(error: unknown): string {
+
+    if (axios.isAxiosError(error)) {
+
+        // No response at all = API unreachable (offline, server down, CORS, timeout)
+        if (!error.response) {
+            return "Unable to connect to the server. Please try again later.";
+        }
+
+        const status = error.response.status;
+
+        if (status === 401) {
+            return "Invalid email or password. Please check your credentials and try again.";
+        }
+
+        if (status === 400) {
+            return "Please enter a valid email address and password.";
+        }
+
+        if (status >= 500) {
+            return "Something went wrong on our end. Please try again later.";
+        }
+    }
+
+    return "Login failed. Please try again.";
+}
 
 function LoginPage() {
 
@@ -37,11 +69,24 @@ function LoginPage() {
     // React Hook Form
     const {
         register,
-        handleSubmit
+        handleSubmit,
+        formState: { isSubmitting }
     } = useForm<LoginRequest>();
+
+    // Message shown in the Alert when login fails
+    const [loginError, setLoginError] = useState<string | null>(null);
+
+    // Hide the old error as soon as the user starts correcting their details
+    function clearLoginError() {
+        if (loginError) {
+            setLoginError(null);
+        }
+    }
 
     // Called when the user clicks Login
     async function onSubmit(data: LoginRequest) {
+
+        setLoginError(null);
 
         try {
 
@@ -56,7 +101,10 @@ function LoginPage() {
         }
         catch (error) {
 
-            console.error(error);
+            // Stay on the login page and tell the user what went wrong.
+            // The full error object is not logged because it contains
+            // the submitted request body (including the password).
+            setLoginError(getLoginErrorMessage(error));
 
         }
     }
@@ -78,22 +126,29 @@ function LoginPage() {
 
                     <Stack spacing={2}>
 
+                        {loginError && (
+                            <Alert severity="error" role="alert">
+                                {loginError}
+                            </Alert>
+                        )}
+
                         <TextField
                             label="Email"
-                            {...register("email")}
+                            {...register("email", { onChange: clearLoginError })}
                         />
 
                         <TextField
                             label="Password"
                             type="password"
-                            {...register("password")}
+                            {...register("password", { onChange: clearLoginError })}
                         />
 
                         <Button
                             variant="contained"
                             type="submit"
+                            disabled={isSubmitting}
                         >
-                            Login
+                            {isSubmitting ? "Logging in..." : "Login"}
                         </Button>
 
                     </Stack>

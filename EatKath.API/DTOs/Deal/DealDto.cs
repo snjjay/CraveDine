@@ -37,5 +37,22 @@ namespace EatKath.API.DTOs.Deal
         public int DailyRedemptionLimit { get; set; }
 
         public bool IsActive { get; set; }
+
+        // Walk-in availability - only filled in for the customer deal
+        // list (GET api/Deal/restaurant/{id}).
+        //
+        // RemainingOffers: lower of the remaining total and daily
+        // offers for AvailabilityDate. Null = unlimited.
+        public int? RemainingOffers { get; set; }
+
+        // The arrival date RemainingOffers refers to: today, or the
+        // deal's start date if it has not started yet. Null when the
+        // deal has already ended.
+        public DateOnly? AvailabilityDate { get; set; }
+
+        // True when the total offer cap is used up (no date can be
+        // claimed). A used-up daily limit alone does not sell out the
+        // offer - other dates may still be available.
+        public bool IsSoldOut { get; set; }
     }
 }

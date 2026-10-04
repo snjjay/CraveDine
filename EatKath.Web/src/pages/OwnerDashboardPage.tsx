@@ -8,6 +8,7 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
+    DialogContentText,
     DialogTitle,
     MenuItem,
     Paper,
@@ -26,9 +27,24 @@ import OwnerReservationService from "../services/OwnerReservationService";
 import OwnerRestaurantService from "../services/OwnerRestaurantService";
 import RedemptionService from "../services/RedemptionService";
 import { useNotification } from "../features/notifications/NotificationContext";
+import { getApiErrorMessage } from "../utils/apiError";
+import { formatCurrency } from "../utils/currency";
+import {
+    RedemptionStatus,
+    getRedemptionStatusColor,
+    getRedemptionStatusLabel
+} from "../utils/redemption";
+import { formatDate, formatTime } from "../utils/time";
 
 import type { OwnerReservation } from "../types/OwnerReservation";
+import type { Redemption } from "../types/Redemption";
 import type { Restaurant } from "../types/Restaurant";
+
+// The redemption whose bill the owner is recording.
+interface BillTarget {
+    redemptionId: number;
+    description: string;
+}
 
 function OwnerDashboardPage() {
 
@@ -45,18 +61,74 @@ function OwnerDashboardPage() {
     const [reservations, setReservations] =
         useState<OwnerReservation[]>([]);
 
+    // Walk-in offer redemptions for the selected restaurant
+    const [redemptions, setRedemptions] =
+        useState<Redemption[]>([]);
+
     const [loading, setLoading] =
         useState(true);
 
-    const [selectedReservationId, setSelectedReservationId] =
-        useState<number | null>(null);
+    const [billTarget, setBillTarget] =
+        useState<BillTarget | null>(null);
 
     const [billAmount, setBillAmount] =
         useState(0);
 
+    const [savingBill, setSavingBill] =
+        useState(false);
+
+    // Walk-in redemption the owner is about to cancel (confirmation dialog)
+    const [cancelTarget, setCancelTarget] =
+        useState<Redemption | null>(null);
+
+    const [cancelling, setCancelling] =
+        useState(false);
+
     useEffect(() => {
         loadData();
     }, []);
+
+    useEffect(() => {
+
+        if (selectedRestaurantId !== null)
+            loadRedemptions(selectedRestaurantId);
+
+    }, [selectedRestaurantId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    async function loadRedemptions(restaurantId: number) {
+
+        try {
+
+            const data =
+                await RedemptionService.getRestaurantRedemptions(restaurantId);
+
+            setRedemptions(data);
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            setRedemptions([]);
+
+            notify(
+                getApiErrorMessage(error, "Failed to load redemptions. Please try again."),
+                "error"
+            );
+
+        }
+
+    }
+
+    // Reload everything after an owner action.
+    async function refresh() {
+
+        await loadData();
+
+        if (selectedRestaurantId !== null)
+            await loadRedemptions(selectedRestaurantId);
+
+    }
 
     async function loadData() {
 
@@ -70,8 +142,11 @@ function OwnerDashboardPage() {
 
             setRestaurants(restaurantData);
 
-            setSelectedRestaurantId(
-                restaurantData[0]?.id ?? null
+            // Keep the owner's current selection across reloads.
+            setSelectedRestaurantId(current =>
+                current !== null && restaurantData.some(r => r.id === current)
+                    ? current
+                    : restaurantData[0]?.id ?? null
             );
 
             setReservations(reservationData);
@@ -103,44 +178,68 @@ function OwnerDashboardPage() {
 
     }
 
+    // Legacy reservation: complete it through its linked redemption.
     async function completedReservation(id: number) {
 
-        setSelectedReservationId(id);
+        const reservation = reservations.find(x => x.id === id);
+
+        if (!reservation?.redemptionId) {
+
+            notify("No redemption found for this reservation.", "warning");
+
+            return;
+        }
+
+        openBillDialog(
+            reservation.redemptionId,
+            `${reservation.customerName} - ${reservation.dealTitle}`
+        );
+
+    }
+
+    function openBillDialog(redemptionId: number, description: string) {
+
+        setBillTarget({ redemptionId, description });
 
         setBillAmount(0);
 
     }
 
+    // Records the bill; the API calculates the discount and final amount.
     async function completeRedemption() {
 
-        if (selectedReservationId === null)
+        if (billTarget === null)
             return;
+
+        if (!(billAmount > 0)) {
+
+            notify("Please enter the bill amount.", "warning");
+
+            return;
+        }
+
+        setSavingBill(true);
 
         try {
 
-            const reservation = reservations.find(
-                x => x.id === selectedReservationId
-            );
-
-            if (!reservation?.redemptionId) {
-
-                notify("No redemption found for this reservation.", "warning");
-
-                return;
-            }
-
-            await RedemptionService.complete(
-                reservation.redemptionId,
+            const result = await RedemptionService.complete(
+                billTarget.redemptionId,
                 {
                     billAmount
                 }
             );
 
-            setSelectedReservationId(null);
+            notify(
+                `Redemption completed. Discount ${formatCurrency(result.discountAmount ?? 0, result.currencyCode)}, ` +
+                `customer pays ${formatCurrency(result.finalAmount ?? 0, result.currencyCode)}.`,
+                "success"
+            );
+
+            setBillTarget(null);
 
             setBillAmount(0);
 
-            await loadData();
+            await refresh();
 
         }
         catch (error: any) {
@@ -155,6 +254,49 @@ function OwnerDashboardPage() {
             );
 
         }
+        finally {
+
+            setSavingBill(false);
+
+        }
+
+    }
+
+    // Runs only after the owner confirms in the dialog. On failure the
+    // dialog stays open so the owner can retry.
+    async function confirmCancelRedemption() {
+
+        if (cancelTarget === null)
+            return;
+
+        setCancelling(true);
+
+        try {
+
+            await RedemptionService.cancel(cancelTarget.id);
+
+            notify("Redemption cancelled.", "success");
+
+            setCancelTarget(null);
+
+            await refresh();
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            notify(
+                getApiErrorMessage(error, "Unable to cancel this redemption. Please try again."),
+                "error"
+            );
+
+        }
+        finally {
+
+            setCancelling(false);
+
+        }
 
     }
 
@@ -162,7 +304,7 @@ function OwnerDashboardPage() {
 
         await OwnerReservationService.noShow(id);
 
-        loadData();
+        refresh();
 
     }
 
@@ -170,7 +312,7 @@ function OwnerDashboardPage() {
 
         await OwnerReservationService.cancel(id);
 
-        loadData();
+        refresh();
 
     }
 
@@ -313,10 +455,17 @@ function OwnerDashboardPage() {
                         No Restaurant Assigned
                     </Typography>
 
-                    <Typography>
-                        No restaurant has been assigned to your account yet.
-                        Please contact an administrator.
+                    <Typography sx={{ mb: 2 }}>
+                        You don't have a restaurant yet. Create one to start
+                        managing deals, reservations and redemptions.
                     </Typography>
+
+                    <Button
+                        variant="contained"
+                        onClick={() => navigate("/owner/restaurant/new")}
+                    >
+                        Create Restaurant
+                    </Button>
 
                 </Paper>
 
@@ -397,9 +546,177 @@ function OwnerDashboardPage() {
 
                     <Typography
                         variant="h5"
+                        sx={{ mb: 1 }}
+                    >
+                        Walk-in Offer Redemptions
+                    </Typography>
+
+                    <Typography
+                        color="text.secondary"
                         sx={{ mb: 2 }}
                     >
-                        Reservations
+                        Customers who claimed an offer at the selected restaurant. When they visit,
+                        check the redemption number, then record the bill to apply the discount.
+                    </Typography>
+
+                    <TableContainer component={Paper} sx={{ mb: 4 }}>
+
+                        <Table>
+
+                            <TableHead>
+
+                                <TableRow>
+
+                                    <TableCell>#</TableCell>
+                                    <TableCell>Customer</TableCell>
+                                    <TableCell>Offer</TableCell>
+                                    <TableCell>Arrival</TableCell>
+                                    <TableCell>Guests</TableCell>
+                                    <TableCell>Status</TableCell>
+                                    <TableCell>Bill</TableCell>
+                                    <TableCell>Actions</TableCell>
+
+                                </TableRow>
+
+                            </TableHead>
+
+                            <TableBody>
+
+                                {redemptions.length === 0 && (
+
+                                    <TableRow>
+                                        <TableCell colSpan={8}>
+                                            No redemptions yet for this restaurant.
+                                        </TableCell>
+                                    </TableRow>
+
+                                )}
+
+                                {redemptions.map((redemption) => (
+
+                                    <TableRow key={redemption.id}>
+
+                                        <TableCell>
+                                            {redemption.id}
+                                        </TableCell>
+
+                                        <TableCell>
+                                            <Typography variant="body2">{redemption.customerName}</Typography>
+                                            <Typography variant="caption" color="text.secondary" component="div">
+                                                {redemption.customerPhone || "No phone"}
+                                            </Typography>
+                                            <Typography variant="caption" color="text.secondary" component="div">
+                                                {redemption.customerEmail}
+                                            </Typography>
+                                        </TableCell>
+
+                                        <TableCell>
+                                            {redemption.dealTitle}
+                                            {redemption.reservationId !== null && (
+                                                <Typography variant="caption" color="text.secondary" component="div">
+                                                    From reservation #{redemption.reservationId}
+                                                </Typography>
+                                            )}
+                                        </TableCell>
+
+                                        <TableCell>
+                                            {formatDate(redemption.arrivalDate)}
+                                            <Typography variant="caption" color="text.secondary" component="div">
+                                                {formatTime(redemption.arrivalTime)}
+                                            </Typography>
+                                        </TableCell>
+
+                                        <TableCell>
+                                            {redemption.guestCount}
+                                        </TableCell>
+
+                                        <TableCell>
+                                            <Chip
+                                                label={getRedemptionStatusLabel(redemption.status)}
+                                                color={getRedemptionStatusColor(redemption.status)}
+                                            />
+                                        </TableCell>
+
+                                        <TableCell>
+                                            {redemption.billAmount != null ? (
+                                                <>
+                                                    <Typography variant="body2">
+                                                        {formatCurrency(redemption.billAmount, redemption.currencyCode)}
+                                                    </Typography>
+                                                    <Typography variant="caption" color="text.secondary" component="div">
+                                                        Discount {formatCurrency(redemption.discountAmount ?? 0, redemption.currencyCode)}
+                                                    </Typography>
+                                                    <Typography variant="caption" color="text.secondary" component="div">
+                                                        Paid {formatCurrency(redemption.finalAmount ?? 0, redemption.currencyCode)}
+                                                    </Typography>
+                                                </>
+                                            ) : "-"}
+                                        </TableCell>
+
+                                        <TableCell>
+
+                                            {redemption.status === RedemptionStatus.Redeemed && (
+
+                                                <Stack
+                                                    direction="row"
+                                                    spacing={1}
+                                                    flexWrap="wrap"
+                                                >
+
+                                                    <Button
+                                                        size="small"
+                                                        variant="contained"
+                                                        color="success"
+                                                        onClick={() =>
+                                                            openBillDialog(
+                                                                redemption.id,
+                                                                `#${redemption.id} ${redemption.customerName} - ${redemption.dealTitle}`
+                                                            )
+                                                        }
+                                                    >
+                                                        Record Bill
+                                                    </Button>
+
+                                                    <Button
+                                                        size="small"
+                                                        variant="outlined"
+                                                        color="error"
+                                                        onClick={() =>
+                                                            setCancelTarget(redemption)
+                                                        }
+                                                    >
+                                                        Cancel
+                                                    </Button>
+
+                                                </Stack>
+
+                                            )}
+
+                                        </TableCell>
+
+                                    </TableRow>
+
+                                ))}
+
+                            </TableBody>
+
+                        </Table>
+
+                    </TableContainer>
+
+
+                    <Typography
+                        variant="h5"
+                        sx={{ mb: 1 }}
+                    >
+                        Legacy Reservations
+                    </Typography>
+
+                    <Typography
+                        color="text.secondary"
+                        sx={{ mb: 2 }}
+                    >
+                        Reservations made before walk-in offers, across all your restaurants.
                     </Typography>
 
 
@@ -539,16 +856,20 @@ function OwnerDashboardPage() {
 
 
             <Dialog
-                open={selectedReservationId !== null}
-                onClose={() => setSelectedReservationId(null)}
+                open={billTarget !== null}
+                onClose={() => !savingBill && setBillTarget(null)}
             >
 
                 <DialogTitle>
-                    Redeem Offer
+                    Record Bill
                 </DialogTitle>
 
 
                 <DialogContent>
+
+                    <Typography sx={{ mt: 1 }}>
+                        {billTarget?.description}
+                    </Typography>
 
                     <TextField
                         fullWidth
@@ -558,6 +879,8 @@ function OwnerDashboardPage() {
                         onChange={(e) =>
                             setBillAmount(Number(e.target.value))
                         }
+                        helperText="The offer discount is calculated automatically."
+                        slotProps={{ htmlInput: { min: 0, step: "0.01" } }}
                         sx={{ mt: 2 }}
                     />
 
@@ -568,8 +891,9 @@ function OwnerDashboardPage() {
 
                     <Button
                         onClick={() =>
-                            setSelectedReservationId(null)
+                            setBillTarget(null)
                         }
+                        disabled={savingBill}
                     >
                         Cancel
                     </Button>
@@ -578,8 +902,59 @@ function OwnerDashboardPage() {
                     <Button
                         variant="contained"
                         onClick={completeRedemption}
+                        disabled={savingBill}
                     >
-                        Redeem Offer
+                        {savingBill ? "Saving..." : "Complete Redemption"}
+                    </Button>
+
+                </DialogActions>
+
+            </Dialog>
+
+
+            <Dialog
+                open={cancelTarget !== null}
+                onClose={() => !cancelling && setCancelTarget(null)}
+            >
+
+                <DialogTitle>
+                    Cancel Redemption
+                </DialogTitle>
+
+
+                <DialogContent>
+
+                    <DialogContentText>
+                        Cancel redemption #{cancelTarget?.id} for "{cancelTarget?.dealTitle}"
+                        {cancelTarget?.customerName ? ` (${cancelTarget.customerName})` : ""}?
+                    </DialogContentText>
+
+                    <DialogContentText sx={{ mt: 2 }}>
+                        The offer will be released for other customers. This cannot be undone.
+                    </DialogContentText>
+
+                </DialogContent>
+
+
+                <DialogActions>
+
+                    <Button
+                        onClick={() =>
+                            setCancelTarget(null)
+                        }
+                        disabled={cancelling}
+                    >
+                        Keep Redemption
+                    </Button>
+
+
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={confirmCancelRedemption}
+                        disabled={cancelling}
+                    >
+                        {cancelling ? "Cancelling…" : "Cancel Redemption"}
                     </Button>
 
                 </DialogActions>

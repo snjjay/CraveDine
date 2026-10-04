@@ -1,4 +1,6 @@
-﻿namespace EatKath.API.DTOs.Restaurant
+﻿using EatKath.API.DTOs.RestaurantOpeningHour;
+
+namespace EatKath.API.DTOs.Restaurant
 {
     public class RestaurantDto
     {
@@ -17,6 +19,8 @@
         public string Website { get; set; } = string.Empty;
 
         public string LogoUrl { get; set; } = string.Empty;
+
+        public string CurrencyCode { get; set; } = "NPR";
 
         public string? CoverImageUrl { get; set; }
 
@@ -38,5 +42,7 @@
         public List<string> Cuisines { get; set; } = new();
 
         public List<string> DiningTypes { get; set; } = new();
+
+        public List<RestaurantOpeningHourDto> OpeningHours { get; set; } = new();
     }
 }

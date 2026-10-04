@@ -79,7 +79,11 @@ public class MappingProfile : Profile
 
         CreateMap<Deal, DealDto>()
             .ForMember(dest => dest.RestaurantName,
-                opt => opt.MapFrom(src => src.Restaurant.Name));
+                opt => opt.MapFrom(src => src.Restaurant.Name))
+            // Availability is calculated by DealService, not mapped.
+            .ForMember(dest => dest.RemainingOffers, opt => opt.Ignore())
+            .ForMember(dest => dest.AvailabilityDate, opt => opt.Ignore())
+            .ForMember(dest => dest.IsSoldOut, opt => opt.Ignore());
 
         CreateMap<CreateDealDto, Deal>();
 
@@ -119,7 +123,17 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.DealTitle,
                 opt => opt.MapFrom(src => src.Deal.Title))
             .ForMember(dest => dest.CustomerName,
-                opt => opt.MapFrom(src => src.User.FirstName + " " + src.User.LastName));
+                opt => opt.MapFrom(src => src.User.FirstName + " " + src.User.LastName))
+            .ForMember(dest => dest.CustomerPhone,
+                opt => opt.MapFrom(src => src.User.PhoneNumber))
+            .ForMember(dest => dest.CustomerEmail,
+                opt => opt.MapFrom(src => src.User.Email))
+            .ForMember(dest => dest.RestaurantId,
+                opt => opt.MapFrom(src => src.Deal.RestaurantId))
+            .ForMember(dest => dest.RestaurantName,
+                opt => opt.MapFrom(src => src.Deal.Restaurant.Name))
+            .ForMember(dest => dest.CurrencyCode,
+                opt => opt.MapFrom(src => src.Deal.Restaurant.CurrencyCode));
 
         // ============================
         // Reservation

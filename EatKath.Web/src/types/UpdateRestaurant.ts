@@ -14,5 +14,7 @@ export interface UpdateRestaurant {
 
     areaId: number;
 
+    currencyCode: string;
+
     isActive: boolean;
 }

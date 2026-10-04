@@ -47,7 +47,7 @@ function EditDealPage() {
         startTime: "",
         endTime: "",
         maximumGuests: 20,
-        reservationLimit: 1,
+        reservationLimit: 0,
         dailyRedemptionLimit: 100,
         isActive: true
     });
@@ -286,7 +286,8 @@ function EditDealPage() {
                     />
 
                     <TextField
-                        label="Reservation Limit"
+                        label="Total Offer Limit"
+                        helperText="Maximum claims for this offer in total. 0 = unlimited."
                         type="number"
                         value={deal.reservationLimit}
                         onChange={(e) =>
@@ -299,7 +300,8 @@ function EditDealPage() {
                     />
 
                     <TextField
-                        label="Daily Redemption Limit"
+                        label="Offers Per Day"
+                        helperText="Maximum claims per arrival date. 0 = unlimited."
                         type="number"
                         value={deal.dailyRedemptionLimit}
                         onChange={(e) =>

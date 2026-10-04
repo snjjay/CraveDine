@@ -15,17 +15,20 @@ namespace EatKath.API.Services
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ICurrentUserService _currentUser;
+        private readonly TimeProvider _timeProvider;
 
         public DealService(
             ApplicationDbContext context,
             IMapper mapper,
             IHttpContextAccessor httpContextAccessor,
-            ICurrentUserService currentUser)
+            ICurrentUserService currentUser,
+            TimeProvider timeProvider)
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _currentUser = currentUser;
+            _timeProvider = timeProvider;
         }
 
         public async Task<IEnumerable<DealDto>> GetAllAsync()
@@ -129,16 +132,49 @@ namespace EatKath.API.Services
             return true;
         }
 
+        // Customer-facing deal list for a restaurant, including how many
+        // walk-in offers are left (see DealCapacityCalculator).
         public async Task<IEnumerable<DealDto>> GetByRestaurantAsync(
             int restaurantId)
         {
-            return await _context.Deals
+            var deals = await _context.Deals
+                .Include(d => d.Restaurant)
                 .Where(d =>
                     d.RestaurantId == restaurantId &&
                     d.IsActive)
-                .ProjectTo<DealDto>(
-                    _mapper.ConfigurationProvider)
                 .ToListAsync();
+
+            var today = DateOnly.FromDateTime(_timeProvider.GetLocalNow().DateTime);
+
+            var result = new List<DealDto>();
+
+            foreach (var deal in deals)
+            {
+                var dto = _mapper.Map<DealDto>(deal);
+
+                if (deal.EndDate < today)
+                {
+                    // Ended - nothing left to claim.
+                    dto.RemainingOffers = 0;
+                }
+                else
+                {
+                    var availabilityDate = deal.StartDate > today ? deal.StartDate : today;
+
+                    var capacity = await DealCapacityCalculator.GetCapacityAsync(
+                        _context,
+                        deal,
+                        availabilityDate);
+
+                    dto.AvailabilityDate = availabilityDate;
+                    dto.RemainingOffers = capacity.Remaining;
+                    dto.IsSoldOut = capacity.TotalRemaining == 0;
+                }
+
+                result.Add(dto);
+            }
+
+            return result;
         }
 
         public async Task<IEnumerable<DealDto>> GetByOwnerAsync(

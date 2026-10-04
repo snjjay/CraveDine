@@ -13,6 +13,7 @@ import {
     DialogContentText,
     DialogTitle,
     Grid,
+    MenuItem,
     Paper,
     Stack,
     TextField,
@@ -22,6 +23,7 @@ import {
 import OwnerRestaurantService from "../services/OwnerRestaurantService";
 import RestaurantImageService from "../services/RestaurantImageService";
 import { getImageUrl } from "../utils/imageUrl";
+import { DEFAULT_CURRENCY_CODE, SUPPORTED_CURRENCIES } from "../utils/currency";
 import { useNotification } from "../features/notifications/NotificationContext";
 
 import type { Restaurant } from "../types/Restaurant";
@@ -63,6 +65,7 @@ function OwnerRestaurantPage() {
         email: "",
         website: "",
         areaId: 0,
+        currencyCode: DEFAULT_CURRENCY_CODE,
         isActive: true
     });
 
@@ -112,6 +115,7 @@ function OwnerRestaurantPage() {
                 email: data.email,
                 website: data.website,
                 areaId: data.areaId,
+                currencyCode: data.currencyCode,
                 isActive: data.isActive
             });
 
@@ -381,6 +385,31 @@ function OwnerRestaurantPage() {
                             })
                         }
                     />
+
+                    <TextField
+                        select
+                        label="Currency"
+                        value={restaurant.currencyCode}
+                        onChange={(e) =>
+                            setRestaurant({
+                                ...restaurant,
+                                currencyCode: e.target.value
+                            })
+                        }
+                    >
+
+                        {SUPPORTED_CURRENCIES.map(currency => (
+
+                            <MenuItem
+                                key={currency.code}
+                                value={currency.code}
+                            >
+                                {currency.label}
+                            </MenuItem>
+
+                        ))}
+
+                    </TextField>
 
                     <Typography variant="h6">
                         Logo

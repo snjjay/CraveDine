@@ -95,6 +95,14 @@ namespace EatKath.API.Data
                 .HasForeignKey(x => x.AreaId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Database-level default so adding this NOT NULL column
+            // backfills every existing restaurant with NPR, rather
+            // than requiring a separate data-migration step.
+            modelBuilder.Entity<Restaurant>()
+                .Property(x => x.CurrencyCode)
+                .HasMaxLength(3)
+                .HasDefaultValue("NPR");
+
             // ============================
             // Restaurant Images:One Restaurant can have many Images.
             // ============================

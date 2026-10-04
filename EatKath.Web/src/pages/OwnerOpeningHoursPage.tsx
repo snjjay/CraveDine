@@ -23,6 +23,18 @@ import { useNotification } from "../features/notifications/NotificationContext";
 import type { Restaurant } from "../types/Restaurant";
 import type { RestaurantOpeningHour } from "../types/RestaurantOpeningHour";
 
+// Display names for the API's .NET DayOfWeek values (Sunday = 0).
+// Display only - dayOfWeek itself is saved unchanged.
+const DAY_NAMES = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+];
+
 function OwnerOpeningHoursPage() {
 
     const { notify } = useNotification();
@@ -210,7 +222,7 @@ function OwnerOpeningHoursPage() {
 
                                 <TableCell>
 
-                                    {hour.dayOfWeek}
+                                    {DAY_NAMES[hour.dayOfWeek] ?? hour.dayOfWeek}
 
                                 </TableCell>
 

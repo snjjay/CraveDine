@@ -30,6 +30,11 @@ import type { Deal } from "../types/Deal";
 import type { RestaurantImage } from "../types/RestaurantImage";
 
 import DealCard from "../components/deals/DealCard";
+import OpeningStatus from "../components/restaurants/OpeningStatus";
+import RestaurantMenu from "../components/restaurants/RestaurantMenu";
+
+// Target of the "View Menu" button.
+const MENU_SECTION_ID = "restaurant-menu";
 
 function RestaurantDetailsPage() {
 
@@ -260,23 +265,52 @@ function RestaurantDetailsPage() {
 
                     </Typography>
 
-                    {restaurant.menuPdfUrl && (
-
-                        <Button
-                            variant="outlined"
-                            href={getImageUrl(restaurant.menuPdfUrl)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            sx={{ mt: 2 }}
-                        >
-                            View Menu
-                        </Button>
-
-                    )}
+                    {/* Scrolls to the digital menu (which offers the PDF as a fallback). */}
+                    <Button
+                        variant="outlined"
+                        onClick={() =>
+                            document
+                                .getElementById(MENU_SECTION_ID)
+                                ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                        }
+                        sx={{ mt: 2 }}
+                    >
+                        View Menu
+                    </Button>
 
                 </CardContent>
 
             </Card>
+
+            <Typography
+                variant="h5"
+                sx={{ mb: 2 }}
+            >
+                Opening Hours
+            </Typography>
+
+            {(!restaurant.openingHours || restaurant.openingHours.length === 0) ? (
+
+                <Typography
+                    color="text.secondary"
+                    sx={{ mb: 4 }}
+                >
+                    Opening hours not available.
+                </Typography>
+
+            ) : (
+
+                <Card sx={{ mb: 4 }}>
+
+                    <CardContent>
+
+                        <OpeningStatus hours={restaurant.openingHours} />
+
+                    </CardContent>
+
+                </Card>
+
+            )}
 
             <Typography
                 variant="h5"
@@ -302,6 +336,7 @@ function RestaurantDetailsPage() {
                     <DealCard
                         key={deal.id}
                         deal={deal}
+                        onRedeemed={() => loadDeals(deal.restaurantId)}
                     />
 
                 ))
@@ -361,67 +396,27 @@ function RestaurantDetailsPage() {
 
             <Divider sx={{ my: 4 }} />
 
-            <Typography
-                variant="h5"
-                sx={{ mb: 2 }}
+            <Box
+                id={MENU_SECTION_ID}
+                sx={{ scrollMarginTop: 16 }}
             >
-                Menu
-            </Typography>
 
-            {categories.map(category => (
+                <Typography
+                    variant="h5"
+                    sx={{ mb: 2 }}
+                >
+                    Menu
+                </Typography>
 
-                <div key={category.id}>
+                <RestaurantMenu
+                    categories={categories}
+                    items={menuItems}
+                    deals={deals}
+                    currencyCode={restaurant.currencyCode}
+                    menuPdfUrl={restaurant.menuPdfUrl}
+                />
 
-                    <Typography
-                        variant="h6"
-                        sx={{ mt: 3 }}
-                    >
-                        {category.name}
-                    </Typography>
-
-                    {menuItems
-                        .filter(item =>
-                            item.menuCategoryId === category.id &&
-                            item.isAvailable
-                        )
-                        .map(item => (
-
-                            <Card
-                                key={item.id}
-                                sx={{ mt: 1, mb: 1 }}
-                            >
-
-                                <CardContent>
-
-                                    <Typography variant="subtitle1">
-
-                                        {item.isFeatured && "⭐ "}
-                                        {item.name}
-
-                                    </Typography>
-
-                                    <Typography
-                                        color="text.secondary"
-                                    >
-                                        {item.description}
-                                    </Typography>
-
-                                    <Typography
-                                        sx={{ mt: 1 }}
-                                        fontWeight="bold"
-                                    >
-                                        NPR {item.price}
-                                    </Typography>
-
-                                </CardContent>
-
-                            </Card>
-
-                        ))}
-
-                </div>
-
-            ))}
+            </Box>
 
         </>
 

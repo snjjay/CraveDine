@@ -18,6 +18,7 @@ import OwnerRestaurantService from "../services/OwnerRestaurantService";
 import MenuCategoryService from "../services/MenuCategoryService";
 import MenuItemService from "../services/MenuItemService";
 import { useNotification } from "../features/notifications/NotificationContext";
+import { formatCurrency } from "../utils/currency";
 
 import type { Restaurant } from "../types/Restaurant";
 import type { MenuCategory } from "../types/MenuCategory";
@@ -387,7 +388,7 @@ function OwnerMenuItemsPage() {
 
                             <Typography sx={{ flex: 1 }}>
 
-                                {item.name} - ${item.price}
+                                {item.name} - {formatCurrency(item.price, restaurant?.currencyCode)}
 
                             </Typography>
 

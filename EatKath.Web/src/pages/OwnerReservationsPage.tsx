@@ -18,6 +18,11 @@ import {
 import OwnerRestaurantService from "../services/OwnerRestaurantService";
 import RedemptionService from "../services/RedemptionService";
 import { useNotification } from "../features/notifications/NotificationContext";
+import {
+    RedemptionStatus,
+    getRedemptionStatusColor,
+    getRedemptionStatusLabel
+} from "../utils/redemption";
 
 import type { Restaurant } from "../types/Restaurant";
 import type { Redemption } from "../types/Redemption";
@@ -112,23 +117,6 @@ async function completeRedemption() {
 }
 
 
-    function getChipColor(status: string) {
-
-        switch (status) {
-
-            case "Redeemed":
-                return "warning";
-
-            case "Completed":
-                return "success";
-
-            default:
-                return "default";
-
-        }
-
-    }
-
     if (loading)
         return <CircularProgress />;
 
@@ -189,11 +177,11 @@ async function completeRedemption() {
 
                             <Chip
                                 sx={{ mt: 2 }}
-                                label={r.status}
-                                color={getChipColor(r.status)}
+                                label={getRedemptionStatusLabel(r.status)}
+                                color={getRedemptionStatusColor(r.status)}
                             />
 
-                            {r.status === "Redeemed" && (
+                            {r.status === RedemptionStatus.Redeemed && (
 
                                 <Button
     sx={{ ml: 2 }}

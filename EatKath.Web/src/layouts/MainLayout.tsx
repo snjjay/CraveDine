@@ -48,14 +48,6 @@ function MainLayout() {
                         Home
                     </Button>
 
-                    <Button
-                        color="inherit"
-                        component={Link}
-                        to="/restaurants"  //Clicking the button goes to /restaurants.
-                    >
-                        Restaurants
-                    </Button>
-
                     {isCustomer && (
 
                         <>
@@ -65,14 +57,6 @@ function MainLayout() {
                                 to="/favorites"
                             >
                                 ❤️ Favourites
-                            </Button>
-
-                            <Button
-                                color="inherit"
-                                component={Link}
-                                to="/my-reservations"
-                            >
-                                📅 My Reservations
                             </Button>
 
                             <Button

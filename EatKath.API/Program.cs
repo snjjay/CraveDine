@@ -90,6 +90,7 @@ builder.Services.AddScoped<IRestaurantImageService, RestaurantImageService>();
 builder.Services.AddScoped<IRestaurantOpeningHourService, RestaurantOpeningHourService>();
 builder.Services.AddScoped<IUserFavoriteService, UserFavoriteService>();
 builder.Services.AddScoped<IRedemptionService, RedemptionService>();
+builder.Services.AddSingleton(TimeProvider.System); // Current date/time for redemption rules (replaceable in tests)
 builder.Services.AddScoped<IOwnerDashboardService, OwnerDashboardService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<FileStorageService>();

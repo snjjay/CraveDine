@@ -1,16 +1,30 @@
 import { useEffect, useState } from "react";
 
 import {
+    Button,
     Card,
     CardContent,
     Chip,
     CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
     Stack,
     Typography
 } from "@mui/material";
 
 import RedemptionService from "../services/RedemptionService";
 import { useNotification } from "../features/notifications/NotificationContext";
+import { getApiErrorMessage } from "../utils/apiError";
+import { formatCurrency } from "../utils/currency";
+import {
+    RedemptionStatus,
+    getRedemptionStatusColor,
+    getRedemptionStatusLabel
+} from "../utils/redemption";
+import { formatDate, formatTime } from "../utils/time";
 
 import type { Redemption } from "../types/Redemption";
 
@@ -23,6 +37,13 @@ function MyRedemptionsPage() {
 
     const [loading, setLoading] =
         useState(true);
+
+    // Claim the customer is about to cancel (confirmation dialog)
+    const [cancelTarget, setCancelTarget] =
+        useState<Redemption | null>(null);
+
+    const [cancelling, setCancelling] =
+        useState(false);
 
     useEffect(() => {
 
@@ -60,24 +81,37 @@ function MyRedemptionsPage() {
 
     }
 
-    function getChipColor(status?: string) {
+    async function handleConfirmCancel() {
 
-        switch (status) {
+        if (!cancelTarget)
+            return;
 
-            case "Redeemed":
-                return "warning";
+        setCancelling(true);
 
-            case "Completed":
-                return "success";
+        try {
 
-            case "Cancelled":
-                return "default";
+            await RedemptionService.cancelMine(cancelTarget.id);
 
-            case "Expired":
-                return "error";
+            notify("Your offer has been cancelled.", "success");
 
-            default:
-                return "default";
+            setCancelTarget(null);
+
+            await loadRedemptions();
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            notify(
+                getApiErrorMessage(error, "Unable to cancel this offer. Please try again."),
+                "error"
+            );
+
+        }
+        finally {
+
+            setCancelling(false);
 
         }
 
@@ -119,15 +153,18 @@ function MyRedemptionsPage() {
 
                                 </Typography>
 
-                                <Typography>
+                                <Typography
+                                    color="text.secondary"
+                                    sx={{ mb: 1 }}
+                                >
 
-                                    Date: {r.arrivalDate}
+                                    {r.restaurantName} · Redemption #{r.id}
 
                                 </Typography>
 
                                 <Typography>
 
-                                    Time: {r.arrivalTime}
+                                    Arrive: {formatDate(r.arrivalDate)} at {formatTime(r.arrivalTime)}
 
                                 </Typography>
 
@@ -141,7 +178,7 @@ function MyRedemptionsPage() {
 
                                     <Typography>
 
-                                        Bill Amount: NPR {r.billAmount}
+                                        Bill Amount: {formatCurrency(r.billAmount, r.currencyCode)}
 
                                     </Typography>
 
@@ -151,7 +188,7 @@ function MyRedemptionsPage() {
 
                                     <Typography>
 
-                                        Discount Amount: NPR {r.discountAmount}
+                                        Discount Amount: {formatCurrency(r.discountAmount, r.currencyCode)}
 
                                     </Typography>
 
@@ -161,7 +198,7 @@ function MyRedemptionsPage() {
 
                                     <Typography>
 
-                                        Final Amount: NPR {r.finalAmount}
+                                        Final Amount: {formatCurrency(r.finalAmount, r.currencyCode)}
 
                                     </Typography>
 
@@ -183,11 +220,31 @@ function MyRedemptionsPage() {
 
                                 )}
 
-                                <Chip
-                                    sx={{ mt: 2 }}
-                                    label={r.status}
-                                    color={getChipColor(r.status)}
-                                />
+                                <Stack
+                                    direction="row"
+                                    spacing={2}
+                                    sx={{ mt: 2, alignItems: "center" }}
+                                >
+
+                                    <Chip
+                                        label={getRedemptionStatusLabel(r.status)}
+                                        color={getRedemptionStatusColor(r.status)}
+                                    />
+
+                                    {r.status === RedemptionStatus.Redeemed && (
+
+                                        <Button
+                                            color="error"
+                                            variant="outlined"
+                                            size="small"
+                                            onClick={() => setCancelTarget(r)}
+                                        >
+                                            Cancel Offer
+                                        </Button>
+
+                                    )}
+
+                                </Stack>
 
                             </CardContent>
 
@@ -198,6 +255,45 @@ function MyRedemptionsPage() {
                 </Stack>
 
             )}
+
+            <Dialog
+                open={cancelTarget !== null}
+                onClose={() => !cancelling && setCancelTarget(null)}
+            >
+
+                <DialogTitle>
+                    Cancel Offer
+                </DialogTitle>
+
+                <DialogContent>
+
+                    <DialogContentText>
+                        Are you sure you want to cancel this offer? The offer will be released for other customers.
+                    </DialogContentText>
+
+                </DialogContent>
+
+                <DialogActions>
+
+                    <Button
+                        onClick={() => setCancelTarget(null)}
+                        disabled={cancelling}
+                    >
+                        Keep Offer
+                    </Button>
+
+                    <Button
+                        color="error"
+                        variant="contained"
+                        onClick={handleConfirmCancel}
+                        disabled={cancelling}
+                    >
+                        {cancelling ? "Cancelling..." : "Cancel Offer"}
+                    </Button>
+
+                </DialogActions>
+
+            </Dialog>
 
         </>
 

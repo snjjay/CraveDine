@@ -11,6 +11,8 @@
 // Restaurant
 // ==========================================================
 
+import type { RestaurantOpeningHour } from "./RestaurantOpeningHour";
+
 export interface Restaurant {
 
     id: number;
@@ -28,6 +30,8 @@ export interface Restaurant {
     website: string;
 
     logoUrl: string;
+
+    currencyCode: string;
 
     coverImageUrl?: string;
 
@@ -48,6 +52,8 @@ export interface Restaurant {
     cuisines: string[];
 
     diningTypes: string[];
+
+    openingHours: RestaurantOpeningHour[];
 
 }
 

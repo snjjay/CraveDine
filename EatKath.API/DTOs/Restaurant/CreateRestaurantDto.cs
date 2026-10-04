@@ -20,6 +20,8 @@
 
         public string LogoUrl { get; set; } = string.Empty;
 
+        public string CurrencyCode { get; set; } = "NPR";
+
         public bool IsActive { get; set; } = true;
     }
 }

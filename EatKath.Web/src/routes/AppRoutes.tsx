@@ -2,7 +2,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
 
-import HomePage from "../pages/HomePage";
+// HomePage (pages/HomePage.tsx) is kept but not routed: "/" shows the
+// restaurant list. To restore it, import it and use it for "/".
 import RestaurantsPage from "../pages/RestaurantsPage";
 import RestaurantDetailsPage from "../pages/RestaurantDetailsPage";
 import MyFavoritesPage from "../pages/MyFavoritesPage";
@@ -12,8 +13,10 @@ import OwnerDealsPage from "../pages/OwnerDealsPage";
 import CreateDealPage from "../pages/CreateDealPage";
 import EditDealPage from "../pages/EditDealPage";
 import OwnerRestaurantPage from "../pages/OwnerRestaurantPage";
+import OwnerCreateRestaurantPage from "../pages/OwnerCreateRestaurantPage";
 
 import AdminDashboardPage from "../pages/AdminDashboardPage";
+import AdminUsersPage from "../pages/AdminUsersPage";
 
 import LoginPage from "../features/auth/LoginPage";
 import RegisterPage from "../features/auth/RegisterPage";
@@ -36,7 +39,7 @@ function AppRoutes() {
 
                     <Route
                         path="/"
-                        element={<HomePage />}
+                        element={<RestaurantsPage />}
                     />
 
                     <Route
@@ -132,6 +135,15 @@ function AppRoutes() {
                     />
 
                     <Route
+                        path="/owner/restaurant/new"
+                        element={
+                            <ProtectedRoute role="Owner">
+                                <OwnerCreateRestaurantPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
                         path="/owner/opening-hours"
                         element={
                             <ProtectedRoute role="Owner">
@@ -145,6 +157,15 @@ function AppRoutes() {
                         element={
                             <ProtectedRoute role="Admin">
                                 <AdminDashboardPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/admin/users"
+                        element={
+                            <ProtectedRoute role="Admin">
+                                <AdminUsersPage />
                             </ProtectedRoute>
                         }
                     />

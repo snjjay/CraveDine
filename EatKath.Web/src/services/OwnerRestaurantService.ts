@@ -2,6 +2,7 @@ import api from "../api/axios";
 
 import type { Restaurant } from "../types/Restaurant";
 import type { UpdateRestaurant } from "../types/UpdateRestaurant";
+import type { CreateRestaurant } from "../types/CreateRestaurant";
 
 class OwnerRestaurantService {
 
@@ -9,6 +10,20 @@ class OwnerRestaurantService {
 
         const response =
             await api.get<Restaurant>("/restaurants/my");
+
+        return response.data;
+
+    }
+
+    async create(
+        restaurant: CreateRestaurant
+    ): Promise<Restaurant> {
+
+        const response =
+            await api.post<Restaurant>(
+                "/restaurants",
+                restaurant
+            );
 
         return response.data;
 

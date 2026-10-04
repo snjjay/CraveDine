@@ -21,6 +21,12 @@
 
         public string LogoUrl { get; set; } = string.Empty;
 
+        // ISO-style 3-letter code (e.g. NPR, AUD, USD). Every Deal,
+        // MenuItem, and Redemption belongs to exactly one Restaurant,
+        // so this single field is the sole source of currency for all
+        // of them - no other entity carries its own currency field.
+        public string CurrencyCode { get; set; } = "NPR";
+
         public bool IsActive { get; set; } = true;
 
        
