@@ -7,6 +7,7 @@ import {
 } from "@mui/material";
 
 import LoadMoreButton from "../components/common/LoadMoreButton";
+import { RESTAURANT_GRID_ITEM_SIZE, RESTAURANT_GRID_SPACING } from "../components/restaurants/restaurantGrid";
 import { useLoadMore } from "../hooks/useLoadMore";
 import UserFavoriteService from "../services/UserFavoriteService";//Bring the UserFavoriteService code from the services folder so I can use it in this page.
 import { getImageUrl } from "../utils/imageUrl";
@@ -93,13 +94,13 @@ function MyFavoritesPage() {
                 My Favourite Restaurants
             </Typography>
 
-            <Grid container spacing={3}>
+            <Grid container spacing={RESTAURANT_GRID_SPACING}>
 
                 {shownFavorites.visibleItems.map(f => (   //For every favourite restaurant in my box, create some UI.
 
                     <Grid
                         key={f.restaurantId}
-                        size={{ xs: 12, sm: 6, md: 4 }}
+                        size={RESTAURANT_GRID_ITEM_SIZE}
                     >
 
                         <img

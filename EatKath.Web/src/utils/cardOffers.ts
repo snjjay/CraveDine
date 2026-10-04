@@ -12,10 +12,12 @@
 //   running now > later today > a later date; then highest discount.
 // - When both exist, one Dine In and one Takeaway offer are shown.
 // - Remaining relevant offers are counted for "+N more".
+// - hasEligibleOffer() uses the same rules for the listing's Offer
+//   Type filter (Dine-in / Takeaway).
 // ==========================================================
 
 import type { RestaurantDealSummary } from "../types/Restaurant";
-import { getDealTimingToday, MenuTab } from "./menuPricing";
+import { getDealTimingToday, MenuTab, type MenuTabValue } from "./menuPricing";
 import { getOfferTypeLabel } from "./offerType";
 import { formatTime12Hour, todayIsoDate } from "./time";
 
@@ -98,18 +100,42 @@ function byRelevance(a: Candidate, b: Candidate): number {
 
 }
 
+// The offers a restaurant can show: Dine In/Takeaway, not sold out, and
+// usable today or on a later date. Shared by the card overlays and the
+// listing's Offer Type filter so both always agree.
+function eligibleCandidates(
+    summaries: RestaurantDealSummary[] | undefined,
+    now: Date
+): Candidate[] {
+
+    return (summaries ?? [])
+        .filter(s =>
+            (s.offerType === MenuTab.DineIn || s.offerType === MenuTab.Takeaway) &&
+            !s.isSoldOut)
+        .map(s => toCandidate(s, now))
+        .filter((c): c is Candidate => c !== null);
+
+}
+
+// True when the restaurant has at least one eligible offer of this type
+// (the same offers its card overlays and "+N more" count).
+export function hasEligibleOffer(
+    summaries: RestaurantDealSummary[] | undefined,
+    offerType: MenuTabValue,
+    now: Date = new Date()
+): boolean {
+
+    return eligibleCandidates(summaries, now)
+        .some(c => c.summary.offerType === offerType);
+
+}
+
 export function selectCardOffers(
     summaries: RestaurantDealSummary[] | undefined,
     now: Date = new Date()
 ): CardOffers {
 
-    const candidates = (summaries ?? [])
-        .filter(s =>
-            (s.offerType === MenuTab.DineIn || s.offerType === MenuTab.Takeaway) &&
-            !s.isSoldOut)
-        .map(s => toCandidate(s, now))
-        .filter((c): c is Candidate => c !== null)
-        .sort(byRelevance);
+    const candidates = eligibleCandidates(summaries, now).sort(byRelevance);
 
     // One of each dining type first, then fill by relevance.
     const chosen: Candidate[] = [];

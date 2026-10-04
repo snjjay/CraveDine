@@ -27,26 +27,36 @@ import SearchIcon from "@mui/icons-material/Search";
 import SearchOffIcon from "@mui/icons-material/SearchOff";
 
 import RestaurantCard from "../components/restaurants/RestaurantCard";
+import { RESTAURANT_GRID_ITEM_SIZE, RESTAURANT_GRID_SPACING } from "../components/restaurants/restaurantGrid";
 import LoadMoreButton from "../components/common/LoadMoreButton";
 import SectionHeader from "../components/common/SectionHeader";
 import AuthContext from "../features/auth/AuthContext";
 import { useLoadMore } from "../hooks/useLoadMore";
+import { hasEligibleOffer } from "../utils/cardOffers";
 import { getImageUrl } from "../utils/imageUrl";
+import { MenuTab, type MenuTabValue } from "../utils/menuPricing";
 
 import RestaurantService from "../services/RestaurantService";
 import UserFavoriteService from "../services/UserFavoriteService";
 import AreaService from "../services/AreaService";
 import CuisineService from "../services/CuisineService";
-import DiningTypeService from "../services/DiningTypeService";
 
 import type { Restaurant } from "../types/Restaurant";
 import type { UserFavorite } from "../types/UserFavorite";
 import type { Area } from "../types/Area";
 import type { Cuisine } from "../types/Cuisine";
-import type { DiningType } from "../types/DiningType";
 
-// Card grid: 1 column on phones, 2 on tablets, 3 on laptops, 4 on large screens.
-const GRID_ITEM_SIZE = { xs: 12, sm: 6, md: 4, lg: 3 };
+// Offer Type filter: matches restaurants with at least one eligible
+// deal of that type (same rules as the card overlays). Values are the
+// API's OfferType numbers as strings; "" = Any Offer.
+const OFFER_TYPE_OPTIONS = [
+    { value: String(MenuTab.DineIn), label: "Dine-in" },
+    { value: String(MenuTab.Takeaway), label: "Takeaway" }
+];
+
+// Top deals strip: 1 column on phones, 2 on tablets, 3 on laptops, 4 on large screens.
+// (The main listing uses the shared 3-across RESTAURANT_GRID_ITEM_SIZE.)
+const TOP_DEALS_GRID_ITEM_SIZE = { xs: 12, sm: 6, md: 4, lg: 3 };
 
 // Filter dropdowns keep a usable width and scroll sideways on phones.
 const FILTER_SX = { minWidth: { xs: 160, md: 180 }, flex: { md: 1 }, flexShrink: 0 };
@@ -76,7 +86,6 @@ function RestaurantsPage() {
 
     const [areas, setAreas] = useState<Area[]>([]);
     const [cuisines, setCuisines] = useState<Cuisine[]>([]);
-    const [diningTypes, setDiningTypes] = useState<DiningType[]>([]);
 
     const [loading, setLoading] = useState(true);
     const [loadError, setLoadError] = useState(false);
@@ -85,7 +94,7 @@ function RestaurantsPage() {
 
     const [selectedArea, setSelectedArea] = useState("");
     const [selectedCuisine, setSelectedCuisine] = useState("");
-    const [selectedDiningType, setSelectedDiningType] = useState("");
+    const [selectedOfferType, setSelectedOfferType] = useState("");
 
     useEffect(() => {
 
@@ -111,11 +120,6 @@ function RestaurantsPage() {
                 await CuisineService.getAll();
 
             setCuisines(cuisinesData);
-
-            const diningTypesData =
-                await DiningTypeService.getAll();
-
-            setDiningTypes(diningTypesData);
 
             if (isCustomer) {
 
@@ -153,6 +157,10 @@ function RestaurantsPage() {
 
     }
 
+    // One "now" for the whole filter pass, so every restaurant is judged
+    // at the same moment.
+    const now = new Date();
+
     const filteredRestaurants = restaurants.filter(r => {
 
         const isActive = r.isActive;
@@ -181,32 +189,38 @@ function RestaurantsPage() {
 
             r.cuisines.includes(selectedCuisine);
 
-        const matchesDiningType =
+        // Actual eligible deals (not sold out, usable today or later),
+        // not the restaurant's dining-type tags.
+        const matchesOfferType =
 
-            selectedDiningType === "" ||
+            selectedOfferType === "" ||
 
-            r.diningTypes.includes(selectedDiningType);
+            hasEligibleOffer(r.dealSummaries, Number(selectedOfferType) as MenuTabValue, now);
 
         return isActive &&
             matchesSearch &&
             matchesArea &&
             matchesCuisine &&
-            matchesDiningType;
+            matchesOfferType;
 
     });
+
+    // e.g. "Dine-in" (for the empty-results message); undefined = Any Offer.
+    const selectedOfferTypeLabel =
+        OFFER_TYPE_OPTIONS.find(o => o.value === selectedOfferType)?.label;
 
     const hasFilters =
         search !== "" ||
         selectedArea !== "" ||
         selectedCuisine !== "" ||
-        selectedDiningType !== "";
+        selectedOfferType !== "";
 
     // Show the results 20 at a time ("View next 20 venues"). A new
     // search, filter or page (Home vs Restaurants) starts again from
     // the first 20. The list is already loaded, so no extra API calls.
     const results = useLoadMore(
         filteredRestaurants,
-        [isHome, search.trim().toLowerCase(), selectedArea, selectedCuisine, selectedDiningType].join("|")
+        [isHome, search.trim().toLowerCase(), selectedArea, selectedCuisine, selectedOfferType].join("|")
     );
 
     function clearFilters() {
@@ -214,7 +228,7 @@ function RestaurantsPage() {
         setSearch("");
         setSelectedArea("");
         setSelectedCuisine("");
-        setSelectedDiningType("");
+        setSelectedOfferType("");
 
     }
 
@@ -425,7 +439,7 @@ function RestaurantsPage() {
                             />
                             <Grid container spacing={3}>
                                 {topDeals.map(restaurant => (
-                                    <Grid key={restaurant.id} size={GRID_ITEM_SIZE}>
+                                    <Grid key={restaurant.id} size={TOP_DEALS_GRID_ITEM_SIZE}>
                                         <RestaurantCard
                                             restaurant={restaurant}
                                             isFavorite={favorites.some(f => f.restaurantId === restaurant.id)}
@@ -560,28 +574,28 @@ function RestaurantsPage() {
 
                     <FormControl sx={FILTER_SX}>
 
-                        <InputLabel id="filter-dining-type-label">Dining Type</InputLabel>
+                        <InputLabel id="filter-offer-type-label">Offer Type</InputLabel>
 
                         <Select
-                            labelId="filter-dining-type-label"
-                            label="Dining Type"
-                            value={selectedDiningType}
+                            labelId="filter-offer-type-label"
+                            label="Offer Type"
+                            value={selectedOfferType}
                             onChange={(e: SelectChangeEvent) =>
-                                setSelectedDiningType(e.target.value)
+                                setSelectedOfferType(e.target.value)
                             }
                         >
 
                             <MenuItem value="">
-                                All Dining Types
+                                Any Offer
                             </MenuItem>
 
-                            {diningTypes.map(type => (
+                            {OFFER_TYPE_OPTIONS.map(option => (
 
                                 <MenuItem
-                                    key={type.id}
-                                    value={type.name}
+                                    key={option.value}
+                                    value={option.value}
                                 >
-                                    {type.name}
+                                    {option.label}
                                 </MenuItem>
 
                             ))}
@@ -603,9 +617,9 @@ function RestaurantsPage() {
             {/* Results */}
             {loading ? (
 
-                <Grid container spacing={3} aria-busy="true" aria-label="Loading restaurants">
-                    {Array.from({ length: 8 }, (_, i) => (
-                        <Grid key={i} size={GRID_ITEM_SIZE}>
+                <Grid container spacing={RESTAURANT_GRID_SPACING} aria-busy="true" aria-label="Loading restaurants">
+                    {Array.from({ length: 6 }, (_, i) => (
+                        <Grid key={i} size={RESTAURANT_GRID_ITEM_SIZE}>
                             <Card>
                                 <Skeleton variant="rectangular" sx={{ aspectRatio: "16 / 10", height: "auto" }} />
                                 <CardContent>
@@ -634,9 +648,11 @@ function RestaurantsPage() {
                             No restaurants found
                         </Typography>
                         <Typography color="text.secondary" sx={{ mt: 0.5 }}>
-                            {hasFilters
-                                ? "Try a different search or clear your filters."
-                                : "Check back soon for new restaurants."}
+                            {selectedOfferTypeLabel
+                                ? `No current ${selectedOfferTypeLabel} offers match your filters. Try another offer type or clear your filters.`
+                                : hasFilters
+                                    ? "Try a different search or clear your filters."
+                                    : "Check back soon for new restaurants."}
                         </Typography>
                         {hasFilters && (
                             <Button variant="outlined" onClick={clearFilters} sx={{ mt: 2 }}>
@@ -650,13 +666,13 @@ function RestaurantsPage() {
 
                 <>
 
-                    <Grid container spacing={3}>
+                    <Grid container spacing={RESTAURANT_GRID_SPACING}>
 
                         {results.visibleItems.map(restaurant => (
 
                             <Grid
                                 key={restaurant.id}
-                                size={GRID_ITEM_SIZE}
+                                size={RESTAURANT_GRID_ITEM_SIZE}
                             >
 
                                 <RestaurantCard
