@@ -6,6 +6,8 @@ import {
     Typography
 } from "@mui/material";
 
+import LoadMoreButton from "../components/common/LoadMoreButton";
+import { useLoadMore } from "../hooks/useLoadMore";
 import UserFavoriteService from "../services/UserFavoriteService";//Bring the UserFavoriteService code from the services folder so I can use it in this page.
 import { getImageUrl } from "../utils/imageUrl";
 import { useNotification } from "../features/notifications/NotificationContext";
@@ -37,6 +39,9 @@ function MyFavoritesPage() {
         // favorites now contains 3 restaurants
 
     const [loading, setLoading] = useState(true); //This is another little boxI'm currently waiting for the API
+
+    // Show favourites 20 at a time ("View next 20 venues"); no filters here.
+    const shownFavorites = useLoadMore(favorites, "favorites");
 
     useEffect(() => { //load when page opens
 
@@ -90,7 +95,7 @@ function MyFavoritesPage() {
 
             <Grid container spacing={3}>
 
-                {favorites.map(f => (   //For every favourite restaurant in my box, create some UI.
+                {shownFavorites.visibleItems.map(f => (   //For every favourite restaurant in my box, create some UI.
 
                     <Grid
                         key={f.restaurantId}
@@ -120,6 +125,8 @@ function MyFavoritesPage() {
                 ))}
 
             </Grid>
+
+            <LoadMoreButton loadMore={shownFavorites} />
 
         </>
 

@@ -1,18 +1,37 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 import {
-    CircularProgress,
-    Grid,
-    Typography,
-    TextField,
+    Alert,
+    Box,
+    Button,
+    Card,
+    CardContent,
+    Chip,
     FormControl,
+    Grid,
+    InputAdornment,
     InputLabel,
-    Select,
     MenuItem,
+    Select,
+    Skeleton,
+    Stack,
+    TextField,
+    Typography,
     type SelectChangeEvent
 } from "@mui/material";
 
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
+import SearchIcon from "@mui/icons-material/Search";
+import SearchOffIcon from "@mui/icons-material/SearchOff";
+
 import RestaurantCard from "../components/restaurants/RestaurantCard";
+import LoadMoreButton from "../components/common/LoadMoreButton";
+import SectionHeader from "../components/common/SectionHeader";
+import AuthContext from "../features/auth/AuthContext";
+import { useLoadMore } from "../hooks/useLoadMore";
+import { getImageUrl } from "../utils/imageUrl";
 
 import RestaurantService from "../services/RestaurantService";
 import UserFavoriteService from "../services/UserFavoriteService";
@@ -26,7 +45,31 @@ import type { Area } from "../types/Area";
 import type { Cuisine } from "../types/Cuisine";
 import type { DiningType } from "../types/DiningType";
 
+// Card grid: 1 column on phones, 2 on tablets, 3 on laptops, 4 on large screens.
+const GRID_ITEM_SIZE = { xs: 12, sm: 6, md: 4, lg: 3 };
+
+// Filter dropdowns keep a usable width and scroll sideways on phones.
+const FILTER_SX = { minWidth: { xs: 160, md: 180 }, flex: { md: 1 }, flexShrink: 0 };
+
+// Scroll target for "Browse restaurants" and the cuisine shortcuts.
+const RESULTS_ID = "restaurant-results";
+
+function scrollToResults() {
+
+    document
+        .getElementById(RESULTS_ID)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+}
+
 function RestaurantsPage() {
+
+    // "/" is Home: the listing gets a hero and discovery sections on top.
+    const isHome = useLocation().pathname === "/";
+
+    // Favourites are a customer feature (the heart only shows for customers).
+    const auth = useContext(AuthContext);
+    const isCustomer = auth?.user?.role === "Customer";
 
     const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
     const [favorites, setFavorites] = useState<UserFavorite[]>([]);
@@ -36,6 +79,7 @@ function RestaurantsPage() {
     const [diningTypes, setDiningTypes] = useState<DiningType[]>([]);
 
     const [loading, setLoading] = useState(true);
+    const [loadError, setLoadError] = useState(false);
 
     const [search, setSearch] = useState("");
 
@@ -47,7 +91,7 @@ function RestaurantsPage() {
 
         loadData();
 
-    }, []);
+    }, [isCustomer]); // eslint-disable-line react-hooks/exhaustive-deps
 
     async function loadData() {
 
@@ -73,24 +117,32 @@ function RestaurantsPage() {
 
             setDiningTypes(diningTypesData);
 
-            try {
+            if (isCustomer) {
 
-                const favoritesData =
-                    await UserFavoriteService.getMyFavorites();
+                try {
 
-                setFavorites(favoritesData);
+                    const favoritesData =
+                        await UserFavoriteService.getMyFavorites();
+
+                    setFavorites(favoritesData);
+
+                }
+                catch {
+
+                    // Favourites are optional on this page.
+
+                }
 
             }
-            catch {
 
-                // Not logged in
-
-            }
+            setLoadError(false);
 
         }
         catch (error) {
 
             console.error(error);
+
+            setLoadError(true);
 
         }
         finally {
@@ -100,9 +152,6 @@ function RestaurantsPage() {
         }
 
     }
-
-    if (loading)
-        return <CircularProgress />;
 
     const filteredRestaurants = restaurants.filter(r => {
 
@@ -146,43 +195,311 @@ function RestaurantsPage() {
 
     });
 
+    const hasFilters =
+        search !== "" ||
+        selectedArea !== "" ||
+        selectedCuisine !== "" ||
+        selectedDiningType !== "";
+
+    // Show the results 20 at a time ("View next 20 venues"). A new
+    // search, filter or page (Home vs Restaurants) starts again from
+    // the first 20. The list is already loaded, so no extra API calls.
+    const results = useLoadMore(
+        filteredRestaurants,
+        [isHome, search.trim().toLowerCase(), selectedArea, selectedCuisine, selectedDiningType].join("|")
+    );
+
+    function clearFilters() {
+
+        setSearch("");
+        setSelectedArea("");
+        setSelectedCuisine("");
+        setSelectedDiningType("");
+
+    }
+
+    // ---------- Home discovery data (derived from loaded restaurants) ----------
+
+    // Active restaurants with offers, best discount first.
+    const dealRestaurants = restaurants
+        .filter(r => r.isActive && r.activeDeals > 0 && r.bestDiscount != null)
+        .sort((a, b) => (b.bestDiscount ?? 0) - (a.bestDiscount ?? 0));
+
+    const topDeals = dealRestaurants.slice(0, 4);
+
+    const bestDiscount = dealRestaurants[0]?.bestDiscount ?? null;
+
+    // Up to 3 real cover photos for the hero mosaic.
+    const heroImages = dealRestaurants
+        .filter(r => r.coverImageUrl)
+        .slice(0, 3)
+        .map(r => getImageUrl(r.coverImageUrl));
+
+    // Cuisines that at least one active restaurant serves.
+    const cuisineShortcuts = cuisines
+        .filter(c => restaurants.some(r => r.isActive && r.cuisines.includes(c.name)))
+        .slice(0, 12);
+
+    function selectCuisine(name: string) {
+
+        setSelectedCuisine(current => current === name ? "" : name);
+        scrollToResults();
+
+    }
+
+    const searchField = (
+        <TextField
+            value={search}
+            onChange={(e) =>
+                setSearch(e.target.value)
+            }
+            placeholder="Search restaurants, areas or discounts"
+            sx={{ flex: { md: 1.6 } }}
+            slotProps={{
+                htmlInput: { "aria-label": "Search restaurants" },
+                input: {
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <SearchIcon aria-hidden />
+                        </InputAdornment>
+                    )
+                }
+            }}
+        />
+    );
+
+    const resultCount = !loading && !loadError && (
+        <Typography variant="body2" color="text.secondary" aria-live="polite">
+            {filteredRestaurants.length} {filteredRestaurants.length === 1 ? "restaurant" : "restaurants"}
+        </Typography>
+    );
+
     return (
 
         <>
 
-            <Typography
-                variant="h4"
+            {isHome ? (
+
+                <>
+
+                    {/* ---------- Home hero ---------- */}
+                    <Box
+                        component="section"
+                        aria-labelledby="home-hero-title"
+                        sx={{
+                            borderRadius: "16px",
+                            overflow: "hidden",
+                            bgcolor: "text.primary",
+                            color: "#FFFFFF",
+                            display: "grid",
+                            gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "minmax(0, 1.15fr) minmax(0, 1fr)" },
+                            mb: { xs: 4, md: 5 }
+                        }}
+                    >
+
+                        <Box sx={{ p: { xs: 3, sm: 4, md: 6 }, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+
+                            <Box
+                                component="span"
+                                sx={{
+                                    alignSelf: "flex-start",
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: 0.75,
+                                    px: 1.25,
+                                    py: 0.5,
+                                    borderRadius: "8px",
+                                    bgcolor: "rgba(255, 255, 255, 0.10)",
+                                    fontSize: "0.8125rem",
+                                    fontWeight: 600
+                                }}
+                            >
+                                <LocalOfferOutlinedIcon aria-hidden sx={{ fontSize: 16, color: "primary.light" }} />
+                                Walk-in restaurant deals
+                            </Box>
+
+                            <Typography
+                                id="home-hero-title"
+                                variant="h1"
+                                sx={{ mt: 2, color: "inherit", fontSize: { xs: "2.125rem", sm: "2.5rem", md: "3rem" } }}
+                            >
+                                Great food.{" "}
+                                <Box component="span" sx={{ color: "primary.light", whiteSpace: "nowrap" }}>Better deals.</Box>
+                            </Typography>
+
+                            <Typography sx={{ mt: 1.5, color: "rgba(255, 255, 255, 0.82)", maxWidth: 520, fontSize: { md: "1.0625rem" } }}>
+                                Discover walk-in offers at restaurants near you. Pick your arrival time,
+                                redeem in seconds and save on your bill.
+                            </Typography>
+
+                            <Stack direction={{ xs: "column", sm: "row", md: "column", lg: "row" }} spacing={1.5} sx={{ mt: 3, maxWidth: 600 }}>
+                                <Box sx={{ flex: 1, display: "flex", "& > .MuiTextField-root": { flex: 1 } }}>
+                                    {searchField}
+                                </Box>
+                                <Button
+                                    variant="contained"
+                                    size="large"
+                                    endIcon={<ArrowDownwardIcon />}
+                                    onClick={scrollToResults}
+                                    sx={{ flexShrink: 0, minHeight: 56 }}
+                                >
+                                    Browse restaurants
+                                </Button>
+                            </Stack>
+
+                            {!loading && !loadError && dealRestaurants.length > 0 && (
+                                <Typography variant="body2" sx={{ mt: 2, color: "rgba(255, 255, 255, 0.72)" }}>
+                                    {dealRestaurants.length} {dealRestaurants.length === 1 ? "restaurant" : "restaurants"} with offers
+                                    {bestDiscount != null && ` · up to ${bestDiscount}% off`}
+                                </Typography>
+                            )}
+
+                        </Box>
+
+                        {/* Photo mosaic from real restaurant covers (desktop only) */}
+                        {heroImages.length > 0 && (
+                            <Box
+                                aria-hidden
+                                sx={{
+                                    display: { xs: "none", md: "grid" },
+                                    gridTemplateColumns: heroImages.length > 1 ? "1fr 1fr" : "1fr",
+                                    gridTemplateRows: "1fr 1fr",
+                                    gap: 1,
+                                    p: 1,
+                                    minHeight: 380
+                                }}
+                            >
+                                {heroImages.map((src, i) => (
+                                    <Box
+                                        key={src + i}
+                                        component="img"
+                                        src={src}
+                                        alt=""
+                                        sx={{
+                                            width: "100%",
+                                            height: "100%",
+                                            objectFit: "cover",
+                                            borderRadius: "12px",
+                                            display: "block",
+                                            gridRow: i === 0 ? "span 2" : undefined,
+                                            minHeight: 0
+                                        }}
+                                    />
+                                ))}
+                            </Box>
+                        )}
+
+                    </Box>
+
+                    {/* ---------- Explore by cuisine ---------- */}
+                    {cuisineShortcuts.length > 0 && (
+                        <Box component="section" aria-labelledby="cuisine-heading" sx={{ mb: { xs: 4, md: 5 } }}>
+                            <SectionHeader id="cuisine-heading" title="Explore by cuisine" />
+                            <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: "wrap" }}>
+                                {cuisineShortcuts.map(c => {
+                                    const selected = selectedCuisine === c.name;
+                                    return (
+                                        <Chip
+                                            key={c.id}
+                                            label={c.name}
+                                            clickable
+                                            onClick={() => selectCuisine(c.name)}
+                                            color={selected ? "primary" : "default"}
+                                            variant={selected ? "filled" : "outlined"}
+                                            aria-pressed={selected}
+                                            sx={{ height: 38, px: 0.5, fontSize: "0.875rem", bgcolor: selected ? undefined : "background.paper" }}
+                                        />
+                                    );
+                                })}
+                            </Stack>
+                        </Box>
+                    )}
+
+                    {/* ---------- Top deals (unfiltered view only) ---------- */}
+                    {!loading && !loadError && !hasFilters && topDeals.length > 0 && (
+                        <Box component="section" aria-labelledby="top-deals-heading" sx={{ mb: { xs: 4, md: 5 } }}>
+                            <SectionHeader
+                                id="top-deals-heading"
+                                title="Top deals right now"
+                                subtitle="The biggest walk-in discounts available."
+                            />
+                            <Grid container spacing={3}>
+                                {topDeals.map(restaurant => (
+                                    <Grid key={restaurant.id} size={GRID_ITEM_SIZE}>
+                                        <RestaurantCard
+                                            restaurant={restaurant}
+                                            isFavorite={favorites.some(f => f.restaurantId === restaurant.id)}
+                                            onFavoriteChanged={loadData}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </Box>
+                    )}
+
+                    {/* ---------- All restaurants header ---------- */}
+                    <Stack
+                        id={RESULTS_ID}
+                        direction="row"
+                        sx={{ justifyContent: "space-between", alignItems: "flex-end", gap: 1, mb: 2, scrollMarginTop: { xs: 76, md: 88 } }}
+                    >
+                        <Typography variant="h5" component="h2">
+                            All restaurants
+                        </Typography>
+                        {resultCount}
+                    </Stack>
+
+                </>
+
+            ) : (
+
+                /* ---------- Listing page header ---------- */
+                <Stack
+                    id={RESULTS_ID}
+                    direction={{ xs: "column", sm: "row" }}
+                    sx={{ justifyContent: "space-between", alignItems: { sm: "flex-end" }, gap: 0.5, mb: 2.5 }}
+                >
+                    <Box>
+                        <Typography variant="h4" component="h1">
+                            Restaurants
+                        </Typography>
+                        <Typography color="text.secondary" sx={{ mt: 0.5 }}>
+                            Discover walk-in deals at restaurants near you.
+                        </Typography>
+                    </Box>
+
+                    {resultCount}
+                </Stack>
+
+            )}
+
+            {/* Search and filters (on Home, search lives in the hero) */}
+            <Stack
+                direction={{ xs: "column", md: "row" }}
+                spacing={1.5}
                 sx={{ mb: 3 }}
             >
-                Restaurants
-            </Typography>
 
-            <Grid
-                container
-                spacing={2}
-                sx={{ mb: 3 }}
-            >
+                {!isHome && searchField}
 
-                <Grid size={{ xs: 12, md: 4 }}>
+                <Stack
+                    direction="row"
+                    spacing={1.5}
+                    sx={{
+                        flex: { md: 2.4 },
+                        overflowX: { xs: "auto", md: "visible" },
+                        pt: { xs: 0.75, md: 0 },
+                        pb: { xs: 0.5, md: 0 },
+                        alignItems: "center"
+                    }}
+                >
 
-                    <TextField
-                        fullWidth
-                        label="Search"
-                        value={search}
-                        onChange={(e) =>
-                            setSearch(e.target.value)
-                        }
-                    />
+                    <FormControl sx={FILTER_SX}>
 
-                </Grid>
-
-                <Grid size={{ xs: 12, md: 3 }}>
-
-                    <FormControl fullWidth>
-
-                        <InputLabel>Area</InputLabel>
+                        <InputLabel id="filter-area-label">Area</InputLabel>
 
                         <Select
+                            labelId="filter-area-label"
                             label="Area"
                             value={selectedArea}
                             onChange={(e: SelectChangeEvent) =>
@@ -209,15 +526,12 @@ function RestaurantsPage() {
 
                     </FormControl>
 
-                </Grid>
+                    <FormControl sx={FILTER_SX}>
 
-                <Grid size={{ xs: 12, md: 2.5 }}>
-
-                    <FormControl fullWidth>
-
-                        <InputLabel>Cuisine</InputLabel>
+                        <InputLabel id="filter-cuisine-label">Cuisine</InputLabel>
 
                         <Select
+                            labelId="filter-cuisine-label"
                             label="Cuisine"
                             value={selectedCuisine}
                             onChange={(e: SelectChangeEvent) =>
@@ -244,15 +558,12 @@ function RestaurantsPage() {
 
                     </FormControl>
 
-                </Grid>
+                    <FormControl sx={FILTER_SX}>
 
-                <Grid size={{ xs: 12, md: 2.5 }}>
-
-                    <FormControl fullWidth>
-
-                        <InputLabel>Dining Type</InputLabel>
+                        <InputLabel id="filter-dining-type-label">Dining Type</InputLabel>
 
                         <Select
+                            labelId="filter-dining-type-label"
                             label="Dining Type"
                             value={selectedDiningType}
                             onChange={(e: SelectChangeEvent) =>
@@ -279,39 +590,96 @@ function RestaurantsPage() {
 
                     </FormControl>
 
+                    {hasFilters && (
+                        <Button onClick={clearFilters} sx={{ flexShrink: 0, whiteSpace: "nowrap" }}>
+                            Clear filters
+                        </Button>
+                    )}
+
+                </Stack>
+
+            </Stack>
+
+            {/* Results */}
+            {loading ? (
+
+                <Grid container spacing={3} aria-busy="true" aria-label="Loading restaurants">
+                    {Array.from({ length: 8 }, (_, i) => (
+                        <Grid key={i} size={GRID_ITEM_SIZE}>
+                            <Card>
+                                <Skeleton variant="rectangular" sx={{ aspectRatio: "16 / 10", height: "auto" }} />
+                                <CardContent>
+                                    <Skeleton width="70%" height={28} />
+                                    <Skeleton width="50%" />
+                                    <Skeleton />
+                                    <Skeleton width="85%" />
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    ))}
                 </Grid>
 
-            </Grid>
+            ) : loadError ? (
 
-            <Grid container spacing={3}>
+                <Alert severity="error">
+                    We couldn't load restaurants right now. Please try again later.
+                </Alert>
 
-                {filteredRestaurants.map(restaurant => (
+            ) : filteredRestaurants.length === 0 ? (
 
-                    <Grid
-                        key={restaurant.id}
-                        size={{
-                            xs: 12,
-                            sm: 6,
-                            md: 4,
-                            lg: 3
-                        }}
-                    >
+                <Card>
+                    <CardContent sx={{ textAlign: "center", py: 6 }}>
+                        <SearchOffIcon aria-hidden sx={{ fontSize: 40, color: "text.disabled" }} />
+                        <Typography variant="h6" component="p" sx={{ mt: 1 }}>
+                            No restaurants found
+                        </Typography>
+                        <Typography color="text.secondary" sx={{ mt: 0.5 }}>
+                            {hasFilters
+                                ? "Try a different search or clear your filters."
+                                : "Check back soon for new restaurants."}
+                        </Typography>
+                        {hasFilters && (
+                            <Button variant="outlined" onClick={clearFilters} sx={{ mt: 2 }}>
+                                Clear filters
+                            </Button>
+                        )}
+                    </CardContent>
+                </Card>
 
-                        <RestaurantCard
-                            restaurant={restaurant}
-                            isFavorite={
-                                favorites.some(
-                                    f => f.restaurantId === restaurant.id
-                                )
-                            }
-                            onFavoriteChanged={loadData}
-                        />
+            ) : (
+
+                <>
+
+                    <Grid container spacing={3}>
+
+                        {results.visibleItems.map(restaurant => (
+
+                            <Grid
+                                key={restaurant.id}
+                                size={GRID_ITEM_SIZE}
+                            >
+
+                                <RestaurantCard
+                                    restaurant={restaurant}
+                                    isFavorite={
+                                        favorites.some(
+                                            f => f.restaurantId === restaurant.id
+                                        )
+                                    }
+                                    onFavoriteChanged={loadData}
+                                />
+
+                            </Grid>
+
+                        ))}
 
                     </Grid>
 
-                ))}
+                    <LoadMoreButton loadMore={results} />
 
-            </Grid>
+                </>
+
+            )}
 
         </>
 

@@ -23,6 +23,7 @@ import RegisterPage from "../features/auth/RegisterPage";
 import ProtectedRoute from "../features/auth/ProtectedRoute";
 import MyReservationsPage from "../pages/MyReservationsPage";
 import MyRedemptionsPage from "../pages/MyRedemptionsPage";
+import ProfilePage from "../pages/ProfilePage";
 import OwnerOpeningHoursPage from "../pages/OwnerOpeningHoursPage";
 import OwnerMenuCategoriesPage from "../pages/OwnerMenuCategoriesPage";
 import OwnerMenuItemsPage from "../pages/OwnerMenuItemsPage";
@@ -75,6 +76,15 @@ function AppRoutes() {
                         element={
                             <ProtectedRoute role="Customer">
                                 <MyRedemptionsPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/profile"
+                        element={
+                            <ProtectedRoute role="Customer">
+                                <ProfilePage />
                             </ProtectedRoute>
                         }
                     />
