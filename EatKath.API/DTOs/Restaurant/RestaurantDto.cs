@@ -44,5 +44,9 @@ namespace EatKath.API.DTOs.Restaurant
         public List<string> DiningTypes { get; set; } = new();
 
         public List<RestaurantOpeningHourDto> OpeningHours { get; set; } = new();
+
+        // Active, not-yet-ended deals with today's availability.
+        // Filled in by the restaurant list (GetAllAsync) only.
+        public List<RestaurantDealSummaryDto> DealSummaries { get; set; } = new();
     }
 }

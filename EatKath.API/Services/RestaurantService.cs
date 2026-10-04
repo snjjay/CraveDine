@@ -17,17 +17,20 @@ namespace EatKath.API.Services
         private readonly IMapper _mapper;
         private readonly FileStorageService _fileStorage;
         private readonly ICurrentUserService _currentUser;
+        private readonly TimeProvider _timeProvider;
 
         public RestaurantService(
             ApplicationDbContext context,
             IMapper mapper,
             FileStorageService fileStorage,
-            ICurrentUserService currentUser)
+            ICurrentUserService currentUser,
+            TimeProvider timeProvider)
         {
             _context = context;
             _mapper = mapper;
             _fileStorage = fileStorage;
             _currentUser = currentUser;
+            _timeProvider = timeProvider;
         }
 
         private void EnsureOwnership(Restaurant restaurant, string action)
@@ -50,8 +53,40 @@ namespace EatKath.API.Services
     .ThenInclude(rd => rd.DiningType)
                 .ToListAsync();
 
+            // Deal summaries for the restaurant cards: active deals that
+            // have not ended, with today's availability (one batch).
+            var today = DateOnly.FromDateTime(_timeProvider.GetLocalNow().DateTime);
+
+            var summaryDeals = restaurants
+                .SelectMany(r => r.Deals)
+                .Where(d => d.IsActive && d.EndDate >= today)
+                .ToList();
+
+            var capacities = await DealCapacityCalculator.GetCapacitiesAsync(
+                _context,
+                summaryDeals,
+                today);
+
             return restaurants.Select(r => new RestaurantDto
             {
+                DealSummaries = r.Deals
+                    .Where(d => capacities.ContainsKey(d.Id))
+                    .OrderByDescending(d => d.DiscountPercentage)
+                    .Select(d => new RestaurantDealSummaryDto
+                    {
+                        Id = d.Id,
+                        DiscountPercentage = d.DiscountPercentage,
+                        OfferType = d.OfferType,
+                        StartDate = d.StartDate,
+                        EndDate = d.EndDate,
+                        StartTime = d.StartTime,
+                        EndTime = d.EndTime,
+                        RemainingOffers = capacities[d.Id].Remaining,
+                        AvailabilityDate = DealCapacityCalculator.AvailabilityDate(d, today),
+                        IsSoldOut = capacities[d.Id].TotalRemaining == 0
+                    })
+                    .ToList(),
+
                 Id = r.Id,
                 Name = r.Name,
                 Description = r.Description,
