@@ -31,19 +31,22 @@ function StatCard({ label, value }: StatCardProps) {
 
     return (
 
-        <Card>
+        <Card sx={{ height: "100%" }}>
 
             <CardContent>
 
-                <Typography variant="h4">
+                <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
 
-                    {value}
+                    {label}
 
                 </Typography>
 
-                <Typography color="text.secondary">
+                <Typography
+                    component="p"
+                    sx={{ fontFamily: "h4.fontFamily", fontWeight: 700, fontSize: "2rem", lineHeight: 1.2, mt: 0.5 }}
+                >
 
-                    {label}
+                    {value}
 
                 </Typography>
 
@@ -148,9 +151,11 @@ function AdminDashboardPage() {
             <Stack
                 direction="row"
                 spacing={2}
+                useFlexGap
                 sx={{
                     justifyContent: "space-between",
                     alignItems: "center",
+                    flexWrap: "wrap",
                     mb: 3
                 }}
             >

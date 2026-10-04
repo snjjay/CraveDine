@@ -363,9 +363,11 @@ function OwnerDashboardPage() {
             <Stack
                 direction="row"
                 spacing={2}
+                useFlexGap
                 sx={{
                     justifyContent: "space-between",
                     alignItems: "center",
+                    flexWrap: "wrap",
                     mb: 3
                 }}
             >
@@ -378,7 +380,9 @@ function OwnerDashboardPage() {
 
                     <Stack
                         direction="row"
-                        spacing={2}
+                        spacing={1.5}
+                        useFlexGap
+                        sx={{ flexWrap: "wrap" }}
                     >
 
                         <Button

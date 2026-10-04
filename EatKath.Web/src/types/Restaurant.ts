@@ -13,6 +13,23 @@
 
 import type { RestaurantOpeningHour } from "./RestaurantOpeningHour";
 
+// Compact deal summary from the restaurant list (GET api/Restaurants):
+// an active, not-yet-ended deal with today's availability.
+// Matches: EatKath.API.DTOs.Restaurant.RestaurantDealSummaryDto
+export interface RestaurantDealSummary {
+    id: number;
+    discountPercentage: number;
+    offerType: number;
+    startDate: string;
+    endDate: string;
+    startTime: string;
+    endTime: string;
+    // null = unlimited
+    remainingOffers: number | null;
+    availabilityDate: string;
+    isSoldOut: boolean;
+}
+
 export interface Restaurant {
 
     id: number;
@@ -54,6 +71,9 @@ export interface Restaurant {
     diningTypes: string[];
 
     openingHours: RestaurantOpeningHour[];
+
+    // Filled by the restaurant list only (empty elsewhere).
+    dealSummaries?: RestaurantDealSummary[];
 
 }
 

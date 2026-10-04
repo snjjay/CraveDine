@@ -45,8 +45,16 @@ function toMinutes(time: string): number {
 
 // How a deal stands today, or null when it cannot be used today
 // (inactive, outside its dates, sold out, or today's window is over).
+// The deal fields the timing check needs (a Deal, or a restaurant-list
+// deal summary).
+export type DealTimingInput = Pick<
+    Deal,
+    "isActive" | "startDate" | "endDate" | "startTime" | "endTime" |
+    "isSoldOut" | "availabilityDate" | "remainingOffers"
+>;
+
 export function getDealTimingToday(
-    deal: Deal,
+    deal: DealTimingInput,
     now: Date = new Date()
 ): DealTiming | null {
 

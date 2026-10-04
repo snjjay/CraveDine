@@ -2,19 +2,24 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
+    Box,
     Button,
     Card,
-    CardContent,
     Chip,
     Stack,
     Typography
 } from "@mui/material";
+
+import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
+import ScheduleIcon from "@mui/icons-material/Schedule";
+import ConfirmationNumberOutlinedIcon from "@mui/icons-material/ConfirmationNumberOutlined";
 
 import RedeemOfferDialog from "../redemptions/RedeemOfferDialog";
 import AuthContext from "../../features/auth/AuthContext";
 import { useNotification } from "../../features/notifications/NotificationContext";
 import type { Deal } from "../../types/Deal";
 import { getDealHeadline, getDealSummary } from "../../utils/deal";
+import { getOfferTypeLabel } from "../../utils/offerType";
 import { formatDate, formatTime12Hour, todayIsoDate } from "../../utils/time";
 
 interface Props {
@@ -113,53 +118,102 @@ function DealCard({ deal, onRedeemed }: Props) {
 
     }
 
+    const canRedeem = deal.isActive && !hasEnded && !deal.isSoldOut;
+
     return (
         <>
-            <Card sx={{ mb: 2 }}>
+            {/* Coupon-style offer card: discount panel | details */}
+            <Card
+                component="article"
+                aria-label={headline}
+                sx={{ height: "100%", display: "flex", alignItems: "stretch" }}
+            >
 
-                <CardContent>
-
-                    <Typography variant="h6">
-                        {headline}
+                <Box
+                    sx={{
+                        width: { xs: 92, sm: 112 },
+                        flexShrink: 0,
+                        bgcolor: "deal.soft",
+                        borderRight: "2px dashed",
+                        borderColor: "rgba(209, 43, 56, 0.28)",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        textAlign: "center",
+                        px: 1,
+                        py: 2
+                    }}
+                >
+                    <Typography
+                        component="p"
+                        sx={{
+                            fontFamily: "h1.fontFamily",
+                            fontWeight: 800,
+                            fontSize: { xs: "1.75rem", sm: "2rem" },
+                            lineHeight: 1,
+                            letterSpacing: "-0.03em",
+                            color: "deal.dark"
+                        }}
+                    >
+                        {deal.discountPercentage}%
                     </Typography>
+                    <Typography variant="overline" sx={{ color: "deal.text", lineHeight: 1.8 }}>
+                        Off
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: "deal.text", fontWeight: 600 }}>
+                        {getOfferTypeLabel(deal.offerType)}
+                    </Typography>
+                </Box>
 
-                    <Typography sx={{ mt: 0.5 }}>
+                <Stack spacing={1} sx={{ p: { xs: 2, sm: 2.5 }, flex: 1, minWidth: 0 }}>
+
+                    <Typography variant="subtitle1" component="h3" sx={{ fontWeight: 700 }}>
                         {summary}
                     </Typography>
 
-                    <Typography sx={{ mt: 2, fontWeight: 500 }}>
-                        Arrive between {formatTime12Hour(deal.startTime)} - {formatTime12Hour(deal.endTime)}
-                    </Typography>
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center", color: "text.primary" }}>
+                        <ScheduleIcon aria-hidden sx={{ fontSize: 18, color: "text.secondary" }} />
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                            Arrive {formatTime12Hour(deal.startTime)} – {formatTime12Hour(deal.endTime)}
+                        </Typography>
+                    </Stack>
 
-                    <Typography
-                        variant="body2"
-                        color="text.secondary"
-                    >
-                        Valid {formatCardDateRange(deal.startDate, deal.endDate)}
-                    </Typography>
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                        <EventOutlinedIcon aria-hidden sx={{ fontSize: 18, color: "text.secondary" }} />
+                        <Typography variant="body2" color="text.secondary">
+                            Valid {formatCardDateRange(deal.startDate, deal.endDate)}
+                        </Typography>
+                    </Stack>
 
                     {deal.isActive ? (
 
                         <>
 
                             {availabilityLabel && (
-                                <Typography
-                                    variant="body2"
-                                    sx={{ mt: 1, fontWeight: 500, color: availabilityColor }}
-                                >
-                                    {availabilityLabel}
-                                </Typography>
+                                <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                                    <ConfirmationNumberOutlinedIcon aria-hidden sx={{ fontSize: 18, color: availabilityColor }} />
+                                    <Typography
+                                        variant="body2"
+                                        sx={{ fontWeight: 600, color: availabilityColor }}
+                                    >
+                                        {availabilityLabel}
+                                    </Typography>
+                                </Stack>
                             )}
 
-                            {!hasEnded && !deal.isSoldOut && (
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={handleRedeemClick}
-                                    sx={{ mt: 2 }}
-                                >
-                                    Redeem
-                                </Button>
+                            {canRedeem && (
+                                <Box sx={{ pt: 0.5 }}>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={handleRedeemClick}
+                                        aria-label={`Redeem ${headline}`}
+                                        sx={{ minWidth: 120, width: { xs: "100%", sm: "auto" } }}
+                                    >
+                                        Redeem
+                                    </Button>
+                                </Box>
                             )}
 
                         </>
@@ -168,13 +222,14 @@ function DealCard({ deal, onRedeemed }: Props) {
 
                         <Stack
                             direction="row"
-                            spacing={2}
-                            alignItems="center"
+                            spacing={1.5}
+                            sx={{ alignItems: "center", flexWrap: "wrap", rowGap: 1 }}
                         >
 
                             <Chip
                                 label="Unavailable"
                                 color="default"
+                                size="small"
                             />
 
                             <Typography
@@ -188,7 +243,7 @@ function DealCard({ deal, onRedeemed }: Props) {
 
                     )}
 
-                </CardContent>
+                </Stack>
 
             </Card>
 

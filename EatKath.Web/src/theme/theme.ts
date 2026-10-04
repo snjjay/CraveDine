@@ -1,34 +1,394 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme, type Shadows } from "@mui/material/styles";
 import { colors } from "./colors";
 
+// Custom palette entries, usable in sx:
+// - deal:        coral-red offer/discount accent, e.g. color: "deal.dark"
+// - primarySoft: light brand tint for highlights, e.g. bgcolor: "primarySoft"
+// - brand:       vivid brand red for the logo tile and large display text
+// - successSoft: light green tint behind "Open" style statuses
+declare module "@mui/material/styles" {
+    interface Palette {
+        deal: { main: string; dark: string; text: string; soft: string; contrastText: string };
+        primarySoft: string;
+        brand: string;
+        successSoft: string;
+    }
+    interface PaletteOptions {
+        deal?: { main: string; dark: string; text: string; soft: string; contrastText: string };
+        primarySoft?: string;
+        brand?: string;
+        successSoft?: string;
+    }
+}
+
+// Outfit (rounded geometric, strong numerals for discounts) for
+// headings; Inter for body and UI text.
+const headingFont = '"Outfit", "Inter", "Roboto", "Helvetica", "Arial", sans-serif';
+const bodyFont = '"Inter", "Roboto", "Helvetica", "Arial", sans-serif';
+
+// Breakpoints/shadows of a default theme, used to build ours.
+const base = createTheme();
+const md = base.breakpoints.up("md");
+
+// Very light charcoal shadows (levels 1-4 for surfaces/hover,
+// 8 for menus/popovers, 16/24 for drawers/dialogs).
+const shadows = [...base.shadows] as Shadows;
+shadows[1] = "0 1px 2px rgba(28, 28, 28, 0.04)";
+shadows[2] = "0 2px 8px rgba(28, 28, 28, 0.06)";
+shadows[3] = "0 6px 18px rgba(28, 28, 28, 0.08)";
+shadows[4] = "0 10px 28px rgba(28, 28, 28, 0.10)";
+shadows[8] = "0 12px 32px rgba(28, 28, 28, 0.12)";
+shadows[16] = "0 16px 40px rgba(28, 28, 28, 0.14)";
+shadows[24] = "0 20px 48px rgba(28, 28, 28, 0.16)";
+
+const focusRing = {
+    outline: `2px solid ${colors.primary}`,
+    outlineOffset: 2
+};
+
 export const theme = createTheme({
+
     palette: {
         primary: {
-            main: colors.primary
+            main: colors.primary,
+            dark: colors.primaryDark,
+            light: colors.primaryLight,
+            contrastText: "#FFFFFF"
         },
+        // Charcoal for neutral emphasis (e.g. secondary buttons).
         secondary: {
-            main: colors.secondary
+            main: colors.textPrimary,
+            dark: "#000000",
+            light: "#4A4A4A",
+            contrastText: "#FFFFFF"
         },
+        deal: {
+            main: colors.deal,
+            dark: colors.dealDark,
+            text: colors.dealText,
+            soft: colors.dealSoft,
+            contrastText: "#FFFFFF"
+        },
+        success: { main: colors.success },
+        warning: { main: colors.warning },
+        error: { main: colors.error },
+        info: { main: colors.info },
         background: {
-            default: colors.background
+            default: colors.background,
+            paper: colors.surface
+        },
+        text: {
+            primary: colors.textPrimary,
+            secondary: colors.textSecondary,
+            disabled: colors.textDisabled
+        },
+        divider: colors.border,
+        primarySoft: colors.primarySoft,
+        brand: colors.brand,
+        successSoft: colors.successSoft,
+        action: {
+            hover: "rgba(28, 28, 28, 0.05)",
+            // Neutral: also the background of default (grey) chips such
+            // as "Cancelled", so it must not look like a positive status.
+            selected: "#EFEBE6"
         }
     },
 
+    shape: {
+        // Buttons and inputs; cards and chips set their own radius below.
+        borderRadius: 10
+    },
+
+    shadows,
+
     typography: {
-        fontFamily: "Roboto, Arial, sans-serif",
+        fontFamily: bodyFont,
+        h1: { fontFamily: headingFont, fontWeight: 700, fontSize: "2.25rem", lineHeight: 1.15, letterSpacing: "-0.02em", [md]: { fontSize: "2.75rem" } },
+        h2: { fontFamily: headingFont, fontWeight: 700, fontSize: "1.875rem", lineHeight: 1.2, letterSpacing: "-0.02em", [md]: { fontSize: "2.25rem" } },
+        h3: { fontFamily: headingFont, fontWeight: 700, fontSize: "1.625rem", lineHeight: 1.2, letterSpacing: "-0.015em", [md]: { fontSize: "1.875rem" } },
+        // Page titles
+        h4: { fontFamily: headingFont, fontWeight: 700, fontSize: "1.5rem", lineHeight: 1.25, letterSpacing: "-0.01em", [md]: { fontSize: "1.75rem" } },
+        // Section titles
+        h5: { fontFamily: headingFont, fontWeight: 700, fontSize: "1.1875rem", lineHeight: 1.3, letterSpacing: "-0.005em", [md]: { fontSize: "1.3125rem" } },
+        // Card titles
+        h6: { fontFamily: headingFont, fontWeight: 600, fontSize: "1.125rem", lineHeight: 1.3 },
+        subtitle1: { fontWeight: 600, fontSize: "1rem", lineHeight: 1.45 },
+        subtitle2: { fontWeight: 600, fontSize: "0.875rem", lineHeight: 1.45 },
+        body1: { fontSize: "0.9375rem", lineHeight: 1.6 },
+        body2: { fontSize: "0.875rem", lineHeight: 1.55 },
+        caption: { fontSize: "0.75rem", lineHeight: 1.5 },
+        overline: { fontWeight: 600, fontSize: "0.6875rem", letterSpacing: "0.08em", lineHeight: 1.6 },
+        button: { fontWeight: 600, fontSize: "0.9375rem", textTransform: "none", letterSpacing: 0 }
+    },
 
-        h4: {
-            fontWeight: 700
+    components: {
+
+        MuiCssBaseline: {
+            styleOverrides: {
+                body: {
+                    backgroundColor: colors.background,
+                    WebkitFontSmoothing: "antialiased",
+                    MozOsxFontSmoothing: "grayscale"
+                },
+                "::selection": {
+                    backgroundColor: colors.primarySoft
+                }
+            }
         },
 
-        h5: {
-            fontWeight: 600
+        // Visible keyboard focus for every button, icon button, tab,
+        // chip, list item and card action area.
+        MuiButtonBase: {
+            styleOverrides: {
+                root: {
+                    "&.Mui-focusVisible": focusRing
+                }
+            }
         },
 
-        button: {
-            textTransform: "none"
+        MuiButton: {
+            defaultProps: {
+                disableElevation: true
+            },
+            styleOverrides: {
+                root: {
+                    borderRadius: 10,
+                    paddingInline: 16,
+                    minHeight: 40
+                },
+                sizeSmall: {
+                    minHeight: 32,
+                    paddingInline: 12,
+                    fontSize: "0.8125rem"
+                },
+                sizeLarge: {
+                    minHeight: 48,
+                    paddingInline: 22,
+                    fontSize: "1rem"
+                },
+                containedPrimary: {
+                    "&:hover": { backgroundColor: colors.primaryDark }
+                },
+                outlined: {
+                    borderColor: colors.borderStrong,
+                    backgroundColor: colors.surface
+                },
+                outlinedPrimary: {
+                    "&:hover": {
+                        borderColor: colors.primary,
+                        backgroundColor: colors.primarySoft
+                    }
+                }
+            }
+        },
+
+        MuiIconButton: {
+            styleOverrides: {
+                root: {
+                    borderRadius: 10
+                }
+            }
+        },
+
+        MuiPaper: {
+            styleOverrides: {
+                root: {
+                    backgroundImage: "none"
+                },
+                rounded: {
+                    borderRadius: 14
+                },
+                // Default surface (Card, Paper, TableContainer): flat
+                // white with a subtle border and a very light shadow.
+                elevation1: {
+                    border: `1px solid ${colors.border}`,
+                    boxShadow: shadows[1]
+                }
+            }
+        },
+
+        MuiCard: {
+            styleOverrides: {
+                root: {
+                    borderRadius: 14,
+                    overflow: "hidden"
+                }
+            }
+        },
+
+        MuiCardContent: {
+            styleOverrides: {
+                root: {
+                    padding: 20,
+                    "&:last-child": { paddingBottom: 20 }
+                }
+            }
+        },
+
+        MuiChip: {
+            styleOverrides: {
+                root: {
+                    borderRadius: 8,
+                    fontWeight: 600
+                },
+                sizeSmall: {
+                    height: 26,
+                    fontSize: "0.75rem"
+                },
+                outlined: {
+                    borderColor: colors.borderStrong
+                }
+            }
+        },
+
+        MuiOutlinedInput: {
+            styleOverrides: {
+                root: {
+                    borderRadius: 10,
+                    backgroundColor: colors.surface,
+                    "&:hover:not(.Mui-focused):not(.Mui-error) .MuiOutlinedInput-notchedOutline": {
+                        borderColor: colors.textDisabled
+                    }
+                },
+                notchedOutline: {
+                    borderColor: colors.borderStrong
+                }
+            }
+        },
+
+        MuiMenu: {
+            styleOverrides: {
+                paper: {
+                    borderRadius: 12,
+                    border: `1px solid ${colors.border}`
+                }
+            }
+        },
+
+        MuiMenuItem: {
+            styleOverrides: {
+                root: {
+                    "&.Mui-selected": { backgroundColor: colors.primarySoft },
+                    "&.Mui-selected:hover": { backgroundColor: colors.primarySoft }
+                }
+            }
+        },
+
+        MuiDialog: {
+            styleOverrides: {
+                paper: {
+                    borderRadius: 14
+                }
+            }
+        },
+
+        MuiDialogTitle: {
+            styleOverrides: {
+                root: {
+                    fontFamily: headingFont,
+                    fontWeight: 700,
+                    fontSize: "1.125rem"
+                }
+            }
+        },
+
+        MuiDialogActions: {
+            styleOverrides: {
+                root: {
+                    padding: "12px 24px 20px",
+                    gap: 8
+                }
+            }
+        },
+
+        MuiTabs: {
+            styleOverrides: {
+                indicator: {
+                    height: 3,
+                    borderRadius: "3px 3px 0 0"
+                }
+            }
+        },
+
+        MuiTab: {
+            styleOverrides: {
+                root: {
+                    textTransform: "none",
+                    fontWeight: 600,
+                    fontSize: "0.9375rem",
+                    minHeight: 48
+                }
+            }
+        },
+
+        MuiAlert: {
+            styleOverrides: {
+                root: {
+                    borderRadius: 10
+                }
+            }
+        },
+
+        MuiAppBar: {
+            defaultProps: {
+                elevation: 0,
+                color: "inherit"
+            },
+            styleOverrides: {
+                root: {
+                    backgroundColor: colors.surface,
+                    color: colors.textPrimary,
+                    borderBottom: `1px solid ${colors.border}`
+                }
+            }
+        },
+
+        MuiLink: {
+            defaultProps: {
+                underline: "hover"
+            },
+            styleOverrides: {
+                root: {
+                    fontWeight: 500,
+                    "&.Mui-focusVisible, &:focus-visible": focusRing
+                }
+            }
+        },
+
+        MuiTableCell: {
+            styleOverrides: {
+                root: {
+                    borderColor: colors.border
+                },
+                head: {
+                    backgroundColor: colors.surfaceMuted,
+                    color: colors.textSecondary,
+                    fontWeight: 600,
+                    fontSize: "0.8125rem"
+                }
+            }
+        },
+
+        MuiSkeleton: {
+            styleOverrides: {
+                rounded: {
+                    borderRadius: 14
+                }
+            }
+        },
+
+        MuiTooltip: {
+            styleOverrides: {
+                tooltip: {
+                    backgroundColor: colors.textPrimary,
+                    fontSize: "0.75rem",
+                    borderRadius: 8
+                }
+            }
         }
+
     }
+
 });
 
 // ==========================================================

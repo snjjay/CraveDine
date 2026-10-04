@@ -6,19 +6,18 @@ import { useContext } from "react";
 
 import {
     Button,
-    Container,
-    Paper,
+    Link as MuiLink,
     Stack,
-    TextField,
-    Typography
+    TextField
 } from "@mui/material";
 
 import { useForm } from "react-hook-form";
 
 import AuthService from "../../services/AuthService";
 import AuthContext from "./AuthContext";
+import AuthCard from "../../components/common/AuthCard";
 import type { RegisterRequest } from "./types";
-import { useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useNotification } from "../notifications/NotificationContext";
 
 function RegisterPage() {
@@ -87,16 +86,18 @@ function RegisterPage() {
 
     return (
 
-        <Container maxWidth="sm">
-
-            <Paper sx={{ p: 4, mt: 6 }}>
-
-                <Typography
-                    variant="h4"
-                    sx={{ mb: 3 }}
-                >
-                    Create Account
-                </Typography>
+        <AuthCard
+            title="Create your account"
+            subtitle="Join CraveDine to redeem walk-in offers at restaurants near you."
+            footer={
+                <>
+                    Already have an account?{" "}
+                    <MuiLink component={RouterLink} to="/login">
+                        Log in
+                    </MuiLink>
+                </>
+            }
+        >
 
                 <form onSubmit={handleSubmit(onSubmit)}>
 
@@ -104,6 +105,7 @@ function RegisterPage() {
 
                         <TextField
                             label="First Name"
+                            autoComplete="given-name"
                             error={!!errors.firstName}
                             helperText={errors.firstName?.message}
                             {...register("firstName", {
@@ -113,6 +115,7 @@ function RegisterPage() {
 
                         <TextField
                             label="Last Name"
+                            autoComplete="family-name"
                             error={!!errors.lastName}
                             helperText={errors.lastName?.message}
                             {...register("lastName", {
@@ -122,6 +125,7 @@ function RegisterPage() {
 
                         <TextField
                             label="Email"
+                            autoComplete="email"
                             error={!!errors.email}
                             helperText={errors.email?.message}
                             {...register("email", {
@@ -135,6 +139,7 @@ function RegisterPage() {
 
                         <TextField
                             label="Password"
+                            autoComplete="new-password"
                             type="password"
                             error={!!errors.password}
                             helperText={errors.password?.message}
@@ -149,12 +154,15 @@ function RegisterPage() {
 
                         <TextField
                             label="Phone Number"
+                            autoComplete="tel"
                             {...register("phoneNumber")}
                         />
 
                         <Button
                             variant="contained"
                             type="submit"
+                            size="large"
+                            fullWidth
                         >
                             Create Account
                         </Button>
@@ -163,9 +171,7 @@ function RegisterPage() {
 
                 </form>
 
-            </Paper>
-
-        </Container>
+        </AuthCard>
     );
 }
 

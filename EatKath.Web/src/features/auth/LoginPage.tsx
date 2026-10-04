@@ -9,19 +9,18 @@ import axios from "axios";
 import {
     Alert,
     Button,
-    Container,
-    Paper,
+    Link as MuiLink,
     Stack,
-    TextField,
-    Typography
+    TextField
 } from "@mui/material";
 
 import { useForm } from "react-hook-form";
 
 import AuthService from "../../services/AuthService";
 import AuthContext from "./AuthContext";
+import AuthCard from "../../components/common/AuthCard";
 import type { LoginRequest } from "./types";
-import { useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 // Turns a failed login request into a safe, user-friendly message.
 // Never shows raw server text, stack traces or request details.
@@ -111,16 +110,18 @@ function LoginPage() {
 
     return (
 
-        <Container maxWidth="sm">
-
-            <Paper sx={{ p: 4, mt: 6 }}>
-
-                <Typography
-                    variant="h4"
-                    sx={{ mb: 3 }}
-                >
-                    Login
-                </Typography>
+        <AuthCard
+            title="Welcome back"
+            subtitle="Log in to redeem walk-in offers and manage your account."
+            footer={
+                <>
+                    New to CraveDine?{" "}
+                    <MuiLink component={RouterLink} to="/register">
+                        Create an account
+                    </MuiLink>
+                </>
+            }
+        >
 
                 <form onSubmit={handleSubmit(onSubmit)}>
 
@@ -134,18 +135,22 @@ function LoginPage() {
 
                         <TextField
                             label="Email"
+                            autoComplete="email"
                             {...register("email", { onChange: clearLoginError })}
                         />
 
                         <TextField
                             label="Password"
                             type="password"
+                            autoComplete="current-password"
                             {...register("password", { onChange: clearLoginError })}
                         />
 
                         <Button
                             variant="contained"
                             type="submit"
+                            size="large"
+                            fullWidth
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? "Logging in..." : "Login"}
@@ -155,9 +160,7 @@ function LoginPage() {
 
                 </form>
 
-            </Paper>
-
-        </Container >
+        </AuthCard>
     );
 }
 

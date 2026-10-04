@@ -390,9 +390,11 @@ function AdminUsersPage() {
             <Stack
                 direction="row"
                 spacing={2}
+                useFlexGap
                 sx={{
                     justifyContent: "space-between",
                     alignItems: "center",
+                    flexWrap: "wrap",
                     mb: 3
                 }}
             >
@@ -413,7 +415,8 @@ function AdminUsersPage() {
             <Stack
                 direction="row"
                 spacing={2}
-                sx={{ mb: 3 }}
+                useFlexGap
+                sx={{ flexWrap: "wrap", mb: 3 }}
             >
 
                 <TextField

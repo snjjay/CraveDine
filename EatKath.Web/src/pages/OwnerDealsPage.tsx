@@ -77,9 +77,11 @@ function OwnerDealsPage() {
             <Stack
                 direction="row"
                 spacing={2}
+                useFlexGap
                 sx={{
                     justifyContent: "space-between",
                     alignItems: "center",
+                    flexWrap: "wrap",
                     mb: 3
                 }}
             >
