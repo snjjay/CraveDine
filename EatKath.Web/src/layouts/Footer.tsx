@@ -117,7 +117,17 @@ function Footer() {
 
     return (
 
-        <Box component="footer" sx={{ bgcolor: "text.primary", color: "#FFFFFF", mt: { xs: 5, md: 8 } }}>
+        <Box
+            component="footer"
+            sx={theme => ({
+                bgcolor: "inverse.main",
+                color: "inverse.contrastText",
+                mt: { xs: 5, md: 8 },
+                // Night: a hairline so the near-black band doesn't merge
+                // with the dark page.
+                ...theme.applyStyles("dark", { borderTop: `1px solid ${(theme.vars || theme).palette.divider}` })
+            })}
+        >
 
             <Container maxWidth={false} sx={{ ...PAGE_CONTAINER_SX, py: { xs: 5, md: 7 } }}>
 

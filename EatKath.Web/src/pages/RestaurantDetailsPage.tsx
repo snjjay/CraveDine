@@ -263,7 +263,7 @@ function RestaurantDetailsPage() {
                     borderRadius: "12px",
                     overflow: "hidden",
                     height: { xs: 260, sm: 320, md: 380 },
-                    bgcolor: "text.primary"
+                    bgcolor: "inverse.main"
                 }}
             >
 

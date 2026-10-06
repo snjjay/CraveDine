@@ -1,23 +1,35 @@
 import { createTheme, type Shadows } from "@mui/material/styles";
-import { colors } from "./colors";
+import { colors, darkColors } from "./colors";
 
 // Custom palette entries, usable in sx:
-// - deal:        coral-red offer/discount accent, e.g. color: "deal.dark"
-// - primarySoft: light brand tint for highlights, e.g. bgcolor: "primarySoft"
-// - brand:       vivid brand red for the logo tile and large display text
-// - successSoft: light green tint behind "Open" style statuses
+// - deal:         coral-red offer/discount accent, e.g. color: "deal.dark"
+// - primarySoft:  light brand tint for highlights, e.g. bgcolor: "primarySoft"
+// - brand:        vivid brand red for the logo tile and large display text
+// - successSoft:  light green tint behind "Open" style statuses
+// - surfaceMuted: subtle neutral surface (table headers, fallback tiles)
+// - borderStrong: form field and outlined button borders
+// - raised:       menus, popovers and dialogs
+// - inverse:      the dark bands (footer, home hero), always light text
 declare module "@mui/material/styles" {
     interface Palette {
         deal: { main: string; dark: string; text: string; soft: string; contrastText: string };
         primarySoft: string;
         brand: string;
         successSoft: string;
+        surfaceMuted: string;
+        borderStrong: string;
+        raised: string;
+        inverse: { main: string; contrastText: string };
     }
     interface PaletteOptions {
         deal?: { main: string; dark: string; text: string; soft: string; contrastText: string };
         primarySoft?: string;
         brand?: string;
         successSoft?: string;
+        surfaceMuted?: string;
+        borderStrong?: string;
+        raised?: string;
+        inverse?: { main: string; contrastText: string };
     }
 }
 
@@ -41,57 +53,124 @@ shadows[8] = "0 12px 32px rgba(28, 28, 28, 0.12)";
 shadows[16] = "0 16px 40px rgba(28, 28, 28, 0.14)";
 shadows[24] = "0 20px 48px rgba(28, 28, 28, 0.16)";
 
-const focusRing = {
-    outline: `2px solid ${colors.primary}`,
-    outlineOffset: 2
-};
-
+// Day (the original CraveDine theme) and Night colour schemes. Switched
+// with useColorScheme() (ThemeToggle); the choice is stored by MUI in
+// localStorage ("mui-mode") and follows the OS until the user picks one.
+// index.html applies the stored/OS scheme before React loads (no flash).
+// Components use palette tokens, which resolve to CSS variables, so the
+// same styles work in both schemes.
 export const theme = createTheme({
 
-    palette: {
-        primary: {
-            main: colors.primary,
-            dark: colors.primaryDark,
-            light: colors.primaryLight,
-            contrastText: "#FFFFFF"
+    cssVariables: {
+        colorSchemeSelector: "data"
+    },
+
+    colorSchemes: {
+
+        light: {
+            palette: {
+                primary: {
+                    main: colors.primary,
+                    dark: colors.primaryDark,
+                    light: colors.primaryLight,
+                    contrastText: "#FFFFFF"
+                },
+                // Charcoal for neutral emphasis (e.g. secondary buttons).
+                secondary: {
+                    main: colors.textPrimary,
+                    dark: "#000000",
+                    light: "#4A4A4A",
+                    contrastText: "#FFFFFF"
+                },
+                deal: {
+                    main: colors.deal,
+                    dark: colors.dealDark,
+                    text: colors.dealText,
+                    soft: colors.dealSoft,
+                    contrastText: "#FFFFFF"
+                },
+                success: { main: colors.success },
+                warning: { main: colors.warning },
+                error: { main: colors.error },
+                info: { main: colors.info },
+                background: {
+                    default: colors.background,
+                    paper: colors.surface
+                },
+                text: {
+                    primary: colors.textPrimary,
+                    secondary: colors.textSecondary,
+                    disabled: colors.textDisabled
+                },
+                divider: colors.border,
+                primarySoft: colors.primarySoft,
+                brand: colors.brand,
+                successSoft: colors.successSoft,
+                surfaceMuted: colors.surfaceMuted,
+                borderStrong: colors.borderStrong,
+                raised: colors.raised,
+                inverse: { main: colors.inverse, contrastText: "#FFFFFF" },
+                action: {
+                    hover: "rgba(28, 28, 28, 0.05)",
+                    // Neutral: also the background of default (grey) chips such
+                    // as "Cancelled", so it must not look like a positive status.
+                    selected: "#EFEBE6"
+                }
+            }
         },
-        // Charcoal for neutral emphasis (e.g. secondary buttons).
-        secondary: {
-            main: colors.textPrimary,
-            dark: "#000000",
-            light: "#4A4A4A",
-            contrastText: "#FFFFFF"
-        },
-        deal: {
-            main: colors.deal,
-            dark: colors.dealDark,
-            text: colors.dealText,
-            soft: colors.dealSoft,
-            contrastText: "#FFFFFF"
-        },
-        success: { main: colors.success },
-        warning: { main: colors.warning },
-        error: { main: colors.error },
-        info: { main: colors.info },
-        background: {
-            default: colors.background,
-            paper: colors.surface
-        },
-        text: {
-            primary: colors.textPrimary,
-            secondary: colors.textSecondary,
-            disabled: colors.textDisabled
-        },
-        divider: colors.border,
-        primarySoft: colors.primarySoft,
-        brand: colors.brand,
-        successSoft: colors.successSoft,
-        action: {
-            hover: "rgba(28, 28, 28, 0.05)",
-            // Neutral: also the background of default (grey) chips such
-            // as "Cancelled", so it must not look like a positive status.
-            selected: "#EFEBE6"
+
+        dark: {
+            palette: {
+                // Lighter coral so coral text, links and focus rings stay
+                // readable on dark surfaces; filled buttons keep the
+                // original coral (see MuiButton).
+                primary: {
+                    main: darkColors.primary,
+                    dark: darkColors.primaryFill,
+                    light: darkColors.primary,
+                    contrastText: "#1C1C1C"
+                },
+                secondary: {
+                    main: darkColors.textPrimary,
+                    dark: "#FFFFFF",
+                    light: "#D9D3CD",
+                    contrastText: "#1C1C1C"
+                },
+                deal: {
+                    main: darkColors.deal,
+                    dark: darkColors.dealDark,
+                    text: darkColors.dealText,
+                    soft: darkColors.dealSoft,
+                    contrastText: "#FFFFFF"
+                },
+                success: { main: darkColors.success },
+                warning: { main: darkColors.warning },
+                error: { main: darkColors.error },
+                info: { main: darkColors.info },
+                background: {
+                    default: darkColors.background,
+                    paper: darkColors.surface
+                },
+                text: {
+                    primary: darkColors.textPrimary,
+                    secondary: darkColors.textSecondary,
+                    disabled: darkColors.textDisabled
+                },
+                divider: darkColors.border,
+                primarySoft: darkColors.primarySoft,
+                brand: darkColors.brand,
+                successSoft: darkColors.successSoft,
+                surfaceMuted: darkColors.surfaceMuted,
+                borderStrong: darkColors.borderStrong,
+                raised: darkColors.raised,
+                inverse: { main: darkColors.inverse, contrastText: "#FFFFFF" },
+                action: {
+                    hover: "rgba(255, 255, 255, 0.06)",
+                    selected: darkColors.selected
+                }
+            }
         }
+
     },
 
     shape: {
@@ -124,25 +203,28 @@ export const theme = createTheme({
     components: {
 
         MuiCssBaseline: {
-            styleOverrides: {
+            styleOverrides: theme => ({
                 body: {
-                    backgroundColor: colors.background,
+                    backgroundColor: theme.vars.palette.background.default,
                     WebkitFontSmoothing: "antialiased",
                     MozOsxFontSmoothing: "grayscale"
                 },
                 "::selection": {
-                    backgroundColor: colors.primarySoft
+                    backgroundColor: theme.vars.palette.primarySoft
                 }
-            }
+            })
         },
 
         // Visible keyboard focus for every button, icon button, tab,
         // chip, list item and card action area.
         MuiButtonBase: {
             styleOverrides: {
-                root: {
-                    "&.Mui-focusVisible": focusRing
-                }
+                root: ({ theme }) => ({
+                    "&.Mui-focusVisible": {
+                        outline: `2px solid ${theme.vars.palette.primary.main}`,
+                        outlineOffset: 2
+                    }
+                })
             }
         },
 
@@ -166,19 +248,27 @@ export const theme = createTheme({
                     paddingInline: 22,
                     fontSize: "1rem"
                 },
-                containedPrimary: {
-                    "&:hover": { backgroundColor: colors.primaryDark }
-                },
-                outlined: {
-                    borderColor: colors.borderStrong,
-                    backgroundColor: colors.surface
-                },
-                outlinedPrimary: {
-                    "&:hover": {
-                        borderColor: colors.primary,
-                        backgroundColor: colors.primarySoft
+                containedPrimary: ({ theme }) => ({
+                    "&:hover": { backgroundColor: theme.vars.palette.primary.dark },
+                    // Night: the same filled coral and white text as Day.
+                    // :where() adds no specificity, so disabled styles and
+                    // component sx still win over this.
+                    ":where([data-dark]) &": {
+                        backgroundColor: darkColors.primaryFill,
+                        color: "#FFFFFF",
+                        "&:hover": { backgroundColor: darkColors.primaryFillHover }
                     }
-                }
+                }),
+                outlined: ({ theme }) => ({
+                    borderColor: theme.vars.palette.borderStrong,
+                    backgroundColor: theme.vars.palette.background.paper
+                }),
+                outlinedPrimary: ({ theme }) => ({
+                    "&:hover": {
+                        borderColor: theme.vars.palette.primary.main,
+                        backgroundColor: theme.vars.palette.primarySoft
+                    }
+                })
             }
         },
 
@@ -200,10 +290,10 @@ export const theme = createTheme({
                 },
                 // Default surface (Card, Paper, TableContainer): flat
                 // white with a subtle border and a very light shadow.
-                elevation1: {
-                    border: `1px solid ${colors.border}`,
+                elevation1: ({ theme }) => ({
+                    border: `1px solid ${theme.vars.palette.divider}`,
                     boxShadow: shadows[1]
-                }
+                })
             }
         },
 
@@ -235,50 +325,60 @@ export const theme = createTheme({
                     height: 26,
                     fontSize: "0.75rem"
                 },
-                outlined: {
-                    borderColor: colors.borderStrong
-                }
+                outlined: ({ theme }) => ({
+                    borderColor: theme.vars.palette.borderStrong
+                })
             }
         },
 
         MuiOutlinedInput: {
             styleOverrides: {
-                root: {
+                root: ({ theme }) => ({
                     borderRadius: 10,
-                    backgroundColor: colors.surface,
+                    backgroundColor: theme.vars.palette.background.paper,
                     "&:hover:not(.Mui-focused):not(.Mui-error) .MuiOutlinedInput-notchedOutline": {
-                        borderColor: colors.textDisabled
+                        borderColor: theme.vars.palette.text.disabled
                     }
-                },
-                notchedOutline: {
-                    borderColor: colors.borderStrong
-                }
+                }),
+                notchedOutline: ({ theme }) => ({
+                    borderColor: theme.vars.palette.borderStrong
+                })
+            }
+        },
+
+        MuiPopover: {
+            styleOverrides: {
+                paper: ({ theme }) => ({
+                    backgroundColor: theme.vars.palette.raised
+                })
             }
         },
 
         MuiMenu: {
             styleOverrides: {
-                paper: {
+                paper: ({ theme }) => ({
                     borderRadius: 12,
-                    border: `1px solid ${colors.border}`
-                }
+                    border: `1px solid ${theme.vars.palette.divider}`,
+                    backgroundColor: theme.vars.palette.raised
+                })
             }
         },
 
         MuiMenuItem: {
             styleOverrides: {
-                root: {
-                    "&.Mui-selected": { backgroundColor: colors.primarySoft },
-                    "&.Mui-selected:hover": { backgroundColor: colors.primarySoft }
-                }
+                root: ({ theme }) => ({
+                    "&.Mui-selected": { backgroundColor: theme.vars.palette.primarySoft },
+                    "&.Mui-selected:hover": { backgroundColor: theme.vars.palette.primarySoft }
+                })
             }
         },
 
         MuiDialog: {
             styleOverrides: {
-                paper: {
-                    borderRadius: 14
-                }
+                paper: ({ theme }) => ({
+                    borderRadius: 14,
+                    backgroundColor: theme.vars.palette.raised
+                })
             }
         },
 
@@ -324,7 +424,13 @@ export const theme = createTheme({
         MuiAlert: {
             styleOverrides: {
                 root: {
-                    borderRadius: 10
+                    borderRadius: 10,
+                    // Links take the alert's own (high-contrast) text colour,
+                    // underlined so they still read as links.
+                    "& .MuiLink-root": {
+                        color: "inherit",
+                        textDecoration: "underline"
+                    }
                 }
             }
         },
@@ -335,11 +441,11 @@ export const theme = createTheme({
                 color: "inherit"
             },
             styleOverrides: {
-                root: {
-                    backgroundColor: colors.surface,
-                    color: colors.textPrimary,
-                    borderBottom: `1px solid ${colors.border}`
-                }
+                root: ({ theme }) => ({
+                    backgroundColor: theme.vars.palette.background.paper,
+                    color: theme.vars.palette.text.primary,
+                    borderBottom: `1px solid ${theme.vars.palette.divider}`
+                })
             }
         },
 
@@ -348,24 +454,27 @@ export const theme = createTheme({
                 underline: "hover"
             },
             styleOverrides: {
-                root: {
+                root: ({ theme }) => ({
                     fontWeight: 500,
-                    "&.Mui-focusVisible, &:focus-visible": focusRing
-                }
+                    "&.Mui-focusVisible, &:focus-visible": {
+                        outline: `2px solid ${theme.vars.palette.primary.main}`,
+                        outlineOffset: 2
+                    }
+                })
             }
         },
 
         MuiTableCell: {
             styleOverrides: {
-                root: {
-                    borderColor: colors.border
-                },
-                head: {
-                    backgroundColor: colors.surfaceMuted,
-                    color: colors.textSecondary,
+                root: ({ theme }) => ({
+                    borderColor: theme.vars.palette.divider
+                }),
+                head: ({ theme }) => ({
+                    backgroundColor: theme.vars.palette.surfaceMuted,
+                    color: theme.vars.palette.text.secondary,
                     fontWeight: 600,
                     fontSize: "0.8125rem"
-                }
+                })
             }
         },
 
@@ -377,13 +486,15 @@ export const theme = createTheme({
             }
         },
 
+        // Charcoal with white text by day; light with dark text at night.
         MuiTooltip: {
             styleOverrides: {
-                tooltip: {
-                    backgroundColor: colors.textPrimary,
+                tooltip: ({ theme }) => ({
+                    backgroundColor: theme.vars.palette.secondary.main,
+                    color: theme.vars.palette.secondary.contrastText,
                     fontSize: "0.75rem",
                     borderRadius: 8
-                }
+                })
             }
         }
 

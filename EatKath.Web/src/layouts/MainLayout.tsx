@@ -39,6 +39,7 @@ import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 
 import AuthContext from "../features/auth/AuthContext";
+import ThemeToggle from "../components/common/ThemeToggle";
 import Footer from "./Footer";
 import { PAGE_CONTAINER_SX } from "./layoutConstants";
 
@@ -245,6 +246,8 @@ function MainLayout() {
                             spacing={1}
                             sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}
                         >
+                            <ThemeToggle />
+
                             {isCustomer ? (
                                 <Button
                                     id="account-menu-button"
@@ -384,9 +387,12 @@ function MainLayout() {
                     <Typography sx={{ fontFamily: "h6.fontFamily", fontWeight: 800, fontSize: "1.125rem" }}>
                         Menu
                     </Typography>
-                    <IconButton aria-label="Close navigation menu" onClick={() => setDrawerOpen(false)} sx={{ width: 44, height: 44 }}>
-                        <CloseIcon />
-                    </IconButton>
+                    <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
+                        <ThemeToggle />
+                        <IconButton aria-label="Close navigation menu" onClick={() => setDrawerOpen(false)} sx={{ width: 44, height: 44 }}>
+                            <CloseIcon />
+                        </IconButton>
+                    </Stack>
                 </Stack>
 
                 <Divider />
@@ -410,7 +416,14 @@ function MainLayout() {
                                 selected={active}
                                 aria-current={active ? "page" : undefined}
                                 onClick={() => setDrawerOpen(false)}
-                                sx={{ borderRadius: "10px", minHeight: 48, color: active ? "primary.main" : "text.primary" }}
+                                // Active item: a deeper coral (Day) / lighter coral
+                                // (Night) so it stays readable on the selected tint.
+                                sx={theme => ({
+                                    borderRadius: "10px",
+                                    minHeight: 48,
+                                    color: active ? "primary.dark" : "text.primary",
+                                    ...(active && theme.applyStyles("dark", { color: (theme.vars || theme).palette.deal.text }))
+                                })}
                             >
                                 <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>
                                     {item.icon}

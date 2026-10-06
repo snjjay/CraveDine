@@ -12,13 +12,15 @@ function ToConfirm({ children }: { children: ReactNode }) {
 
         <Box
             component="mark"
-            sx={{
+            sx={theme => ({
                 bgcolor: "rgba(237, 108, 2, 0.12)",
                 color: "warning.dark",
                 fontWeight: 600,
                 px: 0.5,
-                borderRadius: "4px"
-            }}
+                borderRadius: "4px",
+                // Night: the lighter warning colour reads on the tint.
+                ...theme.applyStyles("dark", { color: (theme.vars || theme).palette.warning.main })
+            })}
         >
             [To be confirmed: {children}]
         </Box>

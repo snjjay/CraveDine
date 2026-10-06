@@ -58,19 +58,25 @@ function LoadMoreButton({ loadMore }: Props) {
             {hasMore && (
                 <Button
                     variant="contained"
+                    color="secondary"
                     disableElevation
                     onClick={handleClick}
-                    sx={{
+                    // Charcoal with white text by day; light with dark
+                    // text at night (secondary palette).
+                    sx={theme => ({
                         width: { xs: "100%", sm: "auto" },
                         minWidth: { sm: 260 },
                         minHeight: 48,
                         px: 4,
-                        bgcolor: "text.primary",
-                        color: "#FFFFFF",
+                        bgcolor: "secondary.main",
+                        color: "secondary.contrastText",
                         fontWeight: 600,
                         fontSize: "0.9375rem",
-                        "&:hover": { bgcolor: "#3A3A3A" }
-                    }}
+                        "&:hover": { bgcolor: "#3A3A3A" },
+                        ...theme.applyStyles("dark", {
+                            "&:hover": { bgcolor: (theme.vars || theme).palette.secondary.dark }
+                        })
+                    })}
                 >
                     View next {nextCount} {nextCount === 1 ? "venue" : "venues"}
                 </Button>

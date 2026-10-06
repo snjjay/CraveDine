@@ -320,7 +320,8 @@ function RestaurantMenu({
                                                             px: 0.75,
                                                             borderRadius: "6px",
                                                             bgcolor: "primarySoft",
-                                                            color: "primary.main",
+                                                            // deal.text: the readable red for small text on this tint
+                                                            color: "deal.text",
                                                             fontSize: "0.6875rem",
                                                             fontWeight: 700,
                                                             lineHeight: 1.7
@@ -353,7 +354,11 @@ function RestaurantMenu({
                                                         <>
                                                             <Typography
                                                                 component="span"
-                                                                sx={{ fontWeight: 700, color: "deal.dark" }}
+                                                                sx={theme => ({
+                                                                    fontWeight: 700,
+                                                                    color: "deal.dark",
+                                                                    ...theme.applyStyles("dark", { color: (theme.vars || theme).palette.deal.text })
+                                                                })}
                                                             >
                                                                 {formatCurrency(discountedPrice, currencyCode)}
                                                             </Typography>

@@ -147,14 +147,15 @@ function DealCard({ deal, onRedeemed }: Props) {
                 >
                     <Typography
                         component="p"
-                        sx={{
+                        sx={theme => ({
                             fontFamily: "h1.fontFamily",
                             fontWeight: 800,
                             fontSize: { xs: "1.75rem", sm: "2rem" },
                             lineHeight: 1,
                             letterSpacing: "-0.03em",
-                            color: "deal.dark"
-                        }}
+                            color: "deal.dark",
+                            ...theme.applyStyles("dark", { color: (theme.vars || theme).palette.deal.text })
+                        })}
                     >
                         {deal.discountPercentage}%
                     </Typography>

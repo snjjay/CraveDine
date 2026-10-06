@@ -310,8 +310,8 @@ function RestaurantsPage() {
                         sx={{
                             borderRadius: "16px",
                             overflow: "hidden",
-                            bgcolor: "text.primary",
-                            color: "#FFFFFF",
+                            bgcolor: "inverse.main",
+                            color: "inverse.contrastText",
                             display: "grid",
                             gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "minmax(0, 1.15fr) minmax(0, 1fr)" },
                             mb: { xs: 4, md: 5 }

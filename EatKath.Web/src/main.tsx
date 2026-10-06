@@ -11,7 +11,9 @@ import NotificationProvider from "./features/notifications/NotificationProvider"
 
 createRoot(document.getElementById("root")!).render( //Find <div id='root'> from index.html and put my React application inside it
     <StrictMode>
-        <ThemeProvider theme={theme}>
+        {/* Day/Night: follows the OS until the user picks (ThemeToggle);
+            index.html applies the scheme before this loads. */}
+        <ThemeProvider theme={theme} defaultMode="system" disableTransitionOnChange noSsr>
             <CssBaseline />
 
             <NotificationProvider>

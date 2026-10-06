@@ -149,8 +149,11 @@ function RestaurantCard({ //Give me these 3 things and I'll build the restaurant
                         never overlap: on narrow cards the button drops to its
                         own line below the overlays instead of squeezing them.
                         The heart sits top-right. */}
+                    {/* data-light: the white overlays on the photo keep
+                        Day colours in Night mode too (theme CSS variables). */}
                     {offers.length > 0 && (
                         <Box
+                            data-light=""
                             sx={{
                                 position: "absolute",
                                 left: 10,
@@ -301,6 +304,7 @@ function RestaurantCard({ //Give me these 3 things and I'll build the restaurant
 
             {isCustomer && (
                 <IconButton
+                    data-light=""
                     onClick={toggleFavorite}
                     aria-label={isFavorite
                         ? `Remove ${restaurant.name} from favourites`
