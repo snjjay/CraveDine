@@ -29,6 +29,10 @@
 
         public bool IsActive { get; set; } = true;
 
+        // Synthetic development/demo listing (created only by the dev-only
+        // `seed-demo` command). Never set from owner or admin forms.
+        public bool IsDemo { get; set; }
+
        
 
         // Navigation Properties

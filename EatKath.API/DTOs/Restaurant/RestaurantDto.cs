@@ -28,6 +28,10 @@ namespace EatKath.API.DTOs.Restaurant
 
         public bool IsActive { get; set; }
 
+        // Synthetic demo listing (development data); shown with a subtle
+        // "Demo" label in the customer UI.
+        public bool IsDemo { get; set; }
+
         public int AreaId { get; set; }
 
         public string AreaName { get; set; } = string.Empty;

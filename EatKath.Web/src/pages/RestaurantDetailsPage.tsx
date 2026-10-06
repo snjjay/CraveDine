@@ -339,6 +339,26 @@ function RestaurantDetailsPage() {
                             {restaurant.activeDeals > 0 && restaurant.bestDiscount != null && (
                                 <DiscountBadge label={`Up to ${restaurant.bestDiscount}% off`} size="medium" />
                             )}
+                            {/* Subtle marker for synthetic demo listings */}
+                            {restaurant.isDemo && (
+                                <Box
+                                    component="span"
+                                    title="Sample restaurant created for testing CraveDine; photos are illustrative."
+                                    sx={{
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        px: 1.25,
+                                        height: 32,
+                                        borderRadius: "8px",
+                                        bgcolor: "rgba(255, 255, 255, 0.16)",
+                                        color: "inherit",
+                                        fontSize: "0.8125rem",
+                                        fontWeight: 600
+                                    }}
+                                >
+                                    Demo listing
+                                </Box>
+                            )}
                         </Stack>
 
                     </Box>

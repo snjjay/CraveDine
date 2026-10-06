@@ -56,6 +56,9 @@ export interface Restaurant {
 
     isActive: boolean;
 
+    // Synthetic development/demo listing (shown with a subtle "Demo" label).
+    isDemo?: boolean;
+
     areaId: number;
 
     areaName: string;

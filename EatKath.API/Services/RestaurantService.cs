@@ -166,6 +166,7 @@ namespace EatKath.API.Services
                 CoverImageUrl = r.CoverImageUrl,
                 MenuPdfUrl = r.MenuPdfUrl,
                 IsActive = r.IsActive,
+                IsDemo = r.IsDemo,
                 AreaId = r.AreaId,
                 AreaName = r.Area.Name,
 
@@ -220,6 +221,7 @@ namespace EatKath.API.Services
                 CoverImageUrl = restaurant.CoverImageUrl,
                 MenuPdfUrl = restaurant.MenuPdfUrl,
                 IsActive = restaurant.IsActive,
+                IsDemo = restaurant.IsDemo,
                 AreaId = restaurant.AreaId,
                 AreaName = restaurant.Area.Name,
 
@@ -287,6 +289,7 @@ namespace EatKath.API.Services
                 CoverImageUrl = restaurant.CoverImageUrl,
                 MenuPdfUrl = restaurant.MenuPdfUrl,
                 IsActive = restaurant.IsActive,
+                IsDemo = restaurant.IsDemo,
                 AreaId = restaurant.AreaId,
                 AreaName = restaurant.Area.Name,
 
@@ -493,6 +496,7 @@ namespace EatKath.API.Services
                 CoverImageUrl = restaurant.CoverImageUrl,
                 MenuPdfUrl = restaurant.MenuPdfUrl,
                 IsActive = restaurant.IsActive,
+                IsDemo = restaurant.IsDemo,
                 AreaId = restaurant.AreaId,
                 AreaName = restaurant.Area.Name,
 

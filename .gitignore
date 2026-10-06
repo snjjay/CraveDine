@@ -517,3 +517,6 @@ wwwroot/uploads/
 
 
 .claude/settings.json
+
+# Local-only development reports (e.g. demo seed credentials)
+*.local.md

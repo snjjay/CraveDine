@@ -1,0 +1,2287 @@
+﻿{
+    "description":  "Source and licence for every CraveDine demo image (development data only). Images are illustrative food/restaurant photographs from Wikimedia Commons and are not photographs of the fictional demo restaurants.",
+    "source":  "Wikimedia Commons (https://commons.wikimedia.org)",
+    "acceptedLicences":  "Public domain, CC0, CC BY 2.0-4.0, CC BY-SA 2.0-4.0 (adaptations of CC BY-SA images are shared under the same licence)",
+    "images":  [
+                   {
+                       "file":  "/uploads/demo/momo-01.jpg",
+                       "category":  "momo",
+                       "title":  "Buff Open Momo steamed - Bhatti Pasal 2024-11-26.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Buff_Open_Momo_steamed_-_Bhatti_Pasal_2024-11-26.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/momo-02.jpg",
+                       "category":  "momo",
+                       "title":  "Buff momo.jpg",
+                       "author":  "Gaurav Dhwaj Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Buff_momo.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/momo-03.jpg",
+                       "category":  "momo",
+                       "title":  "Chicken Momo with Chilly Sauce.jpg",
+                       "author":  "Gaurav Dhwaj Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Chicken_Momo_with_Chilly_Sauce.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/momo-04.jpg",
+                       "category":  "momo",
+                       "title":  "Chicken momo.jpg",
+                       "author":  "Gaurav Dhwaj Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Chicken_momo.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/momo-05.jpg",
+                       "category":  "momo",
+                       "title":  "Home made momo with chutney.jpg",
+                       "author":  "Soumendra Kumar Sahoo",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Home_made_momo_with_chutney.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/momo-06.jpg",
+                       "category":  "momo",
+                       "title":  "Jhol Buff Momo .jpg",
+                       "author":  "Gaurav_Dhwaj_Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Jhol_Buff_Momo_.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/momo-07.jpg",
+                       "category":  "momo",
+                       "title":  "Momo food.jpg",
+                       "author":  "Gannu03",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Momo_food.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/momo-08.jpg",
+                       "category":  "momo",
+                       "title":  "Nepali Veg Momo - Worthing Indian Cafe \u0026 Bar 2026-04-27.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Nepali_Veg_Momo_-_Worthing_Indian_Cafe_%26_Bar_2026-04-27.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/momo-09.jpg",
+                       "category":  "momo",
+                       "title":  "Pork momo in curry house.jpg",
+                       "author":  "Geoffreyrabbit",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Pork_momo_in_curry_house.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/momo-10.jpg",
+                       "category":  "momo",
+                       "title":  "Sag Paneer and Gurkhali Beef Momo - Gurkha Kitchen 2025-10-17.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Sag_Paneer_and_Gurkhali_Beef_Momo_-_Gurkha_Kitchen_2025-10-17.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/momo-11.jpg",
+                       "category":  "momo",
+                       "title":  "Steamed Momos - KOLKATA.jpg",
+                       "author":  "TAPAS KUMAR HALDER",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Steamed_Momos_-_KOLKATA.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/momo-12.jpg",
+                       "category":  "momo",
+                       "title":  "Vegetables Momo streamed with Jhol achar - Bhatti Pasal 2024-11-26.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Vegetables_Momo_streamed_with_Jhol_achar_-_Bhatti_Pasal_2024-11-26.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/momo-13.jpg",
+                       "category":  "momo",
+                       "title":  "A Chicken Momo from Tuen Mun Curry House.jpg",
+                       "author":  "Peachyeung316",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:A_Chicken_Momo_from_Tuen_Mun_Curry_House.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/dalbhat-01.jpg",
+                       "category":  "dalbhat",
+                       "title":  "2015-03-18 Dal Bhat Tarkari,Nagarkot DSCF2224.jpg",
+                       "author":  "松岡明芳",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:2015-03-18_Dal_Bhat_Tarkari,Nagarkot_DSCF2224.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/dalbhat-02.jpg",
+                       "category":  "dalbhat",
+                       "title":  "Dal Bhat Tarkari.jpg",
+                       "author":  "Gaurav Dhwaj Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Dal_Bhat_Tarkari.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/dalbhat-03.jpg",
+                       "category":  "dalbhat",
+                       "title":  "Dal Bhat Tarkari 2.jpg",
+                       "author":  "Gaurav Dhwaj Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Dal_Bhat_Tarkari_2.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/dalbhat-04.jpg",
+                       "category":  "dalbhat",
+                       "title":  "Dal Bhat Tarkari with Chicken.jpg",
+                       "author":  "Gaurav Dhwaj Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Dal_Bhat_Tarkari_with_Chicken.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/dalbhat-05.jpg",
+                       "category":  "dalbhat",
+                       "title":  "Dal bah in Namche.jpg",
+                       "author":  "DARIO SEVERI",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Dal_bah_in_Namche.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/dalbhat-06.jpg",
+                       "category":  "dalbhat",
+                       "title":  "Dal bhat.jpg",
+                       "author":  "Gaurav Dhwaj Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Dal_bhat.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/dalbhat-07.jpg",
+                       "category":  "dalbhat",
+                       "title":  "Dal bhat 20221204.jpg",
+                       "author":  "赤猫法師",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Dal_bhat_20221204.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/dalbhat-08.jpg",
+                       "category":  "dalbhat",
+                       "title":  "Ghandruk-322-Dal Bhat-2013-gje.jpg",
+                       "author":  "Gerd Eichmann",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Ghandruk-322-Dal_Bhat-2013-gje.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/dalbhat-09.jpg",
+                       "category":  "dalbhat",
+                       "title":  "2015-03-09 Dalbath of Yin Yang Restaurant in Thamel, Kathmandu, Nepal ダルバート DSCF6287.JPG",
+                       "author":  "松岡明芳",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:2015-03-09_Dalbath_of_Yin_Yang_Restaurant_in_Thamel,_Kathmandu,_Nepal_%E3%83%80%E3%83%AB%E3%83%90%E3%83%BC%E3%83%88_DSCF6287.JPG",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/dalbhat-10.jpg",
+                       "category":  "dalbhat",
+                       "title":  "Kathmandu-Dinner-02-Dal-Bhat ueppig-2007-gje.jpg",
+                       "author":  "Gerd Eichmann",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Kathmandu-Dinner-02-Dal-Bhat_ueppig-2007-gje.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/newari-01.jpg",
+                       "category":  "newari",
+                       "title":  "Food Festival at Hadigaun (1).jpg",
+                       "author":  "Nabin K. Sapkota",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Food_Festival_at_Hadigaun_(1).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/newari-02.jpg",
+                       "category":  "newari",
+                       "title":  "Food Festival at Hadigaun (7).jpg",
+                       "author":  "Nabin K. Sapkota",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Food_Festival_at_Hadigaun_(7).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/newari-03.jpg",
+                       "category":  "newari",
+                       "title":  "Food Festival at Hadigaun (8).jpg",
+                       "author":  "Nabin K. Sapkota",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Food_Festival_at_Hadigaun_(8).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/newari-04.jpg",
+                       "category":  "newari",
+                       "title":  "Khaja Set.jpg",
+                       "author":  "Gaurav Dhwaj Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Khaja_Set.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/newari-05.jpg",
+                       "category":  "newari",
+                       "title":  "Khaja Set 2.jpg",
+                       "author":  "Gaurav Dhwaj Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Khaja_Set_2.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/newari-06.jpg",
+                       "category":  "newari",
+                       "title":  "Khaja Set Newari.jpg",
+                       "author":  "Gaurav Dhwaj Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Khaja_Set_Newari.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/newari-07.jpg",
+                       "category":  "newari",
+                       "title":  "Newari Foods.jpg",
+                       "author":  "Sufe",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Newari_Foods.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/newari-08.jpg",
+                       "category":  "newari",
+                       "title":  "Newari Khaja Set.jpg",
+                       "author":  "Gaurav Dhwaj Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Newari_Khaja_Set.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/newari-09.jpg",
+                       "category":  "newari",
+                       "title":  "Newari Khaja Set 1.jpg",
+                       "author":  "Gaurav Dhwaj Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Newari_Khaja_Set_1.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/nepali-01.jpg",
+                       "category":  "nepali",
+                       "title":  "Chicken Khana.jpg",
+                       "author":  "Gaurav Dhwaj Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Chicken_Khana.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/nepali-02.jpg",
+                       "category":  "nepali",
+                       "title":  "Famous Chitwan Ko Taas.jpg",
+                       "author":  "Gaurav Dhwaj Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Famous_Chitwan_Ko_Taas.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/nepali-03.jpg",
+                       "category":  "nepali",
+                       "title":  "Nepali dal-bhat-tarkari.jpg",
+                       "author":  "Subhashish Panigrahi",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Nepali_dal-bhat-tarkari.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/nepali-04.jpg",
+                       "category":  "nepali",
+                       "title":  "Newari Khaja Set 2.jpg",
+                       "author":  "Gaurav Dhwaj Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Newari_Khaja_Set_2.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/nepali-05.jpg",
+                       "category":  "nepali",
+                       "title":  "Sel Roti Nepal.jpg",
+                       "author":  "Janak Bhatta",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Sel_Roti_Nepal.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/tibetan-01.jpg",
+                       "category":  "tibetan",
+                       "title":  "A bowl of Thukpa.jpg",
+                       "author":  "Arunabha.Goswami",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:A_bowl_of_Thukpa.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/tibetan-02.jpg",
+                       "category":  "tibetan",
+                       "title":  "Chicken Thukpa.jpg",
+                       "author":  "Gaurav Dhwaj Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Chicken_Thukpa.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/tibetan-03.jpg",
+                       "category":  "tibetan",
+                       "title":  "Egg Thukpa - Noodles served in soup (8903437478).jpg",
+                       "author":  "Sharada Prasad CS from Berkeley, India",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Egg_Thukpa_-_Noodles_served_in_soup_(8903437478).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/tibetan-04.jpg",
+                       "category":  "tibetan",
+                       "title":  "Thenthuk.jpg",
+                       "author":  "Gaurav Dhwaj Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Thenthuk.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/tibetan-05.jpg",
+                       "category":  "tibetan",
+                       "title":  "Thukpa.jpg",
+                       "author":  "Lillottama",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Thukpa.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/tibetan-06.jpg",
+                       "category":  "tibetan",
+                       "title":  "Thukpa (27989841733).jpg",
+                       "author":  "Ashwin Kumar from Bangalore, India",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Thukpa_(27989841733).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/tibetan-07.jpg",
+                       "category":  "tibetan",
+                       "title":  "Thukpa 1.jpg",
+                       "author":  "Scudsvlad",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Thukpa_1.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/tibetan-08.jpg",
+                       "category":  "tibetan",
+                       "title":  "Thupka close-up.jpg",
+                       "author":  "taylorandayumi",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Thupka_close-up.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/tibetan-09.jpg",
+                       "category":  "tibetan",
+                       "title":  "Balep korkun, the Tibetan bread, photographed in Nepal, December 1, 2023.jpg",
+                       "author":  "Billjones94",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Balep_korkun,_the_Tibetan_bread,_photographed_in_Nepal,_December_1,_2023.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/tibetan-10.jpg",
+                       "category":  "tibetan",
+                       "title":  "Fried Momos - Tibetan cuisine.jpg",
+                       "author":  "Sarkar Sayantan",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Fried_Momos_-_Tibetan_cuisine.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/indian-01.jpg",
+                       "category":  "indian",
+                       "title":  "Aunt Lay Leong\u0027s Curry Chicken.jpg",
+                       "author":  "Alpha from Melbourne, Australia",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Aunt_Lay_Leong%27s_Curry_Chicken.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/indian-02.jpg",
+                       "category":  "indian",
+                       "title":  "Chicken Curry, Idstein.jpg",
+                       "author":  "Gerda Arendt",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Chicken_Curry,_Idstein.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/indian-03.jpg",
+                       "category":  "indian",
+                       "title":  "Chicken curry Trivandrum.jpg",
+                       "author":  "Abhilashsnair",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Chicken_curry_Trivandrum.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/indian-04.jpg",
+                       "category":  "indian",
+                       "title":  "Curry Chicken Green Beans.jpg",
+                       "author":  "regan76",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Curry_Chicken_Green_Beans.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/indian-05.jpg",
+                       "category":  "indian",
+                       "title":  "Curry Chicken Leg.jpg",
+                       "author":  "Ceeseven",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Curry_Chicken_Leg.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/indian-06.jpg",
+                       "category":  "indian",
+                       "title":  "Curry Chicken Thigh \u0026 Drumstick.jpg",
+                       "author":  "Ceeseven",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Curry_Chicken_Thigh_%26_Drumstick.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/southindian-01.jpg",
+                       "category":  "southindian",
+                       "title":  "A plate of South Indian Masala Dosa.jpg",
+                       "author":  "Billjones94",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:A_plate_of_South_Indian_Masala_Dosa.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/southindian-02.jpg",
+                       "category":  "southindian",
+                       "title":  "Masala Dosa (2049949444).jpg",
+                       "author":  "Charles Haynes from Hobart, Australia",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Masala_Dosa_(2049949444).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/southindian-03.jpg",
+                       "category":  "southindian",
+                       "title":  "Masala Dosa (Bengaluru).JPG",
+                       "author":  "Sumitbanti",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Masala_Dosa_(Bengaluru).JPG",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/southindian-04.jpg",
+                       "category":  "southindian",
+                       "title":  "Masala Dosa 01.jpg",
+                       "author":  "Srishti Singh",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Masala_Dosa_01.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/southindian-05.jpg",
+                       "category":  "southindian",
+                       "title":  "Masala Dosa 1.jpg",
+                       "author":  "Ahmed Nisar",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Masala_Dosa_1.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/southindian-06.jpg",
+                       "category":  "southindian",
+                       "title":  "Masala Dosa 10.jpg",
+                       "author":  "Vis M",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Masala_Dosa_10.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/southindian-07.jpg",
+                       "category":  "southindian",
+                       "title":  "Masala Dosa 12.jpg",
+                       "author":  "Vis M",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Masala_Dosa_12.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/southindian-08.jpg",
+                       "category":  "southindian",
+                       "title":  "Masala Dosa and Vada.jpg",
+                       "author":  "Gannu03",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Masala_Dosa_and_Vada.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/southindian-09.jpg",
+                       "category":  "southindian",
+                       "title":  "Masala Dosa from Kochi, Kerala, India -2069313.jpg",
+                       "author":  "Ranjithsiji",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Masala_Dosa_from_Kochi,_Kerala,_India_-2069313.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/southindian-10.jpg",
+                       "category":  "southindian",
+                       "title":  "Masala Dosa or Dosai.JPG",
+                       "author":  "OdetomyLife",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Masala_Dosa_or_Dosai.JPG",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/chinese-01.jpg",
+                       "category":  "chinese",
+                       "title":  "Dim Sum - Little Thai, Brighton 2024-03-21.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Dim_Sum_-_Little_Thai,_Brighton_2024-03-21.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/chinese-02.jpg",
+                       "category":  "chinese",
+                       "title":  "Dim Sum Breakfast.jpg",
+                       "author":  "afterdog",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Dim_Sum_Breakfast.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/chinese-03.jpg",
+                       "category":  "chinese",
+                       "title":  "Dim Sum Meals at Lung Dim Sum in Wan Chai.jpg",
+                       "author":  "Peachyeung316",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Dim_Sum_Meals_at_Lung_Dim_Sum_in_Wan_Chai.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/chinese-04.jpg",
+                       "category":  "chinese",
+                       "title":  "Dim Sum Trang.jpg",
+                       "author":  "Ahoerstemeier",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Dim_Sum_Trang.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/chinese-05.jpg",
+                       "category":  "chinese",
+                       "title":  "Dim Sum collection in Chinese restaurant.jpg",
+                       "author":  "Geoffreyrabbit",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Dim_Sum_collection_in_Chinese_restaurant.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/chinese-06.jpg",
+                       "category":  "chinese",
+                       "title":  "Dim sum 1.jpg",
+                       "author":  "Pauloleong2002",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Dim_sum_1.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/indochinese-01.jpg",
+                       "category":  "indochinese",
+                       "title":  "Buff Chow Mein.jpg",
+                       "author":  "Gaurav Dhwaj Khadka",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Buff_Chow_Mein.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/indochinese-02.jpg",
+                       "category":  "indochinese",
+                       "title":  "Chow Mein in Meerut, India.jpg",
+                       "author":  "Ravi Dwivedi",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Chow_Mein_in_Meerut,_India.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/indochinese-03.jpg",
+                       "category":  "indochinese",
+                       "title":  "Chow Mein with pork - Unithai 2025-07-30.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Chow_Mein_with_pork_-_Unithai_2025-07-30.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/indochinese-04.jpg",
+                       "category":  "indochinese",
+                       "title":  "Chow mein 2.jpg",
+                       "author":  "Gannu03",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Chow_mein_2.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/indochinese-05.jpg",
+                       "category":  "indochinese",
+                       "title":  "Chow mein at a place in Meerut, Uttar Pradesh, India.jpg",
+                       "author":  "Ravi Dwivedi",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Chow_mein_at_a_place_in_Meerut,_Uttar_Pradesh,_India.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/indochinese-06.jpg",
+                       "category":  "indochinese",
+                       "title":  "King prawns chow mein with spicy sauce - Stir Fry by CK 2025-08-26.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:King_prawns_chow_mein_with_spicy_sauce_-_Stir_Fry_by_CK_2025-08-26.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/japanese-01.jpg",
+                       "category":  "japanese",
+                       "title":  "Salmon Sushi and Sashimi Platter - W Sushi.jpg",
+                       "author":  "Angelicadlr",
+                       "license":  "CC BY-SA 3.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Salmon_Sushi_and_Sashimi_Platter_-_W_Sushi.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/japanese-02.jpg",
+                       "category":  "japanese",
+                       "title":  "Sushi \u0026 Stuff.jpg",
+                       "author":  "o.tacke",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Sushi_%26_Stuff.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/japanese-03.jpg",
+                       "category":  "japanese",
+                       "title":  "Sushi Plate in Organic Sushi Prague 4.jpg",
+                       "author":  "Mojmir Churavy",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Sushi_Plate_in_Organic_Sushi_Prague_4.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/japanese-04.jpg",
+                       "category":  "japanese",
+                       "title":  "Sushi Plate in Organic Sushi Prague 4 A.jpg",
+                       "author":  "Mojmir Churavy",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Sushi_Plate_in_Organic_Sushi_Prague_4_A.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/japanese-05.jpg",
+                       "category":  "japanese",
+                       "title":  "Sushi Plate in Organic Sushi Prague 4 C.jpg",
+                       "author":  "Mojmir Churavy",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Sushi_Plate_in_Organic_Sushi_Prague_4_C.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/japanese-06.jpg",
+                       "category":  "japanese",
+                       "title":  "Sushi Plate in Organic Sushi Prague 4 G.jpg",
+                       "author":  "Mojmir Churavy",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Sushi_Plate_in_Organic_Sushi_Prague_4_G.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/japanese-07.jpg",
+                       "category":  "japanese",
+                       "title":  "Sushi Plate in Organic Sushi Prague 4 H.jpg",
+                       "author":  "Mojmir Churavy",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Sushi_Plate_in_Organic_Sushi_Prague_4_H.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/japanese-08.jpg",
+                       "category":  "japanese",
+                       "title":  "Sushi Plate in Organic Sushi Prague 4 I.jpg",
+                       "author":  "Mojmir Churavy",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Sushi_Plate_in_Organic_Sushi_Prague_4_I.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/japanese-09.jpg",
+                       "category":  "japanese",
+                       "title":  "Sushi Platter (16013504352).jpg",
+                       "author":  "Studio Sarah Lou",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Sushi_Platter_(16013504352).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/korean-01.jpg",
+                       "category":  "korean",
+                       "title":  "Beef Bibimbap - SAERO 2025-11-06.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Beef_Bibimbap_-_SAERO_2025-11-06.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/korean-02.jpg",
+                       "category":  "korean",
+                       "title":  "Bibimbap 2.jpg",
+                       "author":  "ProjectManhattan",
+                       "license":  "CC BY-SA 3.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Bibimbap_2.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/korean-03.jpg",
+                       "category":  "korean",
+                       "title":  "Bibimbap 3.jpg",
+                       "author":  "ProjectManhattan",
+                       "license":  "CC BY-SA 3.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Bibimbap_3.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/korean-04.jpg",
+                       "category":  "korean",
+                       "title":  "Bibimbap 6.jpg",
+                       "author":  "Chloe Lim",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Bibimbap_6.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/korean-05.jpg",
+                       "category":  "korean",
+                       "title":  "Bibimbap Dukki Berlin.jpg",
+                       "author":  "Benreis",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Bibimbap_Dukki_Berlin.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/korean-06.jpg",
+                       "category":  "korean",
+                       "title":  "Bibimbap at Micun Bibimbap, CapitaMall Crystal (20211212122041).jpg",
+                       "author":  "N509FZ",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Bibimbap_at_Micun_Bibimbap,_CapitaMall_Crystal_(20211212122041).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/korean-07.jpg",
+                       "category":  "korean",
+                       "title":  "Bibimbap in Handan 1.jpg",
+                       "author":  "我乃野云鹤",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Bibimbap_in_Handan_1.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/korean-08.jpg",
+                       "category":  "korean",
+                       "title":  "Bibimbap with kkakdugi.jpg",
+                       "author":  "changupn",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Bibimbap_with_kkakdugi.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/korean-09.jpg",
+                       "category":  "korean",
+                       "title":  "Brighton Bibimbap (mushroom) - Time For Kimchi 2023-12-15.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Brighton_Bibimbap_(mushroom)_-_Time_For_Kimchi_2023-12-15.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/thai-01.jpg",
+                       "category":  "thai",
+                       "title":  "Ang Thong (2024) - \"ancient\" pad thai ผัดไทยโบราณ.jpg",
+                       "author":  "Chainwit.",
+                       "license":  "CC BY 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Ang_Thong_(2024)_-_%22ancient%22_pad_thai_%E0%B8%9C%E0%B8%B1%E0%B8%94%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B9%82%E0%B8%9A%E0%B8%A3%E0%B8%B2%E0%B8%93.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/thai-02.jpg",
+                       "category":  "thai",
+                       "title":  "Ang Thong - Chaiyo (2024) - \"ancient\" award winning pad thai ผัดไทย 01.jpg",
+                       "author":  "Chainwit.",
+                       "license":  "CC BY 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Ang_Thong_-_Chaiyo_(2024)_-_%22ancient%22_award_winning_pad_thai_%E0%B8%9C%E0%B8%B1%E0%B8%94%E0%B9%84%E0%B8%97%E0%B8%A2_01.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/thai-03.jpg",
+                       "category":  "thai",
+                       "title":  "Ang Thong - Chaiyo (2024) - \"ancient\" pad thai ผัดไทยโบราณ.jpg",
+                       "author":  "Chainwit.",
+                       "license":  "CC BY 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Ang_Thong_-_Chaiyo_(2024)_-_%22ancient%22_pad_thai_%E0%B8%9C%E0%B8%B1%E0%B8%94%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B9%82%E0%B8%9A%E0%B8%A3%E0%B8%B2%E0%B8%93.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/thai-04.jpg",
+                       "category":  "thai",
+                       "title":  "Pad Thai (12263703794).jpg",
+                       "author":  "François Bianco",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Pad_Thai_(12263703794).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/thai-05.jpg",
+                       "category":  "thai",
+                       "title":  "Pad Thai (2433385864).jpg",
+                       "author":  "Mack Male from Edmonton, AB, Canada",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Pad_Thai_(2433385864).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/thai-06.jpg",
+                       "category":  "thai",
+                       "title":  "Pad Thai 2017-12-17 (2).jpg",
+                       "author":  "Index Librorum Permissorum",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Pad_Thai_2017-12-17_(2).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/thai-07.jpg",
+                       "category":  "thai",
+                       "title":  "Pad Thai 2018-01-07 (1).jpg",
+                       "author":  "Index Librorum Permissorum",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Pad_Thai_2018-01-07_(1).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/thai-08.jpg",
+                       "category":  "thai",
+                       "title":  "Pad Thai 2018-12-26 (1).jpg",
+                       "author":  "Index Librorum Permissorum",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Pad_Thai_2018-12-26_(1).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/thai-09.jpg",
+                       "category":  "thai",
+                       "title":  "Pad Thai Hor Kai.jpg",
+                       "author":  "Tree Lightbulb",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Pad_Thai_Hor_Kai.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/italian-01.jpg",
+                       "category":  "italian",
+                       "title":  "A plate of red sauce pasta.jpg",
+                       "author":  "Rocky Masum \n\n\n\n\n\n\nThis work was made by Masum-al-Hasan Rocky and released under the license(s) stated below. Please feel free to use it for any purpose as long as you credit Masum-al-Hasan Rocky as author and follow the terms of the chosen license. If you use this work outside of the Wikimedia projects, I would very much like to get a note from you. Thanks!",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:A_plate_of_red_sauce_pasta.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/italian-02.jpg",
+                       "category":  "italian",
+                       "title":  "Baked pasta with meat sauce and cheese.jpg",
+                       "author":  "Geoffreyrabbit",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Baked_pasta_with_meat_sauce_and_cheese.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/italian-03.jpg",
+                       "category":  "italian",
+                       "title":  "Beef pasta with tomato sauce in hong kong.jpg",
+                       "author":  "Peachyeung316",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Beef_pasta_with_tomato_sauce_in_hong_kong.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/italian-04.jpg",
+                       "category":  "italian",
+                       "title":  "Pasta - Bistro Don Giovanni - Sarah Stierch 2018 01.jpg",
+                       "author":  "Missvain",
+                       "license":  "CC BY 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Pasta_-_Bistro_Don_Giovanni_-_Sarah_Stierch_2018_01.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/italian-05.jpg",
+                       "category":  "italian",
+                       "title":  "Pasta al pesto con camarones.jpg",
+                       "author":  "Pequeño mar",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Pasta_al_pesto_con_camarones.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/italian-06.jpg",
+                       "category":  "italian",
+                       "title":  "Pasta alla Norma - Wiki Loves Sicilia.jpg",
+                       "author":  "8w9d",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Pasta_alla_Norma_-_Wiki_Loves_Sicilia.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/italian-07.jpg",
+                       "category":  "italian",
+                       "title":  "Pasta alla zozzona.jpg",
+                       "author":  "The OranRed",
+                       "license":  "CC BY 3.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/3.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Pasta_alla_zozzona.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/italian-08.jpg",
+                       "category":  "italian",
+                       "title":  "Pasta dish.jpg",
+                       "author":  "jwalsh",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Pasta_dish.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/pizza-01.jpg",
+                       "category":  "pizza",
+                       "title":  "D.O.C. Margherita Pizza at Punch Pizza St Paul (2198174643).jpg",
+                       "author":  "Aaron Landry from Honolulu, HI, USA",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:D.O.C._Margherita_Pizza_at_Punch_Pizza_St_Paul_(2198174643).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/pizza-02.jpg",
+                       "category":  "pizza",
+                       "title":  "Gluten lactose free margherita pizza by schär brand.jpg",
+                       "author":  "Thesatirechap",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Gluten_lactose_free_margherita_pizza_by_sch%C3%A4r_brand.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/pizza-03.jpg",
+                       "category":  "pizza",
+                       "title":  "Margherita - Five50 Aria.jpg",
+                       "author":  "pelican",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Margherita_-_Five50_Aria.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/pizza-04.jpg",
+                       "category":  "pizza",
+                       "title":  "Margherita Originale.JPG",
+                       "author":  "Mario56",
+                       "license":  "CC BY-SA 3.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Margherita_Originale.JPG",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/pizza-05.jpg",
+                       "category":  "pizza",
+                       "title":  "Margherita Pizza of The Point Pizza and Point.jpg",
+                       "author":  "Peachyeung316",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Margherita_Pizza_of_The_Point_Pizza_and_Point.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/pizza-06.jpg",
+                       "category":  "pizza",
+                       "title":  "Margherita pizza (2346060254).jpg",
+                       "author":  "stu_spivack",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Margherita_pizza_(2346060254).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/pizza-07.jpg",
+                       "category":  "pizza",
+                       "title":  "Margherita pizza (5209912131).jpg",
+                       "author":  "mroach from Malmö, Sweden",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Margherita_pizza_(5209912131).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/pizza-08.jpg",
+                       "category":  "pizza",
+                       "title":  "Margherita pizza from il Bel Paese Sheung Wan.jpg",
+                       "author":  "Peachyeung316",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Margherita_pizza_from_il_Bel_Paese_Sheung_Wan.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/pizza-09.jpg",
+                       "category":  "pizza",
+                       "title":  "Margherita pizza on plate.jpg",
+                       "author":  "Shisma",
+                       "license":  "CC BY 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Margherita_pizza_on_plate.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/pizza-10.jpg",
+                       "category":  "pizza",
+                       "title":  "Margherita pizza on plate 2.jpg",
+                       "author":  "Shisma",
+                       "license":  "CC BY 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Margherita_pizza_on_plate_2.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/pizza-11.jpg",
+                       "category":  "pizza",
+                       "title":  "Pizza Margherita, at Restaurant Gusto (2013.07.13) 1.jpg",
+                       "author":  "Lombroso",
+                       "license":  "CC BY-SA 3.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Pizza_Margherita,_at_Restaurant_Gusto_(2013.07.13)_1.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/burgers-01.jpg",
+                       "category":  "burgers",
+                       "title":  "Argentine hamburgers made with Paty Clásicas patties served with a side of french fries.jpg",
+                       "author":  "Horacio Cambeiro",
+                       "license":  "CC BY-SA 3.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Argentine_hamburgers_made_with_Paty_Cl%C3%A1sicas_patties_served_with_a_side_of_french_fries.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/burgers-02.jpg",
+                       "category":  "burgers",
+                       "title":  "Argentine homemade hamburger with lettuce, tomato and cheese.jpg",
+                       "author":  "Horacio Cambeiro",
+                       "license":  "CC BY-SA 3.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Argentine_homemade_hamburger_with_lettuce,_tomato_and_cheese.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/burgers-03.jpg",
+                       "category":  "burgers",
+                       "title":  "Cheeseburgers and french fries.jpg",
+                       "author":  "jeffreyw",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Cheeseburgers_and_french_fries.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/burgers-04.jpg",
+                       "category":  "burgers",
+                       "title":  "French fries, ketchup and hamburger.jpg",
+                       "author":  "jeffreyw",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:French_fries,_ketchup_and_hamburger.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/burgers-05.jpg",
+                       "category":  "burgers",
+                       "title":  "Full Argentine meal with hamburgers, chicken burger-style sandwiches, french fries, and pickled gherkins on a set dinner table.jpg",
+                       "author":  "Horacio Cambeiro",
+                       "license":  "CC BY-SA 3.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Full_Argentine_meal_with_hamburgers,_chicken_burger-style_sandwiches,_french_fries,_and_pickled_gherkins_on_a_set_dinner_table.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/burgers-06.jpg",
+                       "category":  "burgers",
+                       "title":  "Hamburger \u0026 Fries at John Devoy\u0027s Bar, NY NY.jpg",
+                       "author":  "Paul Lowry",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Hamburger_%26_Fries_at_John_Devoy%27s_Bar,_NY_NY.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/burgers-07.jpg",
+                       "category":  "burgers",
+                       "title":  "Hamburger America onion burger and French fries.jpg",
+                       "author":  "BanjoZebra",
+                       "license":  "CC BY 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Hamburger_America_onion_burger_and_French_fries.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/burgers-08.jpg",
+                       "category":  "burgers",
+                       "title":  "Hamburger and French fries at Friends \u0026 Brgrs Myyrmanni.jpg",
+                       "author":  "JIP",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Hamburger_and_French_fries_at_Friends_%26_Brgrs_Myyrmanni.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/burgers-09.jpg",
+                       "category":  "burgers",
+                       "title":  "Burger (15132396349).jpg",
+                       "author":  "Jorge Franganillo",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Burger_(15132396349).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/cafe-01.jpg",
+                       "category":  "cafe",
+                       "title":  "Café Capuchino.jpg",
+                       "author":  "Juan Emilio Prades Bel",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Caf%C3%A9_Capuchino.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/cafe-02.jpg",
+                       "category":  "cafe",
+                       "title":  "Café Martínez. Cappuccino Italiano y Lemon Pie.jpg",
+                       "author":  "Just a Man",
+                       "license":  "CC BY 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Caf%C3%A9_Mart%C3%ADnez._Cappuccino_Italiano_y_Lemon_Pie.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/cafe-03.jpg",
+                       "category":  "cafe",
+                       "title":  "Cappuccino and cookie.jpg",
+                       "author":  "TricksterWildcat",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Cappuccino_and_cookie.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/cafe-04.jpg",
+                       "category":  "cafe",
+                       "title":  "Cappuccino art, Luci’s Cafe, Bawley Point, NSW, 2023.jpg",
+                       "author":  "Kgbo",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Cappuccino_art,_Luci%E2%80%99s_Cafe,_Bawley_Point,_NSW,_2023.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/cafe-05.jpg",
+                       "category":  "cafe",
+                       "title":  "Cappuccino in Savour Cafe Hong Kong.jpg",
+                       "author":  "Peachyeung316",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Cappuccino_in_Savour_Cafe_Hong_Kong.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/cafe-06.jpg",
+                       "category":  "cafe",
+                       "title":  "Cappuccino in cafe shop.jpg",
+                       "author":  "Alex Chan",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Cappuccino_in_cafe_shop.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/bakery-01.jpg",
+                       "category":  "bakery",
+                       "title":  "Arsicault Bakery croissants (24690473276).jpg",
+                       "author":  "Willis Lam",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Arsicault_Bakery_croissants_(24690473276).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/bakery-02.jpg",
+                       "category":  "bakery",
+                       "title":  "Chocolate \u0026 Almond Croissant - GAIL\u0027s Bakery 2025-12-21.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Chocolate_%26_Almond_Croissant_-_GAIL%27s_Bakery_2025-12-21.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/bakery-03.jpg",
+                       "category":  "bakery",
+                       "title":  "Chocolate \u0026 almond croissant - GAIL\u0027s 2024-07-14.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Chocolate_%26_almond_croissant_-_GAIL%27s_2024-07-14.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/bakery-04.jpg",
+                       "category":  "bakery",
+                       "title":  "Chocolate \u0026 almond croissant - The Pantry Bakery, Worthing 2026-07-14.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Chocolate_%26_almond_croissant_-_The_Pantry_Bakery,_Worthing_2026-07-14.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/bakery-05.jpg",
+                       "category":  "bakery",
+                       "title":  "Croissant - GAIL\u0027s 2024-08-18.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Croissant_-_GAIL%27s_2024-08-18.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/bakery-06.jpg",
+                       "category":  "bakery",
+                       "title":  "HK STD 沙田 Sha Tin 新城市廣場 New Town Plaza mall shop bakery 牛角包 croissants September 2022 Px3 02.jpg",
+                       "author":  "Yanghime TADIWODOA BBAEW",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:HK_STD_%E6%B2%99%E7%94%B0_Sha_Tin_%E6%96%B0%E5%9F%8E%E5%B8%82%E5%BB%A3%E5%A0%B4_New_Town_Plaza_mall_shop_bakery_%E7%89%9B%E8%A7%92%E5%8C%85_croissants_September_2022_Px3_02.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/bakery-07.jpg",
+                       "category":  "bakery",
+                       "title":  "HK TKO 將軍澳 Tseung Kwan O PopCorn mall shop bakery croissants January 2022 Px3 02.jpg",
+                       "author":  "Posywulausilsma LUOA",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:HK_TKO_%E5%B0%87%E8%BB%8D%E6%BE%B3_Tseung_Kwan_O_PopCorn_mall_shop_bakery_croissants_January_2022_Px3_02.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/desserts-01.jpg",
+                       "category":  "desserts",
+                       "title":  "1963 mandarin cheesecake with blackberry jam.jpg",
+                       "author":  "Peachyeung316",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:1963_mandarin_cheesecake_with_blackberry_jam.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/desserts-02.jpg",
+                       "category":  "desserts",
+                       "title":  "2019-12-24 21 08 45 A slice of cheesecake with white frosting in Hamilton Township, Mercer County, New Jersey.jpg",
+                       "author":  "Famartin",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:2019-12-24_21_08_45_A_slice_of_cheesecake_with_white_frosting_in_Hamilton_Township,_Mercer_County,_New_Jersey.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/desserts-03.jpg",
+                       "category":  "desserts",
+                       "title":  "2020-03-15 19 47 39 A slice of cheesecake with strawberry topping from the Amphora Diner in the Franklin Farm section of Oak Hill, Fairfax County, Virginia.jpg",
+                       "author":  "Famartin",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:2020-03-15_19_47_39_A_slice_of_cheesecake_with_strawberry_topping_from_the_Amphora_Diner_in_the_Franklin_Farm_section_of_Oak_Hill,_Fairfax_County,_Virginia.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/desserts-04.jpg",
+                       "category":  "desserts",
+                       "title":  "2020-04-10 15 09 25 A slice of \"The Cheesecake Factory at Home - Original Cheesecake\" in the Franklin Farm section of Oak Hill, Fairfax County, Virginia.jpg",
+                       "author":  "Famartin",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:2020-04-10_15_09_25_A_slice_of_%22The_Cheesecake_Factory_at_Home_-_Original_Cheesecake%22_in_the_Franklin_Farm_section_of_Oak_Hill,_Fairfax_County,_Virginia.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/desserts-05.jpg",
+                       "category":  "desserts",
+                       "title":  "Amalfi Lemon Cheesecake - Tavola Di Famiglia 2026-02-27.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Amalfi_Lemon_Cheesecake_-_Tavola_Di_Famiglia_2026-02-27.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/desserts-06.jpg",
+                       "category":  "desserts",
+                       "title":  "Cheesecake fromage blanc 2014.jpg",
+                       "author":  "Roozitaa",
+                       "license":  "CC BY-SA 3.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Cheesecake_fromage_blanc_2014.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/desserts-07.jpg",
+                       "category":  "desserts",
+                       "title":  "Cheesecake mit Streuseln (5479527140).jpg",
+                       "author":  "Katrin Gilger",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Cheesecake_mit_Streuseln_(5479527140).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/desserts-08.jpg",
+                       "category":  "desserts",
+                       "title":  "Cheesecake with blueberry topping.jpg",
+                       "author":  "Chris Gladis",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Cheesecake_with_blueberry_topping.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/interior-01.jpg",
+                       "category":  "interior",
+                       "title":  "Bonefish Grill restaurant interior in Marlton, New Jersey 03.jpg",
+                       "author":  "Harrison Keely",
+                       "license":  "CC BY 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Bonefish_Grill_restaurant_interior_in_Marlton,_New_Jersey_03.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/interior-02.jpg",
+                       "category":  "interior",
+                       "title":  "Interior d\u0027un restaurant al carrer de la Corretgeria, València.jpg",
+                       "author":  "Joanbanjo",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Interior_d%27un_restaurant_al_carrer_de_la_Corretgeria,_Val%C3%A8ncia.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/interior-03.jpg",
+                       "category":  "interior",
+                       "title":  "Interior of Bucci Restaurant, Brisbane.jpg",
+                       "author":  "Kgbo",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Interior_of_Bucci_Restaurant,_Brisbane.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/interior-04.jpg",
+                       "category":  "interior",
+                       "title":  "Interior of a hut with straw roof in a coffee restaurant near Li Phi Falls - Don Khon - Laos.jpg",
+                       "author":  "Basile Morin",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Interior_of_a_hut_with_straw_roof_in_a_coffee_restaurant_near_Li_Phi_Falls_-_Don_Khon_-_Laos.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/interior-05.jpg",
+                       "category":  "interior",
+                       "title":  "McCormick \u0026 Schmick\u0027s Seafood Restaurant interior in Philadelphia, Pennsylvania 01.jpg",
+                       "author":  "Harrison Keely",
+                       "license":  "CC BY 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:McCormick_%26_Schmick%27s_Seafood_Restaurant_interior_in_Philadelphia,_Pennsylvania_01.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/interior-06.jpg",
+                       "category":  "interior",
+                       "title":  "McCormick \u0026 Schmick\u0027s Seafood Restaurant interior in Philadelphia, Pennsylvania 03.jpg",
+                       "author":  "Harrison Keely",
+                       "license":  "CC BY 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:McCormick_%26_Schmick%27s_Seafood_Restaurant_interior_in_Philadelphia,_Pennsylvania_03.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/interior-07.jpg",
+                       "category":  "interior",
+                       "title":  "McCormick \u0026 Schmick\u0027s Seafood Restaurant interior in Philadelphia, Pennsylvania 05.jpg",
+                       "author":  "Harrison Keely",
+                       "license":  "CC BY 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:McCormick_%26_Schmick%27s_Seafood_Restaurant_interior_in_Philadelphia,_Pennsylvania_05.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/middleeast-01.jpg",
+                       "category":  "middleeast",
+                       "title":  "A falafel platter at Agasi, Lajpat Nagar, Delhi.jpg",
+                       "author":  "Contrapunctus-1",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:A_falafel_platter_at_Agasi,_Lajpat_Nagar,_Delhi.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/middleeast-02.jpg",
+                       "category":  "middleeast",
+                       "title":  "Close-up of falafel platter at Agasi, Lajpat Nagar, Delhi.jpg",
+                       "author":  "Contrapunctus-1",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Close-up_of_falafel_platter_at_Agasi,_Lajpat_Nagar,_Delhi.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/middleeast-03.jpg",
+                       "category":  "middleeast",
+                       "title":  "Falafel \u0026 Hummus Wrap - Lavash 2024-08-19.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Falafel_%26_Hummus_Wrap_-_Lavash_2024-08-19.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/middleeast-04.jpg",
+                       "category":  "middleeast",
+                       "title":  "Falafel - Sheppy\u0027s 2025-07-27.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Falafel_-_Sheppy%27s_2025-07-27.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/middleeast-05.jpg",
+                       "category":  "middleeast",
+                       "title":  "Falafel dinner.jpg",
+                       "author":  "EvanProdromou",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Falafel_dinner.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/middleeast-06.jpg",
+                       "category":  "middleeast",
+                       "title":  "Falafel platter.jpg",
+                       "author":  "Shreya13jain",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Falafel_platter.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/middleeast-07.jpg",
+                       "category":  "middleeast",
+                       "title":  "Falafel platter at Caffe Tonino, Connaught Place, Delhi, India.jpg",
+                       "author":  "Contrapunctus-1",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Falafel_platter_at_Caffe_Tonino,_Connaught_Place,_Delhi,_India.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/french-01.jpg",
+                       "category":  "french",
+                       "title":  "Alpine Poutine @ Bighorn Bistro \u0026 Bakery @ Chamonix (48366462896).jpg",
+                       "author":  "Guilhem Vellut from Annecy, France",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Alpine_Poutine_@_Bighorn_Bistro_%26_Bakery_@_Chamonix_(48366462896).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/french-02.jpg",
+                       "category":  "french",
+                       "title":  "Balotine of quail at Boucher French Bistro, Graceville, Queensland.jpg",
+                       "author":  "Kgbo",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Balotine_of_quail_at_Boucher_French_Bistro,_Graceville,_Queensland.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/french-03.jpg",
+                       "category":  "french",
+                       "title":  "Bistro Jeanty - April 2025 - Sarah Stierch 09.jpg",
+                       "author":  "Missvain",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Bistro_Jeanty_-_April_2025_-_Sarah_Stierch_09.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/french-04.jpg",
+                       "category":  "french",
+                       "title":  "Bistro du Coin - 2018 - Sarah Stierch 03.jpg",
+                       "author":  "Missvain",
+                       "license":  "CC BY 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Bistro_du_Coin_-_2018_-_Sarah_Stierch_03.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/french-05.jpg",
+                       "category":  "french",
+                       "title":  "Cured Atlantic salmon at Boucher French Bistro, Graceville, Queensland.jpg",
+                       "author":  "Kgbo",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Cured_Atlantic_salmon_at_Boucher_French_Bistro,_Graceville,_Queensland.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/french-06.jpg",
+                       "category":  "french",
+                       "title":  "Cured Atlantic salmon at Boucher French Bistro, Graceville, Queensland 01.jpg",
+                       "author":  "Kgbo",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Cured_Atlantic_salmon_at_Boucher_French_Bistro,_Graceville,_Queensland_01.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/vietnamese-01.jpg",
+                       "category":  "vietnamese",
+                       "title":  "\"Locomotive Pho\" in Xizhimen (20141226134252).JPG",
+                       "author":  "N509FZ",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:%22Locomotive_Pho%22_in_Xizhimen_(20141226134252).JPG",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/vietnamese-02.jpg",
+                       "category":  "vietnamese",
+                       "title":  "3 mushroom curry noodle soup with phở - Pho 2025-11-12.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:3_mushroom_curry_noodle_soup_with_ph%E1%BB%9F_-_Pho_2025-11-12.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/vietnamese-03.jpg",
+                       "category":  "vietnamese",
+                       "title":  "79 super bowl at Pho 79.jpg",
+                       "author":  "RightCowLeftCoast",
+                       "license":  "CC BY 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:79_super_bowl_at_Pho_79.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/vietnamese-04.jpg",
+                       "category":  "vietnamese",
+                       "title":  "Kra-pho pla (fish maw soup), Chiang Rai, 2018-05-26 (2).jpg",
+                       "author":  "Bitterschoko",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Kra-pho_pla_(fish_maw_soup),_Chiang_Rai,_2018-05-26_(2).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/vietnamese-05.jpg",
+                       "category":  "vietnamese",
+                       "title":  "Large bowl of Beef Pho from Dalat Vietnamese Restaurtant.jpg",
+                       "author":  "Peachyeung316",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Large_bowl_of_Beef_Pho_from_Dalat_Vietnamese_Restaurtant.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/vietnamese-06.jpg",
+                       "category":  "vietnamese",
+                       "title":  "Lunch at Hue Cafe (3249091535).jpg",
+                       "author":  "Kenny Louie from Vancouver, Canada",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Lunch_at_Hue_Cafe_(3249091535).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/vietnamese-07.jpg",
+                       "category":  "vietnamese",
+                       "title":  "Pho Bo Ga - Pho Dzung AUD8.50 small.jpg",
+                       "author":  "avlxyz",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Pho_Bo_Ga_-_Pho_Dzung_AUD8.50_small.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/vietnamese-08.jpg",
+                       "category":  "vietnamese",
+                       "title":  "Pho Xe Lua at Pho 79.jpg",
+                       "author":  "RightCowLeftCoast",
+                       "license":  "CC BY 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Pho_Xe_Lua_at_Pho_79.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/vietnamese-09.jpg",
+                       "category":  "vietnamese",
+                       "title":  "Pho Xe Lua with rau thom at Pho 79.jpg",
+                       "author":  "RightCowLeftCoast",
+                       "license":  "CC BY 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Pho_Xe_Lua_with_rau_thom_at_Pho_79.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/mexican-01.jpg",
+                       "category":  "mexican",
+                       "title":  "Al pastor tacos (29161834548).jpg",
+                       "author":  "T.Tseng",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Al_pastor_tacos_(29161834548).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/mexican-02.jpg",
+                       "category":  "mexican",
+                       "title":  "Al pastor tacos (34320411213).jpg",
+                       "author":  "T.Tseng",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Al_pastor_tacos_(34320411213).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/mexican-03.jpg",
+                       "category":  "mexican",
+                       "title":  "Al pastor tacos (34965815632).jpg",
+                       "author":  "T.Tseng",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Al_pastor_tacos_(34965815632).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/mexican-04.jpg",
+                       "category":  "mexican",
+                       "title":  "Ceviche, seafood tacos, chips, guacamole, beans (34662952704).jpg",
+                       "author":  "Lou Stejskal",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Ceviche,_seafood_tacos,_chips,_guacamole,_beans_(34662952704).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/mexican-05.jpg",
+                       "category":  "mexican",
+                       "title":  "El Pavo Real Lunch Tacos al Pastor.jpg",
+                       "author":  "Infrogmation of New Orleans",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:El_Pavo_Real_Lunch_Tacos_al_Pastor.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/mexican-06.jpg",
+                       "category":  "mexican",
+                       "title":  "Rocco\u0027s Tacos, E Las Olas Blvd, Fort Lauderdale Florida January 2018 04.jpg",
+                       "author":  "Infrogmation of New Orleans",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Rocco%27s_Tacos,_E_Las_Olas_Blvd,_Fort_Lauderdale_Florida_January_2018_04.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/mexican-07.jpg",
+                       "category":  "mexican",
+                       "title":  "Tacos at Johnny Sánchez, New Orleans January 2025.jpg",
+                       "author":  "pelican",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Tacos_at_Johnny_S%C3%A1nchez,_New_Orleans_January_2025.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/mexican-08.jpg",
+                       "category":  "mexican",
+                       "title":  "Tacos at restaurant Chalupa.jpg",
+                       "author":  "JIP",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Tacos_at_restaurant_Chalupa.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/mexican-09.jpg",
+                       "category":  "mexican",
+                       "title":  "Tacos at restaurant Chalupa close up.jpg",
+                       "author":  "JIP",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Tacos_at_restaurant_Chalupa_close_up.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/mexican-10.jpg",
+                       "category":  "mexican",
+                       "title":  "Tacos de Barba Birria 5.jpg",
+                       "author":  "City Foodsters",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Tacos_de_Barba_Birria_5.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/mexican-11.jpg",
+                       "category":  "mexican",
+                       "title":  "Tacos de Barba Birria 6.jpg",
+                       "author":  "City Foodsters",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Tacos_de_Barba_Birria_6.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/seafood-01.jpg",
+                       "category":  "seafood",
+                       "title":  "DFC 4122 Grilled whole fish skewered and served on a banana leaf - a rustic street-food favorite.jpg",
+                       "author":  "PattayaPatrol",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:DFC_4122_Grilled_whole_fish_skewered_and_served_on_a_banana_leaf_-_a_rustic_street-food_favorite.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/seafood-02.jpg",
+                       "category":  "seafood",
+                       "title":  "DFC 4185 Three whole fish sizzling over hot coals charred skin and smoky grill marks ready to be served.jpg",
+                       "author":  "PattayaPatrol",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:DFC_4185_Three_whole_fish_sizzling_over_hot_coals_charred_skin_and_smoky_grill_marks_ready_to_be_served.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/seafood-03.jpg",
+                       "category":  "seafood",
+                       "title":  "DSCF0708 Crispy golden-brown whole fish grilled and stacked on a tray ready to serve at a bustling night market.jpg",
+                       "author":  "PattayaPatrol",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:DSCF0708_Crispy_golden-brown_whole_fish_grilled_and_stacked_on_a_tray_ready_to_serve_at_a_bustling_night_market.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/seafood-04.jpg",
+                       "category":  "seafood",
+                       "title":  "Dorade dish.jpg",
+                       "author":  "Gerda Arendt",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Dorade_dish.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/seafood-05.jpg",
+                       "category":  "seafood",
+                       "title":  "Fish fry recipe.jpg",
+                       "author":  "Keerthiga",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Fish_fry_recipe.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/bbq-01.jpg",
+                       "category":  "bbq",
+                       "title":  "Barbecue 10.JPG",
+                       "author":  "Seha bs",
+                       "license":  "CC BY-SA 3.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Barbecue_10.JPG",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/bbq-02.jpg",
+                       "category":  "bbq",
+                       "title":  "Grilled meat rolls served on a black plate.jpg",
+                       "author":  "Shixart1985",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Grilled_meat_rolls_served_on_a_black_plate.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/bbq-03.jpg",
+                       "category":  "bbq",
+                       "title":  "Grilled meat served on a black plate with green and red chilies.jpg",
+                       "author":  "Shixart1985",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Grilled_meat_served_on_a_black_plate_with_green_and_red_chilies.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/bbq-04.jpg",
+                       "category":  "bbq",
+                       "title":  "Meat on the grill (43272131452).jpg",
+                       "author":  "Dejan Krsmanovic",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Meat_on_the_grill_(43272131452).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/bbq-05.jpg",
+                       "category":  "bbq",
+                       "title":  "Meat on the grill (43272143112).jpg",
+                       "author":  "Dejan Krsmanovic",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Meat_on_the_grill_(43272143112).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/bbq-06.jpg",
+                       "category":  "bbq",
+                       "title":  "SZ 深圳 Shenzhen 南山區 Nanshan 萬科里東里 China Vanke Lane In Street East Mall shop 昌井韓國烤肉自助餐廳 ChangJing Korean Barbecue Meat Buffet Restaurant pork July 2025 R12S 05.jpg",
+                       "author":  "PDD Ping Done OK",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:SZ_%E6%B7%B1%E5%9C%B3_Shenzhen_%E5%8D%97%E5%B1%B1%E5%8D%80_Nanshan_%E8%90%AC%E7%A7%91%E9%87%8C%E6%9D%B1%E9%87%8C_China_Vanke_Lane_In_Street_East_Mall_shop_%E6%98%8C%E4%BA%95%E9%9F%93%E5%9C%8B%E7%83%A4%E8%82%89%E8%87%AA%E5%8A%A9%E9%A4%90%E5%BB%B3_ChangJing_Korean_Barbecue_Meat_Buffet_Restaurant_pork_July_2025_R12S_05.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/vegan-01.jpg",
+                       "category":  "vegan",
+                       "title":  "BuddhaBowlLot.jpg",
+                       "author":  "PizzaMan",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:BuddhaBowlLot.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/vegan-02.jpg",
+                       "category":  "vegan",
+                       "title":  "2020-04-20 18 11 14 Salad in a yellow bowl in the Franklin Farm section of Oak Hill, Fairfax County, Virginia.jpg",
+                       "author":  "Famartin",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:2020-04-20_18_11_14_Salad_in_a_yellow_bowl_in_the_Franklin_Farm_section_of_Oak_Hill,_Fairfax_County,_Virginia.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/vegan-03.jpg",
+                       "category":  "vegan",
+                       "title":  "Bowl of vegetable salad 001.jpg",
+                       "author":  "Suyash Dwivedi",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Bowl_of_vegetable_salad_001.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/vegan-04.jpg",
+                       "category":  "vegan",
+                       "title":  "Healthy Lentil Salad (Unsplash).jpg",
+                       "author":  "James Sutton jamessutton_photography",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Healthy_Lentil_Salad_(Unsplash).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/vegan-05.jpg",
+                       "category":  "vegan",
+                       "title":  "Healthy Gnocchi Buddha Bowl.jpg",
+                       "author":  "FitTasteTic",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Healthy_Gnocchi_Buddha_Bowl.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/vegan-06.jpg",
+                       "category":  "vegan",
+                       "title":  "Healthy Gnocchi Buddha Bowl - 49859053553.jpg",
+                       "author":  "FitTasteTic",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Healthy_Gnocchi_Buddha_Bowl_-_49859053553.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/vegan-07.jpg",
+                       "category":  "vegan",
+                       "title":  "Healthy Vegan Buddha Bowl.jpg",
+                       "author":  "FitTasteTic",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Healthy_Vegan_Buddha_Bowl.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/vegan-08.jpg",
+                       "category":  "vegan",
+                       "title":  "Healthy Vegan Buddha Bowl - 49859044753.jpg",
+                       "author":  "FitTasteTic",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Healthy_Vegan_Buddha_Bowl_-_49859044753.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/pakistani-01.jpg",
+                       "category":  "pakistani",
+                       "title":  "Gosht Paya Nihari.jpg",
+                       "author":  "Foodaholix",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Gosht_Paya_Nihari.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/pakistani-02.jpg",
+                       "category":  "pakistani",
+                       "title":  "Kofta Nihari.jpg",
+                       "author":  "Miansari66",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Kofta_Nihari.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/pakistani-03.jpg",
+                       "category":  "pakistani",
+                       "title":  "Mutton Nihari.jpg",
+                       "author":  "Sarkar Sayantan",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Mutton_Nihari.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/pakistani-04.jpg",
+                       "category":  "pakistani",
+                       "title":  "Nahari, Indian Dish 01.jpg",
+                       "author":  "Sidheeq",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Nahari,_Indian_Dish_01.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/pakistani-05.jpg",
+                       "category":  "pakistani",
+                       "title":  "Nalli Nihari.JPG",
+                       "author":  "Miansari66",
+                       "license":  "Public domain",
+                       "licenseUrl":  null,
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Nalli_Nihari.JPG",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/pakistani-06.jpg",
+                       "category":  "pakistani",
+                       "title":  "Nalli Nihari India.jpg",
+                       "author":  "Nilanjan Sasmal",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Nalli_Nihari_India.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/pakistani-07.jpg",
+                       "category":  "pakistani",
+                       "title":  "Nihari.JPG",
+                       "author":  "Miansari66",
+                       "license":  "Public domain",
+                       "licenseUrl":  null,
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Nihari.JPG",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/mughlai-01.jpg",
+                       "category":  "mughlai",
+                       "title":  "Chicken Korma.JPG",
+                       "author":  "Miansari66",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Chicken_Korma.JPG",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/mughlai-02.jpg",
+                       "category":  "mughlai",
+                       "title":  "Chicken Korma with Taftan.JPG",
+                       "author":  "Miansari66",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Chicken_Korma_with_Taftan.JPG",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/mughlai-03.jpg",
+                       "category":  "mughlai",
+                       "title":  "Degi Korma.JPG",
+                       "author":  "Miansari66",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Degi_Korma.JPG",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/mughlai-04.jpg",
+                       "category":  "mughlai",
+                       "title":  "Flickr - cyclonebill - Lamb Korma, raita, Masoor Dal, gulerødder og chapati.jpg",
+                       "author":  "cyclonebill",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Flickr_-_cyclonebill_-_Lamb_Korma,_raita,_Masoor_Dal,_guler%C3%B8dder_og_chapati.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/mughlai-05.jpg",
+                       "category":  "mughlai",
+                       "title":  "Lamb Korma (5360303745).jpg",
+                       "author":  "cyclonebill from Copenhagen, Denmark",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Lamb_Korma_(5360303745).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/mughlai-06.jpg",
+                       "category":  "mughlai",
+                       "title":  "Lamb Saag and Chicken Korma - Northern Indian, Palms Food Court.jpg",
+                       "author":  "Alpha",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Lamb_Saag_and_Chicken_Korma_-_Northern_Indian,_Palms_Food_Court.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/american-01.jpg",
+                       "category":  "american",
+                       "title":  "American Breakfast - Snais\u0027s Cafe 2026-01-05.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:American_Breakfast_-_Snais%27s_Cafe_2026-01-05.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/american-02.jpg",
+                       "category":  "american",
+                       "title":  "American breakfast (187066827).jpg",
+                       "author":  "Jessica from Hove, United Kingdom",
+                       "license":  "CC BY 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:American_breakfast_(187066827).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/american-03.jpg",
+                       "category":  "american",
+                       "title":  "Piacere, Temple Fortune, London (5955505631).jpg",
+                       "author":  "Ewan Munro from London, UK",
+                       "license":  "CC BY-SA 2.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:Piacere,_Temple_Fortune,_London_(5955505631).jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/american-04.jpg",
+                       "category":  "american",
+                       "title":  "The American Breakfast - The Orchard Cafe 2025-12-04.jpg",
+                       "author":  "Andy Li",
+                       "license":  "CC0",
+                       "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:The_American_Breakfast_-_The_Orchard_Cafe_2025-12-04.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   },
+                   {
+                       "file":  "/uploads/demo/american-05.jpg",
+                       "category":  "american",
+                       "title":  "2021-05-28 20 35 46 A three piece chicken combo meal from Kentucky Fried Chicken in Rochelle Park Township, Bergen County, New Jersey.jpg",
+                       "author":  "Famartin",
+                       "license":  "CC BY-SA 4.0",
+                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                       "sourcePage":  "https://commons.wikimedia.org/wiki/File:2021-05-28_20_35_46_A_three_piece_chicken_combo_meal_from_Kentucky_Fried_Chicken_in_Rochelle_Park_Township,_Bergen_County,_New_Jersey.jpg",
+                       "modifications":  "Centre-cropped to 16:10 and resized to 1200x750 JPEG"
+                   }
+               ]
+}

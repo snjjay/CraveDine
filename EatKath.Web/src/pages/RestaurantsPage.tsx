@@ -246,13 +246,13 @@ function RestaurantsPage() {
     const bestDiscount = dealRestaurants[0]?.bestDiscount ?? null;
 
     // Approved restaurant photos for the hero (config/heroImages.ts), used
-    // only while their restaurant is active and, for a cover, while it is
-    // still that restaurant's cover. Uses the already-loaded list.
+    // only while they are an active restaurant's cover or, for a gallery
+    // photo, while its restaurant is active. Uses the already-loaded list.
     const heroPhotos: HeroImage[] = APPROVED_RESTAURANT_HERO_PHOTOS
         .filter(path => {
-            const restaurantId = Number(path.match(/^\/uploads\/restaurants\/(\d+)\//)?.[1]);
-            const restaurant = restaurants.find(r => r.id === restaurantId && r.isActive);
-            return !!restaurant && (path.includes("/gallery/") || restaurant.coverImageUrl === path);
+            if (restaurants.some(r => r.isActive && r.coverImageUrl === path)) return true;
+            const restaurantId = Number(path.match(/^\/uploads\/restaurants\/(\d+)\/gallery\//)?.[1]);
+            return restaurants.some(r => r.id === restaurantId && r.isActive);
         })
         .map(path => ({ src: getImageUrl(path), alt: "" }));
 

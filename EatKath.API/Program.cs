@@ -169,6 +169,15 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+// Development-only demo dataset: `dotnet run -- seed-demo` (see
+// Data/Demo/DemoSeedCommand.cs). Runs instead of the web server and is never
+// part of the normal startup seeding below.
+if (args.Contains("seed-demo"))
+{
+    Environment.ExitCode = await EatKath.API.Data.Demo.DemoSeedCommand.RunAsync(app);
+    return;
+}
+
 // ==========================================================
 // Configure Middleware :What happens to every request?
 

@@ -258,9 +258,36 @@ function RestaurantCard({ //Give me these 3 things and I'll build the restaurant
 
                 <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column", gap: 0.5 }}>
 
-                    <Typography variant="h6" component="h3" noWrap title={restaurant.name}>
-                        {restaurant.name}
-                    </Typography>
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center", minWidth: 0 }}>
+
+                        <Typography variant="h6" component="h3" noWrap title={restaurant.name} sx={{ minWidth: 0 }}>
+                            {restaurant.name}
+                        </Typography>
+
+                        {/* Subtle marker for synthetic demo listings */}
+                        {restaurant.isDemo && (
+                            <Box
+                                component="span"
+                                title="Demo listing: sample data for testing"
+                                sx={{
+                                    flexShrink: 0,
+                                    px: 0.75,
+                                    py: 0.125,
+                                    borderRadius: "6px",
+                                    border: "1px solid",
+                                    borderColor: "divider",
+                                    color: "text.secondary",
+                                    fontSize: "0.6875rem",
+                                    fontWeight: 600,
+                                    lineHeight: 1.4,
+                                    letterSpacing: "0.02em"
+                                }}
+                            >
+                                Demo
+                            </Box>
+                        )}
+
+                    </Stack>
 
                     {metaText && (
                         <Typography variant="body2" color="text.secondary" noWrap title={metaText}>

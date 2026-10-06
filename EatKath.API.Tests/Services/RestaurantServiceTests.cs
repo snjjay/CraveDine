@@ -1673,4 +1673,23 @@ public class RestaurantServiceTests
         (await _service.GetByOwnerIdAsync(1)).Single().CuisineIds.Should().BeEquivalentTo(expected);
         (await _service.GetAllAsync()).Single().CuisineIds.Should().BeEquivalentTo(expected);
     }
+
+    [TestMethod]
+    public async Task ReadMethods_ShouldExposeIsDemo_AndUpdateShouldNotChangeIt()
+    {
+        var areaId = await SeedAreaAsync();
+        var demo = await SeedRestaurantWithCuisinesAsync(areaId, _defaultCuisineId);
+        demo.IsDemo = true;
+        var real = await SeedRestaurantWithCuisinesAsync(areaId, _defaultCuisineId);
+        await _context.SaveChangesAsync();
+
+        (await _service.GetByIdAsync(demo.Id))!.IsDemo.Should().BeTrue();
+        (await _service.GetByIdAsync(real.Id))!.IsDemo.Should().BeFalse();
+        (await _service.GetAllAsync()).Count(r => r.IsDemo).Should().Be(1);
+        (await _service.GetByOwnerIdAsync(1)).Count(r => r.IsDemo).Should().Be(1);
+
+        // Owner/admin edits can't switch the demo flag (not in the update request).
+        var updated = await _service.UpdateAsync(demo.Id, BuildUpdateDto(demo, "NPR"));
+        updated!.IsDemo.Should().BeTrue();
+    }
 }
