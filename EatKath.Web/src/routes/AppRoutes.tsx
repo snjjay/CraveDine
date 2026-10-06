@@ -24,6 +24,15 @@ import ProtectedRoute from "../features/auth/ProtectedRoute";
 import MyReservationsPage from "../pages/MyReservationsPage";
 import MyRedemptionsPage from "../pages/MyRedemptionsPage";
 import ProfilePage from "../pages/ProfilePage";
+
+// Informational pages (linked from the footer).
+import OurStoryPage from "../pages/OurStoryPage";
+import HowItWorksPage from "../pages/HowItWorksPage";
+import FaqPage from "../pages/FaqPage";
+import PartnerPage from "../pages/PartnerPage";
+import ContactPage from "../pages/ContactPage";
+import PrivacyPolicyPage from "../pages/PrivacyPolicyPage";
+import TermsPage from "../pages/TermsPage";
 import OwnerOpeningHoursPage from "../pages/OwnerOpeningHoursPage";
 import OwnerMenuCategoriesPage from "../pages/OwnerMenuCategoriesPage";
 import OwnerMenuItemsPage from "../pages/OwnerMenuItemsPage";
@@ -88,6 +97,15 @@ function AppRoutes() {
                             </ProtectedRoute>
                         }
                     />
+
+                    {/* Informational pages (public) */}
+                    <Route path="/our-story" element={<OurStoryPage />} />
+                    <Route path="/how-it-works" element={<HowItWorksPage />} />
+                    <Route path="/faqs" element={<FaqPage />} />
+                    <Route path="/partner" element={<PartnerPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                    <Route path="/terms" element={<TermsPage />} />
 
                     <Route
                         path="/login"

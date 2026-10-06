@@ -39,12 +39,8 @@ import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 
 import AuthContext from "../features/auth/AuthContext";
-
-// Shared page width: ~1440px with responsive side padding.
-const PAGE_CONTAINER_SX = {
-    maxWidth: 1440,
-    px: { xs: 2, sm: 3, md: 4 }
-};
+import Footer from "./Footer";
+import { PAGE_CONTAINER_SX } from "./layoutConstants";
 
 interface NavItem {
     label: string;
@@ -149,7 +145,8 @@ function MainLayout() {
 
     return (
 
-        <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
+        // Column layout so the footer sits at the bottom even on short pages.
+        <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column", bgcolor: "background.default" }}>
 
             <AppBar position="sticky">
 
@@ -469,12 +466,14 @@ function MainLayout() {
             <Container
                 component="main"
                 maxWidth={false}
-                sx={{ ...PAGE_CONTAINER_SX, py: { xs: 3, md: 4 } }}
+                sx={{ ...PAGE_CONTAINER_SX, py: { xs: 3, md: 4 }, flexGrow: 1 }}
             >
 
                 <Outlet /> {/*is basically the placeholder where the selected page gets inserted. MainLayout provides the common page structure. <Outlet /> is where the current route's page appears.*/}
 
             </Container>
+
+            <Footer />
 
         </Box>
 
