@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -13,11 +13,14 @@ import {
 
 import OwnerRestaurantService from "../services/OwnerRestaurantService";
 import AreaService from "../services/AreaService";
+import CuisineService from "../services/CuisineService";
+import CuisineMultiSelect from "../components/restaurants/CuisineMultiSelect";
 import { useNotification } from "../features/notifications/NotificationContext";
 import { DEFAULT_CURRENCY_CODE, SUPPORTED_CURRENCIES } from "../utils/currency";
 
 import type { Area } from "../types/Area";
 import type { CreateRestaurant } from "../types/CreateRestaurant";
+import type { Cuisine } from "../types/Cuisine";
 
 function OwnerCreateRestaurantPage() {
 
@@ -26,8 +29,13 @@ function OwnerCreateRestaurantPage() {
     const navigate = useNavigate();
 
     const [areas, setAreas] = useState<Area[]>([]);
+    const [cuisines, setCuisines] = useState<Cuisine[]>([]);
 
     const [saving, setSaving] = useState(false);
+
+    // A ref (not just state) so two quick clicks can't both create a
+    // restaurant before React re-renders the disabled button.
+    const savingRef = useRef(false);
 
     const [restaurant, setRestaurant] = useState<CreateRestaurant>({
         ownerId: 0,
@@ -40,22 +48,28 @@ function OwnerCreateRestaurantPage() {
         website: "",
         logoUrl: "",
         currencyCode: DEFAULT_CURRENCY_CODE,
-        isActive: true
+        isActive: true,
+        cuisineIds: []
     });
 
     useEffect(() => {
 
-        loadAreas();
+        loadOptions();
 
     }, []);
 
-    async function loadAreas() {
+    // Area and Cuisine choices for the form.
+    async function loadOptions() {
 
         try {
 
-            const data = await AreaService.getAll();
+            const [areaData, cuisineData] = await Promise.all([
+                AreaService.getAll(),
+                CuisineService.getAll()
+            ]);
 
-            setAreas(data);
+            setAreas(areaData);
+            setCuisines(cuisineData);
 
         }
         catch (error: any) {
@@ -65,7 +79,7 @@ function OwnerCreateRestaurantPage() {
             notify(
                 error.response?.data?.Message ??
                 error.message ??
-                "Failed to load areas. Please try again.",
+                "Failed to load areas and cuisines. Please try again.",
                 "error"
             );
 
@@ -74,6 +88,9 @@ function OwnerCreateRestaurantPage() {
     }
 
     async function saveRestaurant() {
+
+        if (savingRef.current)
+            return;
 
         if (!restaurant.name.trim()) {
 
@@ -96,6 +113,13 @@ function OwnerCreateRestaurantPage() {
             return;
         }
 
+        if (restaurant.cuisineIds.length === 0) {
+
+            notify("Please select at least one cuisine.", "warning");
+
+            return;
+        }
+
         if (!restaurant.phoneNumber.trim()) {
 
             notify("Phone number is required.", "warning");
@@ -110,6 +134,7 @@ function OwnerCreateRestaurantPage() {
             return;
         }
 
+        savingRef.current = true;
         setSaving(true);
 
         try {
@@ -138,6 +163,7 @@ function OwnerCreateRestaurantPage() {
         }
         finally {
 
+            savingRef.current = false;
             setSaving(false);
 
         }
@@ -221,6 +247,17 @@ function OwnerCreateRestaurantPage() {
                         ))}
 
                     </TextField>
+
+                    <CuisineMultiSelect
+                        cuisines={cuisines}
+                        value={restaurant.cuisineIds}
+                        onChange={(cuisineIds) =>
+                            setRestaurant({
+                                ...restaurant,
+                                cuisineIds
+                            })
+                        }
+                    />
 
                     <TextField
                         select

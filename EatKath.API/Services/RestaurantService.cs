@@ -42,6 +42,73 @@ namespace EatKath.API.Services
             }
         }
 
+        // The selected Area, or a 400-style error instead of a database
+        // foreign-key failure when the id doesn't exist.
+        private async Task<Area> GetExistingAreaAsync(int areaId)
+        {
+            var area = await _context.Areas.FirstOrDefaultAsync(a => a.Id == areaId);
+
+            return area ?? throw new BusinessRuleException(
+                "The selected area could not be found. Please choose an area again.");
+        }
+
+        // The selected cuisines: at least one, no duplicates, and every
+        // id must exist.
+        private async Task<List<Cuisine>> GetSelectedCuisinesAsync(List<int>? cuisineIds)
+        {
+            if (cuisineIds == null || cuisineIds.Count == 0)
+                throw new BusinessRuleException("Select at least one cuisine.");
+
+            if (cuisineIds.Distinct().Count() != cuisineIds.Count)
+                throw new BusinessRuleException("Each cuisine can only be selected once.");
+
+            var cuisines = await _context.Cuisines
+                .Where(c => cuisineIds.Contains(c.Id))
+                .ToListAsync();
+
+            var missingIds = cuisineIds.Except(cuisines.Select(c => c.Id)).ToList();
+
+            if (missingIds.Count > 0)
+            {
+                throw new BusinessRuleException(
+                    $"The selected cuisine could not be found (id {string.Join(", ", missingIds)}). Please choose the cuisines again.");
+            }
+
+            return cuisines;
+        }
+
+        // Makes the restaurant's cuisine links match the selection: links
+        // no longer selected are removed, new ones added, and links that
+        // stay selected are left untouched. Saved by the caller's single
+        // SaveChangesAsync() together with the rest of the update.
+        private void ReplaceCuisines(Restaurant restaurant, List<Cuisine> cuisines)
+        {
+            var selectedIds = cuisines.Select(c => c.Id).ToHashSet();
+
+            var removed = restaurant.RestaurantCuisines
+                .Where(rc => !selectedIds.Contains(rc.CuisineId))
+                .ToList();
+
+            foreach (var link in removed)
+            {
+                restaurant.RestaurantCuisines.Remove(link);
+                _context.RestaurantCuisines.Remove(link);
+            }
+
+            var currentIds = restaurant.RestaurantCuisines
+                .Select(rc => rc.CuisineId)
+                .ToHashSet();
+
+            foreach (var cuisine in cuisines.Where(c => !currentIds.Contains(c.Id)))
+            {
+                restaurant.RestaurantCuisines.Add(new RestaurantCuisine
+                {
+                    Restaurant = restaurant,
+                    Cuisine = cuisine
+                });
+            }
+        }
+
         public async Task<IEnumerable<RestaurantDto>> GetAllAsync()
         {
             var restaurants = await _context.Restaurants
@@ -108,6 +175,10 @@ namespace EatKath.API.Services
                 .Select(x => x.Cuisine.Name)
                 .ToList(),
 
+                CuisineIds = r.RestaurantCuisines
+                    .Select(x => x.CuisineId)
+                    .ToList(),
+
                 DiningTypes = r.RestaurantDiningTypes
                 .Select(x => x.DiningType.Name)
                 .ToList(),
@@ -163,6 +234,10 @@ namespace EatKath.API.Services
                 Cuisines = restaurant.RestaurantCuisines
         .Select(x => x.Cuisine.Name)
         .ToList(),
+
+                CuisineIds = restaurant.RestaurantCuisines
+                    .Select(x => x.CuisineId)
+                    .ToList(),
 
                 DiningTypes = restaurant.RestaurantDiningTypes
         .Select(x => x.DiningType.Name)
@@ -221,6 +296,10 @@ namespace EatKath.API.Services
                     .Select(x => x.Cuisine.Name)
                     .ToList(),
 
+                CuisineIds = restaurant.RestaurantCuisines
+                    .Select(x => x.CuisineId)
+                    .ToList(),
+
                 DiningTypes = restaurant.RestaurantDiningTypes
                     .Select(x => x.DiningType.Name)
                     .ToList(),
@@ -242,11 +321,27 @@ namespace EatKath.API.Services
                 throw new BusinessRuleException($"'{dto.CurrencyCode}' is not a supported currency.");
             }
 
+            var area = await GetExistingAreaAsync(dto.AreaId);
+            var cuisines = await GetSelectedCuisinesAsync(dto.CuisineIds);
+
             var restaurant = _mapper.Map<Restaurant>(dto);
+
+            restaurant.Area = area;
 
             if (!_currentUser.IsAdmin)
             {
                 restaurant.OwnerId = _currentUser.UserId;
+            }
+
+            // Cuisine links are saved with the restaurant (and its default
+            // opening hours below) in the same SaveChangesAsync() call.
+            foreach (var cuisine in cuisines)
+            {
+                restaurant.RestaurantCuisines.Add(new RestaurantCuisine
+                {
+                    Restaurant = restaurant,
+                    Cuisine = cuisine
+                });
             }
 
             _context.Restaurants.Add(restaurant);
@@ -360,8 +455,24 @@ namespace EatKath.API.Services
                 }
             }
 
+            // Area: validated only when it changes (the current one exists).
+            if (restaurant.AreaId != dto.AreaId)
+            {
+                restaurant.Area = await GetExistingAreaAsync(dto.AreaId);
+            }
+
+            // Cuisines: omitted = keep the current ones; supplied = replace.
+            if (dto.CuisineIds != null)
+            {
+                var cuisines = await GetSelectedCuisinesAsync(dto.CuisineIds);
+
+                ReplaceCuisines(restaurant, cuisines);
+            }
+
             _mapper.Map(dto, restaurant);
 
+            // One SaveChangesAsync() = one transaction: details, area and
+            // cuisine links are saved together or not at all.
             await _context.SaveChangesAsync();
 
             await _context.Entry(restaurant)
@@ -396,6 +507,10 @@ namespace EatKath.API.Services
                         Cuisines = restaurant.RestaurantCuisines
                 .Select(x => x.Cuisine.Name)
                 .ToList(),
+
+                CuisineIds = restaurant.RestaurantCuisines
+                    .Select(x => x.CuisineId)
+                    .ToList(),
 
                         DiningTypes = restaurant.RestaurantDiningTypes
                 .Select(x => x.DiningType.Name)

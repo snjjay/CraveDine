@@ -41,6 +41,9 @@ namespace EatKath.API.DTOs.Restaurant
         // NEW
         public List<string> Cuisines { get; set; } = new();
 
+        // Ids of the same cuisines, so edit forms can preselect them.
+        public List<int> CuisineIds { get; set; } = new();
+
         public List<string> DiningTypes { get; set; } = new();
 
         public List<RestaurantOpeningHourDto> OpeningHours { get; set; } = new();

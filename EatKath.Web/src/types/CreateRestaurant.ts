@@ -21,4 +21,6 @@ export interface CreateRestaurant {
     currencyCode: string;
 
     isActive: boolean;
+    // Existing Cuisine ids; at least one is required.
+    cuisineIds: number[];
 }

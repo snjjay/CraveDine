@@ -23,5 +23,9 @@
         public string CurrencyCode { get; set; } = "NPR";
 
         public bool IsActive { get; set; } = true;
+
+        // Cuisines the restaurant serves (existing Cuisine ids).
+        // At least one is required.
+        public List<int> CuisineIds { get; set; } = new();
     }
 }

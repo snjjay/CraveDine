@@ -68,6 +68,9 @@ export interface Restaurant {
 
     cuisines: string[];
 
+    // Ids of the same cuisines (used to preselect them on edit forms).
+    cuisineIds?: number[];
+
     diningTypes: string[];
 
     openingHours: RestaurantOpeningHour[];

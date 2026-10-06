@@ -34,6 +34,20 @@ namespace EatKath.API.Validators.Restaurant
 
             RuleFor(x => x.LogoUrl)
                 .MaximumLength(500);
+
+            // Cuisines are optional on update (null = unchanged), but a
+            // supplied list replaces the set and must not be empty.
+            When(x => x.CuisineIds != null, () =>
+            {
+                RuleFor(x => x.CuisineIds!)
+                    .NotEmpty()
+                    .WithMessage("Select at least one cuisine.")
+                    .Must(ids => ids.Distinct().Count() == ids.Count)
+                    .WithMessage("Each cuisine can only be selected once.");
+
+                RuleForEach(x => x.CuisineIds)
+                    .GreaterThan(0);
+            });
         }
     }
 }

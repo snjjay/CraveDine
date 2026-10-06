@@ -37,6 +37,17 @@ namespace EatKath.API.Validators.Restaurant
 
             RuleFor(x => x.LogoUrl)
                 .MaximumLength(500);
+
+            // Same rules RestaurantService enforces (it also checks the
+            // ids exist).
+            RuleFor(x => x.CuisineIds)
+                .NotEmpty()
+                .WithMessage("Select at least one cuisine.")
+                .Must(ids => ids.Distinct().Count() == ids.Count)
+                .WithMessage("Each cuisine can only be selected once.");
+
+            RuleForEach(x => x.CuisineIds)
+                .GreaterThan(0);
         }
     }
 }

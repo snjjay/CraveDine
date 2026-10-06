@@ -17,4 +17,7 @@ export interface UpdateRestaurant {
     currencyCode: string;
 
     isActive: boolean;
+    // Optional: omitted = keep the current cuisines; supplied = replace
+    // them with this set (at least one).
+    cuisineIds?: number[];
 }

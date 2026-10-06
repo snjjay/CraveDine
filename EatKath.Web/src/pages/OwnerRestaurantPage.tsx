@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import {
@@ -22,10 +22,16 @@ import {
 
 import OwnerRestaurantService from "../services/OwnerRestaurantService";
 import RestaurantImageService from "../services/RestaurantImageService";
+import AreaService from "../services/AreaService";
+import CuisineService from "../services/CuisineService";
+import CuisineMultiSelect from "../components/restaurants/CuisineMultiSelect";
+import { getApiErrorMessage } from "../utils/apiError";
 import { getImageUrl } from "../utils/imageUrl";
 import { DEFAULT_CURRENCY_CODE, SUPPORTED_CURRENCIES } from "../utils/currency";
 import { useNotification } from "../features/notifications/NotificationContext";
 
+import type { Area } from "../types/Area";
+import type { Cuisine } from "../types/Cuisine";
 import type { Restaurant } from "../types/Restaurant";
 import type { UpdateRestaurant } from "../types/UpdateRestaurant";
 import type { RestaurantImage } from "../types/RestaurantImage";
@@ -57,6 +63,12 @@ function OwnerRestaurantPage() {
     const [uploading, setUploading] = useState(false);
     const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
+    // Area and Cuisine choices, and the save-in-progress flag.
+    const [areas, setAreas] = useState<Area[]>([]);
+    const [cuisines, setCuisines] = useState<Cuisine[]>([]);
+    const [saving, setSaving] = useState(false);
+    const savingRef = useRef(false);
+
     const [restaurant, setRestaurant] = useState<UpdateRestaurant>({
         name: "",
         description: "",
@@ -66,7 +78,8 @@ function OwnerRestaurantPage() {
         website: "",
         areaId: 0,
         currencyCode: DEFAULT_CURRENCY_CODE,
-        isActive: true
+        isActive: true,
+        cuisineIds: []
     });
 
     useEffect(() => {
@@ -74,6 +87,38 @@ function OwnerRestaurantPage() {
         loadRestaurant();
 
     }, [restaurantIdParam]);
+
+    // Area and Cuisine choices are the same for every restaurant: load once.
+    useEffect(() => {
+
+        let ignore = false;
+
+        Promise.all([AreaService.getAll(), CuisineService.getAll()])
+            .then(([areaData, cuisineData]) => {
+
+                if (ignore)
+                    return;
+
+                setAreas(areaData);
+                setCuisines(cuisineData);
+
+            })
+            .catch(error => {
+
+                console.error(error);
+
+                notify(
+                    getApiErrorMessage(error, "Failed to load areas and cuisines. Please try again."),
+                    "error"
+                );
+
+            });
+
+        return () => {
+            ignore = true;
+        };
+
+    }, [notify]);
 
     async function loadRestaurant() {
 
@@ -116,7 +161,9 @@ function OwnerRestaurantPage() {
                 website: data.website,
                 areaId: data.areaId,
                 currencyCode: data.currencyCode,
-                isActive: data.isActive
+                isActive: data.isActive,
+                // Current cuisines, preselected (empty if none assigned yet).
+                cuisineIds: data.cuisineIds ?? []
             });
 
             loadGallery(data.id);
@@ -137,32 +184,75 @@ function OwnerRestaurantPage() {
 
     async function save() {
 
-        await OwnerRestaurantService.update(
-            restaurantId,
-            restaurant
-        );
+        // A ref (not just state) so two quick clicks can't both start a
+        // save before React re-renders the disabled button.
+        if (savingRef.current)
+            return;
 
-        if (logoFile)
-            await OwnerRestaurantService.uploadLogo(
+        if (!restaurant.areaId) {
+
+            notify("Please select an area.", "warning");
+
+            return;
+        }
+
+        if (!restaurant.cuisineIds || restaurant.cuisineIds.length === 0) {
+
+            notify("Please select at least one cuisine.", "warning");
+
+            return;
+        }
+
+        savingRef.current = true;
+        setSaving(true);
+
+        try {
+
+            await OwnerRestaurantService.update(
                 restaurantId,
-                logoFile
+                restaurant
             );
 
-        if (coverFile)
-            await OwnerRestaurantService.uploadCover(
-                restaurantId,
-                coverFile
+            if (logoFile)
+                await OwnerRestaurantService.uploadLogo(
+                    restaurantId,
+                    logoFile
+                );
+
+            if (coverFile)
+                await OwnerRestaurantService.uploadCover(
+                    restaurantId,
+                    coverFile
+                );
+
+            if (menuFile)
+                await OwnerRestaurantService.uploadMenu(
+                    restaurantId,
+                    menuFile
+                );
+
+            notify("Restaurant updated successfully.", "success");
+
+            loadRestaurant();
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            // The API's validation message, e.g. "Select at least one cuisine."
+            notify(
+                getApiErrorMessage(error, "Failed to save the restaurant. Please try again."),
+                "error"
             );
 
-        if (menuFile)
-            await OwnerRestaurantService.uploadMenu(
-                restaurantId,
-                menuFile
-            );
+        }
+        finally {
 
-        notify("Restaurant updated successfully.", "success");
+            savingRef.current = false;
+            setSaving(false);
 
-        loadRestaurant();
+        }
 
     }
 
@@ -354,6 +444,43 @@ function OwnerRestaurantPage() {
                     />
 
                     <TextField
+                        select
+                        label="Area"
+                        required
+                        value={areas.length > 0 && restaurant.areaId ? restaurant.areaId : ""}
+                        onChange={(e) =>
+                            setRestaurant({
+                                ...restaurant,
+                                areaId: Number(e.target.value)
+                            })
+                        }
+                    >
+
+                        {areas.map(area => (
+
+                            <MenuItem
+                                key={area.id}
+                                value={area.id}
+                            >
+                                {area.name}
+                            </MenuItem>
+
+                        ))}
+
+                    </TextField>
+
+                    <CuisineMultiSelect
+                        cuisines={cuisines}
+                        value={restaurant.cuisineIds ?? []}
+                        onChange={(cuisineIds) =>
+                            setRestaurant({
+                                ...restaurant,
+                                cuisineIds
+                            })
+                        }
+                    />
+
+                    <TextField
                         label="Phone"
                         value={restaurant.phoneNumber}
                         onChange={(e) =>
@@ -491,9 +618,10 @@ function OwnerRestaurantPage() {
 
                     <Button
                         variant="contained"
+                        disabled={saving}
                         onClick={save}
                     >
-                        Save Restaurant
+                        {saving ? "Saving..." : "Save Restaurant"}
                     </Button>
 
                 </Stack>

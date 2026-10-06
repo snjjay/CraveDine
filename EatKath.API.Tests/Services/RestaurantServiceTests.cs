@@ -23,6 +23,9 @@ public class RestaurantServiceTests
     private FileStorageService _fileStorage = null!;
     private RestaurantService _service = null!;
 
+    // A cuisine seeded for every test: CreateAsync requires at least one.
+    private int _defaultCuisineId;
+
     // -----------------------------
     // Restaurant <-> RestaurantDto mappings live in
     // RestaurantProfile, a separate AutoMapper profile
@@ -66,6 +69,11 @@ public class RestaurantServiceTests
             _fileStorage,
             _currentUser.Object,
             new FixedTimeProvider(new DateTime(2026, 11, 10, 10, 0, 0)));
+
+        var defaultCuisine = new Cuisine { Name = "Nepali" };
+        _context.Cuisines.Add(defaultCuisine);
+        _context.SaveChanges();
+        _defaultCuisineId = defaultCuisine.Id;
     }
 
     private async Task<int> SeedAreaAsync()
@@ -81,8 +89,9 @@ public class RestaurantServiceTests
         return area.Id;
     }
 
-    private static CreateRestaurantDto BuildCreateDto(int ownerId, int areaId) => new()
+    private CreateRestaurantDto BuildCreateDto(int ownerId, int areaId) => new()
     {
+        CuisineIds = new List<int> { _defaultCuisineId },
         OwnerId = ownerId,
         Name = "Spice Kitchen",
         Description = "Nepali cuisine",
@@ -1294,5 +1303,374 @@ public class RestaurantServiceTests
         var result = (await _service.GetAllAsync()).Single();
 
         result.DealSummaries.Should().BeEmpty();
+    }
+
+    // ==========================================================
+    // Area and Cuisine assignment (owner Create/Edit Restaurant)
+    // ==========================================================
+
+    private async Task<int> SeedCuisineAsync(string name)
+    {
+        var cuisine = new Cuisine { Name = name };
+
+        _context.Cuisines.Add(cuisine);
+        await _context.SaveChangesAsync();
+
+        return cuisine.Id;
+    }
+
+    private async Task<int> SeedNamedAreaAsync(string name)
+    {
+        var area = new Area { Name = name };
+
+        _context.Areas.Add(area);
+        await _context.SaveChangesAsync();
+
+        return area.Id;
+    }
+
+    // A restaurant with a stored logo, cover and menu, linked to the
+    // given cuisines - like an existing restaurant in the database.
+    private async Task<Restaurant> SeedRestaurantWithCuisinesAsync(int areaId, params int[] cuisineIds)
+    {
+        var restaurant = new Restaurant
+        {
+            Name = "Spice Kitchen",
+            Description = "Nepali food",
+            Address = "Thamel, Kathmandu",
+            PhoneNumber = "0400000000",
+            Email = "spice@test.com",
+            OwnerId = 1,
+            AreaId = areaId,
+            CurrencyCode = "NPR",
+            IsActive = true,
+            LogoUrl = "/uploads/logos/spice.png",
+            CoverImageUrl = "/uploads/covers/spice.jpg",
+            MenuPdfUrl = "/uploads/menus/spice.pdf"
+        };
+
+        foreach (var cuisineId in cuisineIds)
+            restaurant.RestaurantCuisines.Add(new RestaurantCuisine { CuisineId = cuisineId });
+
+        _context.Restaurants.Add(restaurant);
+        await _context.SaveChangesAsync();
+
+        return restaurant;
+    }
+
+    private List<int> StoredCuisineIds(int restaurantId) =>
+        _context.RestaurantCuisines
+            .Where(rc => rc.RestaurantId == restaurantId)
+            .Select(rc => rc.CuisineId)
+            .OrderBy(id => id)
+            .ToList();
+
+    [TestMethod]
+    public async Task CreateAsync_ShouldSaveSelectedCuisines_AndReturnTheirNamesAndIds()
+    {
+        var areaId = await SeedAreaAsync();
+        var tibetanId = await SeedCuisineAsync("Tibetan");
+
+        var dto = BuildCreateDto(1, areaId);
+        dto.CuisineIds = new List<int> { _defaultCuisineId, tibetanId };
+
+        var result = await _service.CreateAsync(dto);
+
+        StoredCuisineIds(result.Id).Should().BeEquivalentTo(new[] { _defaultCuisineId, tibetanId });
+        result.CuisineIds.Should().BeEquivalentTo(new[] { _defaultCuisineId, tibetanId });
+        result.Cuisines.Should().BeEquivalentTo(new[] { "Nepali", "Tibetan" });
+        result.AreaId.Should().Be(areaId);
+        result.AreaName.Should().Be("Thamel");
+    }
+
+    [TestMethod]
+    public async Task CreateAsync_ShouldThrowAndSaveNothing_WhenNoCuisineIsSelected()
+    {
+        var areaId = await SeedAreaAsync();
+
+        var dto = BuildCreateDto(1, areaId);
+        dto.CuisineIds = new List<int>();
+
+        var act = () => _service.CreateAsync(dto);
+
+        await act.Should().ThrowAsync<BusinessRuleException>()
+            .WithMessage("Select at least one cuisine.");
+
+        _context.Restaurants.Should().BeEmpty();
+        _context.RestaurantOpeningHours.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    public async Task CreateAsync_ShouldThrowAndSaveNothing_WhenACuisineDoesNotExist()
+    {
+        var areaId = await SeedAreaAsync();
+
+        var dto = BuildCreateDto(1, areaId);
+        dto.CuisineIds = new List<int> { _defaultCuisineId, 999 };
+
+        var act = () => _service.CreateAsync(dto);
+
+        await act.Should().ThrowAsync<BusinessRuleException>()
+            .WithMessage("*cuisine could not be found*999*");
+
+        _context.Restaurants.Should().BeEmpty();
+        _context.RestaurantCuisines.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    public async Task CreateAsync_ShouldThrow_WhenTheSameCuisineIsSelectedTwice()
+    {
+        var areaId = await SeedAreaAsync();
+
+        var dto = BuildCreateDto(1, areaId);
+        dto.CuisineIds = new List<int> { _defaultCuisineId, _defaultCuisineId };
+
+        var act = () => _service.CreateAsync(dto);
+
+        await act.Should().ThrowAsync<BusinessRuleException>()
+            .WithMessage("Each cuisine can only be selected once.");
+
+        _context.Restaurants.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    public async Task CreateAsync_ShouldThrowValidationError_NotDatabaseError_WhenAreaDoesNotExist()
+    {
+        var dto = BuildCreateDto(1, 999);
+
+        var act = () => _service.CreateAsync(dto);
+
+        await act.Should().ThrowAsync<BusinessRuleException>()
+            .WithMessage("The selected area could not be found*");
+
+        _context.Restaurants.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    public async Task UpdateAsync_ShouldReplaceCuisineSet_AddingNewAndRemovingDeselected()
+    {
+        var areaId = await SeedAreaAsync();
+        var tibetanId = await SeedCuisineAsync("Tibetan");
+        var cafeId = await SeedCuisineAsync("Cafe");
+
+        var restaurant = await SeedRestaurantWithCuisinesAsync(areaId, _defaultCuisineId, tibetanId);
+
+        var dto = BuildUpdateDto(restaurant, "NPR");
+        dto.CuisineIds = new List<int> { tibetanId, cafeId };
+
+        var result = await _service.UpdateAsync(restaurant.Id, dto);
+
+        StoredCuisineIds(restaurant.Id).Should().BeEquivalentTo(new[] { tibetanId, cafeId });
+        result!.CuisineIds.Should().BeEquivalentTo(new[] { tibetanId, cafeId });
+        result.Cuisines.Should().BeEquivalentTo(new[] { "Tibetan", "Cafe" });
+    }
+
+    [TestMethod]
+    public async Task UpdateAsync_ShouldKeepExistingCuisines_WhenCuisineIdsAreOmitted()
+    {
+        var areaId = await SeedAreaAsync();
+        var tibetanId = await SeedCuisineAsync("Tibetan");
+
+        var restaurant = await SeedRestaurantWithCuisinesAsync(areaId, _defaultCuisineId, tibetanId);
+
+        var dto = BuildUpdateDto(restaurant, "NPR");
+        dto.Name = "Spice Kitchen Thamel";
+        dto.CuisineIds = null;
+
+        var result = await _service.UpdateAsync(restaurant.Id, dto);
+
+        result!.Name.Should().Be("Spice Kitchen Thamel");
+        StoredCuisineIds(restaurant.Id).Should().BeEquivalentTo(new[] { _defaultCuisineId, tibetanId });
+        result.CuisineIds.Should().BeEquivalentTo(new[] { _defaultCuisineId, tibetanId });
+    }
+
+    [TestMethod]
+    public async Task UpdateAsync_ShouldRejectEmptyCuisineList_AndChangeNothing()
+    {
+        var areaId = await SeedAreaAsync();
+        var restaurant = await SeedRestaurantWithCuisinesAsync(areaId, _defaultCuisineId);
+
+        var dto = BuildUpdateDto(restaurant, "NPR");
+        dto.Name = "Changed Name";
+        dto.CuisineIds = new List<int>();
+
+        var act = () => _service.UpdateAsync(restaurant.Id, dto);
+
+        await act.Should().ThrowAsync<BusinessRuleException>()
+            .WithMessage("Select at least one cuisine.");
+
+        StoredCuisineIds(restaurant.Id).Should().BeEquivalentTo(new[] { _defaultCuisineId });
+        _context.ChangeTracker.Clear();
+        _context.Restaurants.Single().Name.Should().Be("Spice Kitchen");
+    }
+
+    [TestMethod]
+    public async Task UpdateAsync_ShouldThrowAndKeepCuisines_WhenACuisineDoesNotExist()
+    {
+        var areaId = await SeedAreaAsync();
+        var restaurant = await SeedRestaurantWithCuisinesAsync(areaId, _defaultCuisineId);
+
+        var dto = BuildUpdateDto(restaurant, "NPR");
+        dto.CuisineIds = new List<int> { 999 };
+
+        var act = () => _service.UpdateAsync(restaurant.Id, dto);
+
+        await act.Should().ThrowAsync<BusinessRuleException>()
+            .WithMessage("*cuisine could not be found*999*");
+
+        StoredCuisineIds(restaurant.Id).Should().BeEquivalentTo(new[] { _defaultCuisineId });
+    }
+
+    [TestMethod]
+    public async Task UpdateAsync_ShouldChangeArea_AndReturnTheNewAreaName()
+    {
+        var thamelId = await SeedAreaAsync();
+        var lalitpurId = await SeedNamedAreaAsync("Lalitpur");
+        var restaurant = await SeedRestaurantWithCuisinesAsync(thamelId, _defaultCuisineId);
+
+        var dto = BuildUpdateDto(restaurant, "NPR");
+        dto.AreaId = lalitpurId;
+
+        var result = await _service.UpdateAsync(restaurant.Id, dto);
+
+        result!.AreaId.Should().Be(lalitpurId);
+        result.AreaName.Should().Be("Lalitpur");
+        _context.ChangeTracker.Clear();
+        _context.Restaurants.Single().AreaId.Should().Be(lalitpurId);
+    }
+
+    [TestMethod]
+    public async Task UpdateAsync_ShouldThrowAndKeepArea_WhenAreaDoesNotExist()
+    {
+        var areaId = await SeedAreaAsync();
+        var restaurant = await SeedRestaurantWithCuisinesAsync(areaId, _defaultCuisineId);
+
+        var dto = BuildUpdateDto(restaurant, "NPR");
+        dto.AreaId = 999;
+
+        var act = () => _service.UpdateAsync(restaurant.Id, dto);
+
+        await act.Should().ThrowAsync<BusinessRuleException>()
+            .WithMessage("The selected area could not be found*");
+
+        _context.ChangeTracker.Clear();
+        _context.Restaurants.Single().AreaId.Should().Be(areaId);
+    }
+
+    [TestMethod]
+    public async Task UpdateAsync_ShouldNotEraseStoredLogo_WhenSavingUnrelatedDetails()
+    {
+        // -----------------------------
+        // Regression: the owner edit form doesn't send logoUrl, so the
+        // DTO's LogoUrl is blank. That used to overwrite the stored
+        // logo on every profile save.
+        // -----------------------------
+
+        var areaId = await SeedAreaAsync();
+        var restaurant = await SeedRestaurantWithCuisinesAsync(areaId, _defaultCuisineId);
+
+        var dto = BuildUpdateDto(restaurant, "NPR");
+        dto.LogoUrl = string.Empty;
+        dto.Name = "Spice Kitchen Thamel";
+        dto.PhoneNumber = "0411111111";
+
+        var result = await _service.UpdateAsync(restaurant.Id, dto);
+
+        result!.LogoUrl.Should().Be("/uploads/logos/spice.png");
+        _context.ChangeTracker.Clear();
+        var stored = _context.Restaurants.Single();
+        stored.LogoUrl.Should().Be("/uploads/logos/spice.png");
+        stored.CoverImageUrl.Should().Be("/uploads/covers/spice.jpg");
+        stored.MenuPdfUrl.Should().Be("/uploads/menus/spice.pdf");
+        stored.Name.Should().Be("Spice Kitchen Thamel");
+        stored.PhoneNumber.Should().Be("0411111111");
+    }
+
+    [TestMethod]
+    public async Task UpdateAsync_ShouldPreserveDealsOpeningHoursOwnerAndCurrency_WhenAreaAndCuisinesChange()
+    {
+        var thamelId = await SeedAreaAsync();
+        var lalitpurId = await SeedNamedAreaAsync("Lalitpur");
+        var tibetanId = await SeedCuisineAsync("Tibetan");
+        var restaurant = await SeedRestaurantWithCuisinesAsync(thamelId, _defaultCuisineId);
+
+        var deal = SummaryDeal(20, OfferType.DineIn);
+        deal.RestaurantId = restaurant.Id;
+        _context.Deals.Add(deal);
+        _context.RestaurantOpeningHours.Add(new RestaurantOpeningHour
+        {
+            RestaurantId = restaurant.Id,
+            DayOfWeek = DayOfWeek.Monday,
+            OpenTime = new TimeOnly(10, 0),
+            CloseTime = new TimeOnly(21, 0)
+        });
+        await _context.SaveChangesAsync();
+
+        var dto = BuildUpdateDto(restaurant, "NPR");
+        dto.AreaId = lalitpurId;
+        dto.CuisineIds = new List<int> { tibetanId };
+
+        await _service.UpdateAsync(restaurant.Id, dto);
+
+        _context.ChangeTracker.Clear();
+        var stored = _context.Restaurants.Single();
+        stored.OwnerId.Should().Be(1);
+        stored.CurrencyCode.Should().Be("NPR");
+        stored.IsActive.Should().BeTrue();
+        _context.Deals.Should().ContainSingle(d => d.RestaurantId == restaurant.Id && d.DiscountPercentage == 20);
+        _context.RestaurantOpeningHours.Should().ContainSingle(h => h.RestaurantId == restaurant.Id);
+    }
+
+    [TestMethod]
+    public async Task UpdateAsync_ShouldNotAffectOtherRestaurantsCuisines()
+    {
+        var areaId = await SeedAreaAsync();
+        var tibetanId = await SeedCuisineAsync("Tibetan");
+
+        var restaurant = await SeedRestaurantWithCuisinesAsync(areaId, _defaultCuisineId);
+        var other = await SeedRestaurantWithCuisinesAsync(areaId, _defaultCuisineId, tibetanId);
+
+        var dto = BuildUpdateDto(restaurant, "NPR");
+        dto.CuisineIds = new List<int> { tibetanId };
+
+        await _service.UpdateAsync(restaurant.Id, dto);
+
+        StoredCuisineIds(restaurant.Id).Should().BeEquivalentTo(new[] { tibetanId });
+        StoredCuisineIds(other.Id).Should().BeEquivalentTo(new[] { _defaultCuisineId, tibetanId });
+    }
+
+    [TestMethod]
+    public async Task UpdateAsync_ShouldRejectNonOwner_AndKeepCuisines()
+    {
+        var areaId = await SeedAreaAsync();
+        var tibetanId = await SeedCuisineAsync("Tibetan");
+        var restaurant = await SeedRestaurantWithCuisinesAsync(areaId, _defaultCuisineId);
+
+        _currentUser.Setup(x => x.IsAdmin).Returns(false);
+        _currentUser.Setup(x => x.UserId).Returns(99);
+
+        var dto = BuildUpdateDto(restaurant, "NPR");
+        dto.CuisineIds = new List<int> { tibetanId };
+
+        var act = () => _service.UpdateAsync(restaurant.Id, dto);
+
+        await act.Should().ThrowAsync<BusinessRuleException>()
+            .WithMessage("You are not authorized to update this restaurant.");
+
+        StoredCuisineIds(restaurant.Id).Should().BeEquivalentTo(new[] { _defaultCuisineId });
+    }
+
+    [TestMethod]
+    public async Task ReadMethods_ShouldIncludeCuisineIds_ForPrepopulatingEditForms()
+    {
+        var areaId = await SeedAreaAsync();
+        var tibetanId = await SeedCuisineAsync("Tibetan");
+        var restaurant = await SeedRestaurantWithCuisinesAsync(areaId, _defaultCuisineId, tibetanId);
+
+        var expected = new[] { _defaultCuisineId, tibetanId };
+
+        (await _service.GetByIdAsync(restaurant.Id))!.CuisineIds.Should().BeEquivalentTo(expected);
+        (await _service.GetByOwnerIdAsync(1)).Single().CuisineIds.Should().BeEquivalentTo(expected);
+        (await _service.GetAllAsync()).Single().CuisineIds.Should().BeEquivalentTo(expected);
     }
 }
