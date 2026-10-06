@@ -28,8 +28,8 @@ namespace EatKath.API.Data.Seeders
                         Description = $"Sample {c.Name.ToLower()} item.",
                         Price = 5 + (i * 3),
 
-                        // NEW
-                        ImageUrl = $"https://picsum.photos/seed/{c.RestaurantId}-{c.Id}-{i}/600/600",
+                        // No image by default; owners upload real photos
+                        // from the Menu Items page.
 
                         IsFeatured = i == 1,
                         IsAvailable = true

@@ -11,6 +11,12 @@ namespace EatKath.API.Services;
 
 public class MenuItemService : IMenuItemService
 {
+    // Largest accepted menu-item image upload (the owner page checks the
+    // same limit before uploading).
+    public const long MaxImageBytes = 5 * 1024 * 1024;
+
+    private const string UploadFolderPrefix = "/uploads/menuitems/";
+
     private readonly ApplicationDbContext _context;
     private readonly IMapper _mapper;
     private readonly IValidator<CreateMenuItemDto> _createValidator;
@@ -171,9 +177,13 @@ public class MenuItemService : IMenuItemService
             throw new BusinessRuleException("You are not authorized to delete this menu item.");
         }
 
+        var imageUrl = entity.ImageUrl;
+
         _context.MenuItems.Remove(entity);
 
         await _context.SaveChangesAsync();
+
+        await DeleteUploadedImageAsync(imageUrl);
 
         return true;
     }
@@ -197,14 +207,29 @@ public class MenuItemService : IMenuItemService
             throw new BusinessRuleException("You are not authorized to upload an image for this menu item.");
         }
 
-        var imagePath = await _fileStorage.SaveImageAsync(
+        var previousImageUrl = menuItem.ImageUrl;
+
+        var imagePath = await _fileStorage.SaveValidatedImageAsync(
             file,
             $"uploads/menuitems/{menuItemId}",
-            "image");
+            MaxImageBytes);
 
         menuItem.ImageUrl = imagePath;
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch
+        {
+            // Not saved: the new file would be orphaned.
+            await DeleteUploadedImageAsync(imagePath);
+            throw;
+        }
+
+        // Only after the new image is saved: the replaced file is no
+        // longer referenced.
+        await DeleteUploadedImageAsync(previousImageUrl);
 
         return imagePath;
     }
@@ -229,10 +254,25 @@ public class MenuItemService : IMenuItemService
             throw new BusinessRuleException("You are not authorized to delete the image for this menu item.");
         }
 
-        await _fileStorage.DeleteFileAsync(menuItem.ImageUrl);
+        await DeleteUploadedImageAsync(menuItem.ImageUrl);
 
-        menuItem.ImageUrl = string.Empty;
+        menuItem.ImageUrl = null;
 
         await _context.SaveChangesAsync();
+    }
+
+    // Deletes a menu-item image file uploaded through this service. Any
+    // other value (empty, or an external URL from old seed data) is not
+    // a file under uploads/menuitems and is left alone.
+    private async Task DeleteUploadedImageAsync(string? imageUrl)
+    {
+        if (string.IsNullOrEmpty(imageUrl) ||
+            !imageUrl.StartsWith(UploadFolderPrefix, StringComparison.OrdinalIgnoreCase) ||
+            imageUrl.Contains(".."))
+        {
+            return;
+        }
+
+        await _fileStorage.DeleteFileAsync(imageUrl);
     }
 }
