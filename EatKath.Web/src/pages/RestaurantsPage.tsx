@@ -34,6 +34,8 @@ import AuthContext from "../features/auth/AuthContext";
 import { useLoadMore } from "../hooks/useLoadMore";
 import { hasEligibleOffer } from "../utils/cardOffers";
 import { getImageUrl } from "../utils/imageUrl";
+import HeroImageRotator from "../components/home/HeroImageRotator";
+import { APPROVED_RESTAURANT_HERO_PHOTOS, type HeroImage } from "../config/heroImages";
 import { MenuTab, type MenuTabValue } from "../utils/menuPricing";
 
 import RestaurantService from "../services/RestaurantService";
@@ -243,11 +245,16 @@ function RestaurantsPage() {
 
     const bestDiscount = dealRestaurants[0]?.bestDiscount ?? null;
 
-    // Up to 3 real cover photos for the hero mosaic.
-    const heroImages = dealRestaurants
-        .filter(r => r.coverImageUrl)
-        .slice(0, 3)
-        .map(r => getImageUrl(r.coverImageUrl));
+    // Approved restaurant photos for the hero (config/heroImages.ts), used
+    // only while their restaurant is active and, for a cover, while it is
+    // still that restaurant's cover. Uses the already-loaded list.
+    const heroPhotos: HeroImage[] = APPROVED_RESTAURANT_HERO_PHOTOS
+        .filter(path => {
+            const restaurantId = Number(path.match(/^\/uploads\/restaurants\/(\d+)\//)?.[1]);
+            const restaurant = restaurants.find(r => r.id === restaurantId && r.isActive);
+            return !!restaurant && (path.includes("/gallery/") || restaurant.coverImageUrl === path);
+        })
+        .map(path => ({ src: getImageUrl(path), alt: "" }));
 
     // Cuisines that at least one active restaurant serves.
     const cuisineShortcuts = cuisines
@@ -370,38 +377,19 @@ function RestaurantsPage() {
 
                         </Box>
 
-                        {/* Photo mosaic from real restaurant covers (desktop only) */}
-                        {heroImages.length > 0 && (
-                            <Box
-                                aria-hidden
-                                sx={{
-                                    display: { xs: "none", md: "grid" },
-                                    gridTemplateColumns: heroImages.length > 1 ? "1fr 1fr" : "1fr",
-                                    gridTemplateRows: "1fr 1fr",
-                                    gap: 1,
-                                    p: 1,
-                                    minHeight: 380
-                                }}
-                            >
-                                {heroImages.map((src, i) => (
-                                    <Box
-                                        key={src + i}
-                                        component="img"
-                                        src={src}
-                                        alt=""
-                                        sx={{
-                                            width: "100%",
-                                            height: "100%",
-                                            objectFit: "cover",
-                                            borderRadius: "12px",
-                                            display: "block",
-                                            gridRow: i === 0 ? "span 2" : undefined,
-                                            minHeight: 0
-                                        }}
-                                    />
-                                ))}
-                            </Box>
-                        )}
+                        {/* Rotating food and restaurant imagery (desktop only).
+                            Fixed size, so rotating images never shift the layout. */}
+                        <Box
+                            aria-hidden
+                            sx={{
+                                display: { xs: "none", md: "block" },
+                                position: "relative",
+                                m: 1,
+                                minHeight: 380
+                            }}
+                        >
+                            <HeroImageRotator restaurantPhotos={heroPhotos} />
+                        </Box>
 
                     </Box>
 
