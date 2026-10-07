@@ -4,6 +4,8 @@ const api = axios.create({ //Set up your EatKath phone, Create your own configur
 
     baseURL: import.meta.env.VITE_API_URL, //Tells Axios where the .NET API lives
 
+    timeout: 30_000, //Give up after 30s (rejects with code ECONNABORTED) so pages show their error state instead of loading forever
+
     headers: {
         "Content-Type": "application/json" //Tell API what's inside the package, Says we're sending JSON
     }

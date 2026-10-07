@@ -109,16 +109,42 @@ namespace EatKath.API.Services
             }
         }
 
+        // Sets each restaurant's Deals (ordered by id) from deals loaded in a
+        // separate query. Including Deals instead makes EF sort them by
+        // restaurant, and sorting rows with Deals' nvarchar(max) columns
+        // needs a ~6.5 MB SQL Server memory grant, which waits ~25s when
+        // LocalDB is short of memory. A plain read needs no grant.
+        private static void AttachDeals(IEnumerable<Restaurant> restaurants, IEnumerable<Deal> deals)
+        {
+            var dealsByRestaurant = deals
+                .OrderBy(d => d.Id)
+                .ToLookup(d => d.RestaurantId);
+
+            foreach (var restaurant in restaurants)
+            {
+                restaurant.Deals = dealsByRestaurant[restaurant.Id].ToList();
+            }
+        }
+
         public async Task<IEnumerable<RestaurantDto>> GetAllAsync()
         {
+            // Read-only, and split into one query per collection: a single
+            // joined query over several collections makes SQL Server
+            // request a very large memory grant (slow under memory
+            // pressure, e.g. LocalDB). Deals: see AttachDeals.
             var restaurants = await _context.Restaurants
+                .AsNoTracking()
+                .AsSplitQuery()
                 .Include(r => r.Area)
-.Include(r => r.Deals)
 .Include(r => r.RestaurantCuisines)
     .ThenInclude(rc => rc.Cuisine)
 .Include(r => r.RestaurantDiningTypes)
     .ThenInclude(rd => rd.DiningType)
                 .ToListAsync();
+
+            AttachDeals(restaurants, await _context.Deals
+                .AsNoTracking()
+                .ToListAsync());
 
             // Deal summaries for the restaurant cards: active deals that
             // have not ended, with today's availability (one batch).
@@ -194,7 +220,10 @@ namespace EatKath.API.Services
 
         public async Task<RestaurantDto?> GetByIdAsync(int id)
         {
+            // Read-only and split (see GetAllAsync).
             var restaurant = await _context.Restaurants
+                            .AsNoTracking()
+                            .AsSplitQuery()
                             .Include(r => r.Area)
                              .Include(r => r.Deals)
             .Include(r => r.RestaurantCuisines)
@@ -265,15 +294,24 @@ namespace EatKath.API.Services
 
         public async Task<IEnumerable<RestaurantDto>> GetByOwnerIdAsync(int ownerId)
         {
+            // Read-only and split (see GetAllAsync). Deals: see AttachDeals.
             var restaurants = await _context.Restaurants
+                .AsNoTracking()
+                .AsSplitQuery()
                 .Include(r => r.Area)
-                .Include(r => r.Deals)
                 .Include(r => r.RestaurantCuisines)
                     .ThenInclude(rc => rc.Cuisine)
                 .Include(r => r.RestaurantDiningTypes)
                     .ThenInclude(rd => rd.DiningType)
                 .Where(r => r.OwnerId == ownerId)
                 .ToListAsync();
+
+            var restaurantIds = restaurants.Select(r => r.Id).ToList();
+
+            AttachDeals(restaurants, await _context.Deals
+                .AsNoTracking()
+                .Where(d => restaurantIds.Contains(d.RestaurantId))
+                .ToListAsync());
 
             return restaurants.Select(restaurant => new RestaurantDto
             {
@@ -419,7 +457,10 @@ namespace EatKath.API.Services
 
         public async Task<RestaurantDto?> UpdateAsync(int id, UpdateRestaurantDto dto)
         {
+            // Split (see GetAllAsync) but still tracked: the restaurant and
+            // its cuisine links are modified and saved below.
             var restaurant = await _context.Restaurants
+            .AsSplitQuery()
             .Include(r => r.Area)
             .Include(r => r.Deals)
             .Include(r => r.RestaurantCuisines)
