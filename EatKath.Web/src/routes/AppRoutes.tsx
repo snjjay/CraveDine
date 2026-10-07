@@ -21,6 +21,7 @@ import AdminUsersPage from "../pages/AdminUsersPage";
 import LoginPage from "../features/auth/LoginPage";
 import RegisterPage from "../features/auth/RegisterPage";
 import ProtectedRoute from "../features/auth/ProtectedRoute";
+import SessionExpiredRedirect from "../features/auth/SessionExpiredRedirect";
 import MyReservationsPage from "../pages/MyReservationsPage";
 import MyRedemptionsPage from "../pages/MyRedemptionsPage";
 import ProfilePage from "../pages/ProfilePage";
@@ -42,6 +43,9 @@ function AppRoutes() {
     return (
 
         <BrowserRouter>
+
+            {/* Expired session -> /login (see features/auth/sessionEvents.ts) */}
+            <SessionExpiredRedirect />
 
             <Routes>
 

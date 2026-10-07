@@ -5,6 +5,11 @@ export interface AuthContextType {
     user: AuthResponse | null;  //Current logged-in user, AuthResponse>Shape of the user's login information, null //No user is logged in, so the current user is null
     login: (user: AuthResponse) => void; //Function that logs a user in
     logout: () => void;  //Function that logs a user out
+    // True right after the session expired (stored session found expired,
+    // automatic logout at expiresAt, or an API 401). SessionExpiredRedirect
+    // sends the user to /login once and then acknowledges it.
+    sessionExpired: boolean;
+    acknowledgeSessionExpired: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined); //Create a shared place where authentication information can be provided to the application

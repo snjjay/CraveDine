@@ -135,9 +135,18 @@ function RestaurantsPage() {
                 }
                 catch {
 
-                    // Favourites are optional on this page.
+                    // Favourites are optional on this page. An expired
+                    // session (401) is handled globally: the user is
+                    // signed out, told once and sent to /login.
 
                 }
+
+            }
+            else {
+
+                // Signed out (e.g. the session expired): no favourite
+                // state from the previous user's session.
+                setFavorites([]);
 
             }
 

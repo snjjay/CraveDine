@@ -20,6 +20,9 @@ import { Link } from "react-router-dom";
 
 import UserFavoriteService from "../../services/UserFavoriteService";
 import AuthContext from "../../features/auth/AuthContext";
+import { isSessionExpiredError } from "../../features/auth/sessionEvents";
+import { useNotification } from "../../features/notifications/NotificationContext";
+import { getApiErrorMessage } from "../../utils/apiError";
 
 import type { Restaurant } from "../../types/Restaurant";
 import { selectCardOffers } from "../../utils/cardOffers";
@@ -52,6 +55,8 @@ function RestaurantCard({ //Give me these 3 things and I'll build the restaurant
     // logged-in customers.
     const auth = useContext(AuthContext);
     const isCustomer = auth?.user?.role === "Customer";
+
+    const { notify } = useNotification();
 
     // Prefer the cover photo; fall back to the logo, then to the
     // CraveDine fallback tile (also used if the image fails to load).
@@ -94,6 +99,22 @@ function RestaurantCard({ //Give me these 3 things and I'll build the restaurant
         catch (error) {
 
             console.error(error);
+
+            // An expired session is reported once globally (the user is
+            // signed out and sent to /login), so no second message here.
+            if (!isSessionExpiredError(error)) {
+
+                notify(
+                    getApiErrorMessage(
+                        error,
+                        isFavorite
+                            ? "Couldn't remove this restaurant from your favourites. Please try again."
+                            : "Couldn't add this restaurant to your favourites. Please try again."
+                    ),
+                    "error"
+                );
+
+            }
 
         }
 

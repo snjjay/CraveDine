@@ -1,5 +1,7 @@
 import axios from "axios"; //Get a phone >Axios = the phone/connection that actually sends the request to your .NET API
 
+import { markSessionExpiredError, signalSessionExpired } from "../features/auth/sessionEvents";
+
 const api = axios.create({ //Set up your EatKath phone, Create your own configured Axios instance
 
     baseURL: import.meta.env.VITE_API_URL, //Tells Axios where the .NET API lives
@@ -35,6 +37,62 @@ api.interceptors.request.use( //Security check before sending, Runs before every
     },
 
     (error) => Promise.reject(error)
+
+);
+
+// Token of the signed-in user saved in localStorage (or null).
+function getStoredToken(): string | null {
+
+    try {
+
+        const storedUser = localStorage.getItem("user");
+
+        return storedUser ? (JSON.parse(storedUser).token ?? null) : null;
+
+    }
+    catch {
+
+        return null;
+
+    }
+
+}
+
+// Expired/invalid session: an authenticated request answered with 401.
+// Only when the request carried the token that is still saved (so a late
+// 401 for an old token, or several 401s at once, signal only once - the
+// first one clears the saved session), and not for the login/register
+// calls, whose 401 means wrong credentials (handled by LoginPage).
+// AuthProvider reacts to the signal: signs out, shows the message once
+// and redirects to /login. The error is still rejected (marked) so
+// callers can finish; they skip their own message for it.
+api.interceptors.response.use(
+
+    (response) => response,
+
+    (error) => {
+
+        const status = error.response?.status;
+        const url = String(error.config?.url ?? "");
+        const sentAuthorization = String(error.config?.headers?.Authorization ?? "");
+        const storedToken = getStoredToken();
+
+        if (
+            status === 401 &&
+            !/\/auth\/(login|register)$/i.test(url) &&
+            storedToken !== null &&
+            sentAuthorization === `Bearer ${storedToken}`
+        ) {
+
+            markSessionExpiredError(error);
+
+            signalSessionExpired();
+
+        }
+
+        return Promise.reject(error);
+
+    }
 
 );
 
