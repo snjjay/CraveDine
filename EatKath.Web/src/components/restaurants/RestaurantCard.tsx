@@ -1,5 +1,5 @@
 // Think of it as RestaurantCard = a reusable restaurant display box.
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
 import {
     Box,
@@ -24,6 +24,7 @@ import AuthContext from "../../features/auth/AuthContext";
 import type { Restaurant } from "../../types/Restaurant";
 import { selectCardOffers } from "../../utils/cardOffers";
 import { getImageUrl } from "../../utils/imageUrl";
+import RestaurantImageFallback from "./RestaurantImageFallback";
 
 // Compact white offer card on top of the photo.
 const OVERLAY_SX = {
@@ -52,8 +53,10 @@ function RestaurantCard({ //Give me these 3 things and I'll build the restaurant
     const auth = useContext(AuthContext);
     const isCustomer = auth?.user?.role === "Customer";
 
-    // Prefer the cover photo; fall back to the logo.
-    const imageUrl = getImageUrl(restaurant.coverImageUrl || restaurant.logoUrl);
+    // Prefer the cover photo; fall back to the logo, then to the
+    // CraveDine fallback tile (also used if the image fails to load).
+    const imagePath = restaurant.coverImageUrl || restaurant.logoUrl;
+    const [imageFailed, setImageFailed] = useState(false);
 
     // Up to two offer summaries for the photo (+N more).
     const { offers, moreCount } = selectCardOffers(restaurant.dealSummaries);
@@ -130,19 +133,24 @@ function RestaurantCard({ //Give me these 3 things and I'll build the restaurant
 
                 <Box sx={{ position: "relative", aspectRatio: "16 / 10", overflow: "hidden", bgcolor: "action.hover" }}>
 
-                    <Box
-                        component="img"
-                        src={imageUrl}
-                        alt={restaurant.name}
-                        loading="lazy"
-                        sx={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                            display: "block",
-                            transition: "transform 300ms ease"
-                        }}
-                    />
+                    {imagePath && !imageFailed ? (
+                        <Box
+                            component="img"
+                            src={getImageUrl(imagePath)}
+                            alt={restaurant.name}
+                            loading="lazy"
+                            onError={() => setImageFailed(true)}
+                            sx={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                display: "block",
+                                transition: "transform 300ms ease"
+                            }}
+                        />
+                    ) : (
+                        <RestaurantImageFallback />
+                    )}
 
                     {/* Bottom of the photo: offer overlays on the left, "View all
                         offers" bottom-right. One wrapping flex row, so they

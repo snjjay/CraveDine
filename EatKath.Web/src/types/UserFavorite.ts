@@ -8,6 +8,8 @@ export interface UserFavorite {
 
     logoUrl: string;
 
+    coverImageUrl?: string | null;
+
     createdAt: string;
 
 }

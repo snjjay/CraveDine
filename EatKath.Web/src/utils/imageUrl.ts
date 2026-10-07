@@ -1,7 +1,9 @@
-export function getImageUrl(path?: string): string {
+export function getImageUrl(path?: string | null): string {
 
+    // No external placeholder: callers show their own local fallback
+    // (e.g. RestaurantImageFallback) when there is no image.
     if (!path) {
-        return "https://placehold.co/1200x400?text=EatKath";
+        return "";
     }
 
     if (path.startsWith("http://") || path.startsWith("https://")) {
@@ -31,7 +33,7 @@ export function getImageUrl(path?: string): string {
 //
 // → No image path was provided.
 //
-// → Use a default placeholder image.
+// → Return "" - the component shows its local fallback instead.
 //
 //
 // 2. ALREADY A COMPLETE URL:

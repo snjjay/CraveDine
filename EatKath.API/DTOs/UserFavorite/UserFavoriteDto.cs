@@ -10,6 +10,8 @@
 
         public string LogoUrl { get; set; } = string.Empty;
 
+        public string? CoverImageUrl { get; set; }
+
         public DateTime CreatedAt { get; set; }
     }
 }

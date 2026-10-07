@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react"; //useState → stores data that can change. useEffect → runs code when the page loads.
 
 import {
+    Box,
     CircularProgress,
     Grid,
     Typography
 } from "@mui/material";
 
 import LoadMoreButton from "../components/common/LoadMoreButton";
+import RestaurantImageFallback from "../components/restaurants/RestaurantImageFallback";
 import { RESTAURANT_GRID_ITEM_SIZE, RESTAURANT_GRID_SPACING } from "../components/restaurants/restaurantGrid";
 import { useLoadMore } from "../hooks/useLoadMore";
 import UserFavoriteService from "../services/UserFavoriteService";//Bring the UserFavoriteService code from the services folder so I can use it in this page.
@@ -103,16 +105,19 @@ function MyFavoritesPage() {
                         size={RESTAURANT_GRID_ITEM_SIZE}
                     >
 
-                        <img
-                            src={getImageUrl(f.logoUrl)}
-                            alt={f.restaurantName}
-                            style={{
-                                width: "100%",
-                                height: 180,
-                                objectFit: "cover",
-                                borderRadius: 8
-                            }}
-                        />
+                        {/* Cover photo, or the CraveDine fallback tile */}
+                        <Box sx={{ height: 180, borderRadius: "8px", overflow: "hidden", bgcolor: "action.hover" }}>
+                            {f.coverImageUrl ? (
+                                <Box
+                                    component="img"
+                                    src={getImageUrl(f.coverImageUrl)}
+                                    alt={f.restaurantName}
+                                    sx={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                                />
+                            ) : (
+                                <RestaurantImageFallback />
+                            )}
+                        </Box>
 
                         <Typography
                             variant="h6"

@@ -29,8 +29,9 @@
 
         public bool IsActive { get; set; } = true;
 
-        // Synthetic development/demo listing (created only by the dev-only
-        // `seed-demo` command). Never set from owner or admin forms.
+        // Synthetic development/demo listing (set by the dev-only
+        // `seed-demo` command and the fictional startup seed restaurants).
+        // Never set from owner or admin forms.
         public bool IsDemo { get; set; }
 
        

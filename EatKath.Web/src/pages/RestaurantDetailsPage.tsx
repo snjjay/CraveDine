@@ -40,6 +40,8 @@ import type { RestaurantImage } from "../types/RestaurantImage";
 
 import DealCard from "../components/deals/DealCard";
 import OpeningStatus from "../components/restaurants/OpeningStatus";
+import RestaurantImageFallback from "../components/restaurants/RestaurantImageFallback";
+import RestaurantMonogram from "../components/restaurants/RestaurantMonogram";
 import RestaurantMenu from "../components/restaurants/RestaurantMenu";
 import DiscountBadge from "../components/common/DiscountBadge";
 import InfoRow from "../components/common/InfoRow";
@@ -113,6 +115,9 @@ function RestaurantDetailsPage() {
     const [galleryLoading, setGalleryLoading] = useState(true);
 
     const [loading, setLoading] = useState(true);
+
+    // Cover that failed to load (shows the fallback tile instead).
+    const [failedCover, setFailedCover] = useState<string | null>(null);
 
     useEffect(() => {
 
@@ -239,8 +244,8 @@ function RestaurantDetailsPage() {
 
     }
 
-    const coverUrl = getImageUrl(restaurant.coverImageUrl);
-    const logoUrl = getImageUrl(restaurant.logoUrl);
+    const coverPath = restaurant.coverImageUrl;
+    const showCover = !!coverPath && coverPath !== failedCover;
 
     // e.g. "Kathmandu · Nepali, Tibetan"
     const meta = [
@@ -267,12 +272,17 @@ function RestaurantDetailsPage() {
                 }}
             >
 
-                <Box
-                    component="img"
-                    src={coverUrl}
-                    alt=""
-                    sx={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                />
+                {showCover ? (
+                    <Box
+                        component="img"
+                        src={getImageUrl(coverPath)}
+                        alt=""
+                        onError={() => setFailedCover(coverPath)}
+                        sx={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                    />
+                ) : (
+                    <RestaurantImageFallback size="hero" />
+                )}
 
                 {/* Gradient keeps the white text readable on any photo */}
                 <Box
@@ -297,9 +307,9 @@ function RestaurantDetailsPage() {
                     }}
                 >
 
-                    {restaurant.logoUrl && (
+                    {restaurant.logoUrl ? (
                         <Avatar
-                            src={logoUrl}
+                            src={getImageUrl(restaurant.logoUrl)}
                             alt={`${restaurant.name} logo`}
                             variant="rounded"
                             sx={{
@@ -309,6 +319,16 @@ function RestaurantDetailsPage() {
                                 border: "3px solid #FFFFFF",
                                 bgcolor: "background.paper",
                                 flexShrink: 0
+                            }}
+                        />
+                    ) : (
+                        <RestaurantMonogram
+                            name={restaurant.name}
+                            sx={{
+                                width: { xs: 64, md: 88 },
+                                height: { xs: 64, md: 88 },
+                                fontSize: { xs: "2rem", md: "2.75rem" },
+                                border: "3px solid #FFFFFF"
                             }}
                         />
                     )}

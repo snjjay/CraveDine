@@ -89,9 +89,14 @@ namespace EatKath.API.Data.Seeders
                     Email = $"info{i + 1}@eatkathdemo.com",
                     Website = $"https://www.eatkathdemo{i + 1}.com",
 
-                    LogoUrl = $"https://picsum.photos/seed/logo{i + 1}/300/300",
-                    CoverImageUrl = $"https://picsum.photos/seed/cover{i + 1}/1200/600",
+                    // No images: the site shows its own logo monogram and
+                    // cover fallback rather than unrelated stock photos.
+                    LogoUrl = string.Empty,
+                    CoverImageUrl = null,
                     MenuPdfUrl = null,
+
+                    // Fictional businesses: listed as demo data.
+                    IsDemo = true,
 
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow,

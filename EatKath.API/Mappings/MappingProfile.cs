@@ -113,7 +113,9 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.RestaurantName,
                 opt => opt.MapFrom(src => src.Restaurant.Name))
             .ForMember(dest => dest.LogoUrl,
-                opt => opt.MapFrom(src => src.Restaurant.LogoUrl));
+                opt => opt.MapFrom(src => src.Restaurant.LogoUrl))
+            .ForMember(dest => dest.CoverImageUrl,
+                opt => opt.MapFrom(src => src.Restaurant.CoverImageUrl));
 
         // ============================
         // Redemption
