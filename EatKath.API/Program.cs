@@ -224,6 +224,14 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
+    // Sample users/restaurants/deals only in Development; every other
+    // environment gets migrations + reference data only.
+    var includeDevelopmentData = DatabaseSeeder.ShouldSeedDevelopmentData(app.Environment);
+
+    Console.WriteLine(includeDevelopmentData
+        ? "Seeding reference data + development sample data."
+        : "Seeding reference data only.");
+
     const int maxRetries = 10;
 
     for (int i = 1; i <= maxRetries; i++)
@@ -232,7 +240,7 @@ using (var scope = app.Services.CreateScope())
         {
             Console.WriteLine($"Database seed attempt {i}/{maxRetries}...");
 
-            await DatabaseSeeder.SeedAsync(context);
+            await DatabaseSeeder.SeedAsync(context, includeDevelopmentData);
 
             Console.WriteLine("Database seeded successfully.");
 
