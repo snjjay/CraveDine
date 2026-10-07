@@ -695,7 +695,9 @@ function OwnerRestaurantPage() {
                 <Stack
                     direction="row"
                     spacing={2}
+                    useFlexGap
                     alignItems="center"
+                    sx={{ flexWrap: "wrap" }}
                 >
 
                     <input

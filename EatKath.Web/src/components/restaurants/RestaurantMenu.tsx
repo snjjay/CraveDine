@@ -34,11 +34,12 @@ const SITE_HEADER_HEIGHT = { xs: 60, md: 68 };
 // (Desktop allows for the category chips wrapping onto a second row.)
 const CATEGORY_SCROLL_MARGIN = { xs: 60 + 112, md: 68 + 152 };
 
-// Text read by screen readers only (e.g. "Original price").
+// Text read by screen readers only (e.g. "Original price"). Sizes are
+// strings: in sx a bare 1 means 100%, which made the span overflow.
 const visuallyHidden = {
     position: "absolute",
-    width: 1,
-    height: 1,
+    width: "1px",
+    height: "1px",
     overflow: "hidden",
     clip: "rect(0 0 0 0)",
     whiteSpace: "nowrap"

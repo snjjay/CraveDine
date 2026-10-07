@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 import {
     Alert,
@@ -56,6 +56,13 @@ const OFFER_TYPE_OPTIONS = [
     { value: String(MenuTab.Takeaway), label: "Takeaway" }
 ];
 
+// ?offer=dine-in / ?offer=takeaway (e.g. the footer's Dine-in Deals and
+// Takeaway Deals links) preselects the Offer Type filter.
+const OFFER_URL_VALUES: Record<string, string> = {
+    "dine-in": String(MenuTab.DineIn),
+    "takeaway": String(MenuTab.Takeaway)
+};
+
 // Top deals strip: 1 column on phones, 2 on tablets, 3 on laptops, 4 on large screens.
 // (The main listing uses the shared 3-across RESTAURANT_GRID_ITEM_SIZE.)
 const TOP_DEALS_GRID_ITEM_SIZE = { xs: 12, sm: 6, md: 4, lg: 3 };
@@ -96,7 +103,19 @@ function RestaurantsPage() {
 
     const [selectedArea, setSelectedArea] = useState("");
     const [selectedCuisine, setSelectedCuisine] = useState("");
-    const [selectedOfferType, setSelectedOfferType] = useState("");
+    const [searchParams] = useSearchParams();
+    const offerFromUrl = OFFER_URL_VALUES[searchParams.get("offer") ?? ""] ?? "";
+
+    const [selectedOfferType, setSelectedOfferType] = useState(offerFromUrl);
+
+    // A new ?offer= link (even while this page is open) re-applies the
+    // filter; the dropdown stays freely changeable otherwise.
+    const [appliedOfferFromUrl, setAppliedOfferFromUrl] = useState(offerFromUrl);
+
+    if (offerFromUrl !== appliedOfferFromUrl) {
+        setAppliedOfferFromUrl(offerFromUrl);
+        setSelectedOfferType(offerFromUrl);
+    }
 
     useEffect(() => {
 
