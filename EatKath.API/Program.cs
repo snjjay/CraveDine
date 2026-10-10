@@ -194,7 +194,8 @@ if (args.Contains("seed-demo"))
 //Each middleware gets a chance to do something.
 // ==========================================================
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() ||
+    builder.Configuration.GetValue<bool>("Swagger:Enabled"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();
