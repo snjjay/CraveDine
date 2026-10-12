@@ -9,6 +9,7 @@ using EatKath.API.DTOs.Redemption;
 using EatKath.API.DTOs.RestaurantImage;
 using EatKath.API.DTOs.RestaurantOpeningHour;
 using EatKath.API.DTOs.SurpriseBag;
+using EatKath.API.DTOs.SurpriseBagReservation;
 using EatKath.API.DTOs.User;
 using EatKath.API.DTOs.UserFavorite;
 using EatKath.API.Entities;
@@ -173,6 +174,47 @@ public class MappingProfile : Profile
         CreateMap<CreateSurpriseBagDto, SurpriseBag>();
 
         CreateMap<UpdateSurpriseBagDto, SurpriseBag>();
+
+        // ============================
+        // Surprise Bag Reservation
+        // ============================
+
+        // Bag and restaurant details come from the reservation's own bag;
+        // the price is the reserved UnitPrice. CanCancel is calculated by
+        // SurpriseBagReservationService.
+        CreateMap<SurpriseBagReservation, SurpriseBagReservationDto>()
+            .ForMember(dest => dest.BagTitle,
+                opt => opt.MapFrom(src => src.SurpriseBag.Title))
+            .ForMember(dest => dest.Category,
+                opt => opt.MapFrom(src => src.SurpriseBag.Category))
+            .ForMember(dest => dest.RestaurantId,
+                opt => opt.MapFrom(src => src.SurpriseBag.RestaurantId))
+            .ForMember(dest => dest.RestaurantName,
+                opt => opt.MapFrom(src => src.SurpriseBag.Restaurant.Name))
+            .ForMember(dest => dest.RestaurantAddress,
+                opt => opt.MapFrom(src => src.SurpriseBag.Restaurant.Address))
+            .ForMember(dest => dest.RestaurantPhone,
+                opt => opt.MapFrom(src => src.SurpriseBag.Restaurant.PhoneNumber))
+            .ForMember(dest => dest.CurrencyCode,
+                opt => opt.MapFrom(src => src.SurpriseBag.Restaurant.CurrencyCode))
+            .ForMember(dest => dest.PickupDate,
+                opt => opt.MapFrom(src => src.SurpriseBag.PickupDate))
+            .ForMember(dest => dest.PickupStartTime,
+                opt => opt.MapFrom(src => src.SurpriseBag.PickupStartTime))
+            .ForMember(dest => dest.PickupEndTime,
+                opt => opt.MapFrom(src => src.SurpriseBag.PickupEndTime))
+            .ForMember(dest => dest.TotalPrice,
+                opt => opt.MapFrom(src => src.UnitPrice * src.Quantity))
+            .ForMember(dest => dest.CanCancel, opt => opt.Ignore());
+
+        CreateMap<SurpriseBagReservation, OwnerSurpriseBagReservationDto>()
+            .IncludeBase<SurpriseBagReservation, SurpriseBagReservationDto>()
+            .ForMember(dest => dest.CustomerName,
+                opt => opt.MapFrom(src => src.User.FirstName + " " + src.User.LastName))
+            .ForMember(dest => dest.CustomerPhone,
+                opt => opt.MapFrom(src => src.User.PhoneNumber))
+            .ForMember(dest => dest.CustomerEmail,
+                opt => opt.MapFrom(src => src.User.Email));
     }
 }
 

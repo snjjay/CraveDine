@@ -108,6 +108,8 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateAreaValidator>(); // 
 
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<ISurpriseBagService, SurpriseBagService>();
+builder.Services.AddScoped<ISurpriseBagReservationService, SurpriseBagReservationService>();
+builder.Services.AddSingleton<IConfirmationCodeGenerator, ConfirmationCodeGenerator>();
 
 // ==========================================================
 // Swagger: Give me a screen where I can see and test my APIs
