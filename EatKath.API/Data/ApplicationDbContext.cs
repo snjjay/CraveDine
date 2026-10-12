@@ -1,4 +1,5 @@
 ﻿using EatKath.API.Entities; //Your Entities are your database models: Area, Restaurant, User Deal, MenuItem
+using EatKath.API.Enums;
 using Microsoft.EntityFrameworkCore; //Bring in Entity Framework and my database entities which gives u things like  DbContext DbSet ModelBuilder
 
 
@@ -50,6 +51,10 @@ namespace EatKath.API.Data
         public DbSet<UserFavorite> UserFavorites => Set<UserFavorite>();
 
         public DbSet<Reservation> Reservations { get; set; }
+
+        // Surprise Bags
+        public DbSet<SurpriseBag> SurpriseBags => Set<SurpriseBag>();
+        public DbSet<SurpriseBagReservation> SurpriseBagReservations => Set<SurpriseBagReservation>();
 
         //OnModelCreating — Define how tables relate: Tell Entity Framework exactly how my database tables should be designed and related. How are those tables related and what rules do they have?
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -299,6 +304,77 @@ namespace EatKath.API.Data
                 .HasIndex(x => new { x.UserId, x.DealId, x.ReservationDate, x.ReservationTime })
                 .IsUnique()
                 .HasFilter("[Status] <> N'Cancelled' AND [Status] <> N'Rejected' AND [Status] <> N'NoShow'");
+
+            // ============================
+            // Surprise Bags: a restaurant's surplus-food bags and the
+            // customers' reservations of them. One-way navigations from
+            // Restaurant and User, so those entities are unchanged.
+            // ============================
+
+            modelBuilder.Entity<SurpriseBag>(bag =>
+            {
+                // Same as Deal: deleting a restaurant deletes its bags.
+                bag.HasOne(x => x.Restaurant)
+                    .WithMany()
+                    .HasForeignKey(x => x.RestaurantId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                bag.Property(x => x.Title).HasMaxLength(150);
+                bag.Property(x => x.Description).HasMaxLength(1000);
+                bag.Property(x => x.Conditions).HasMaxLength(1000);
+                bag.Property(x => x.Price).HasPrecision(18, 2);
+                bag.Property(x => x.EstimatedValue).HasPrecision(18, 2);
+
+                bag.HasIndex(x => new { x.RestaurantId, x.PickupDate });
+
+                bag.ToTable(t =>
+                {
+                    t.HasCheckConstraint("CK_SurpriseBags_QuantityTotal", "[QuantityTotal] >= 1");
+                    t.HasCheckConstraint("CK_SurpriseBags_MaxPerCustomer", "[MaxPerCustomer] >= 1");
+                    t.HasCheckConstraint("CK_SurpriseBags_Price", "[Price] >= 0");
+                    t.HasCheckConstraint("CK_SurpriseBags_EstimatedValue", "[EstimatedValue] IS NULL OR [EstimatedValue] >= 0");
+                    // Same-day window: cannot cross midnight.
+                    t.HasCheckConstraint("CK_SurpriseBags_PickupWindow", "[PickupEndTime] > [PickupStartTime]");
+                });
+            });
+
+            modelBuilder.Entity<SurpriseBagReservation>(reservation =>
+            {
+                // Like Redemption -> Deal: reservation history blocks
+                // deleting the bag instead of disappearing with it.
+                reservation.HasOne(x => x.SurpriseBag)
+                    .WithMany(x => x.Reservations)
+                    .HasForeignKey(x => x.SurpriseBagId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                reservation.HasOne(x => x.User)
+                    .WithMany()
+                    .HasForeignKey(x => x.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                reservation.Property(x => x.UnitPrice).HasPrecision(18, 2);
+                reservation.Property(x => x.ConfirmationCode).HasMaxLength(12);
+
+                reservation.HasIndex(x => x.ConfirmationCode).IsUnique();
+
+                // One active (Reserved) reservation per customer per bag. A
+                // database backstop for concurrent requests, like the
+                // Reservation filtered index above; cancelled, collected and
+                // no-show reservations don't count.
+                reservation.HasIndex(x => new { x.SurpriseBagId, x.UserId })
+                    .IsUnique()
+                    .HasFilter($"[Status] = {(int)SurpriseBagReservationStatus.Reserved}");
+
+                // Availability: Reserved + Collected quantity per bag.
+                reservation.HasIndex(x => new { x.SurpriseBagId, x.Status });
+
+                reservation.ToTable(t =>
+                {
+                    t.HasCheckConstraint("CK_SurpriseBagReservations_Quantity", "[Quantity] >= 1");
+                    t.HasCheckConstraint("CK_SurpriseBagReservations_UnitPrice", "[UnitPrice] >= 0");
+                    t.HasCheckConstraint("CK_SurpriseBagReservations_ConfirmationCode", "[ConfirmationCode] <> N''");
+                });
+            });
 
         }
     }

@@ -537,6 +537,149 @@ namespace EatKath.API.Migrations
                     b.ToTable("Roles");
                 });
 
+            modelBuilder.Entity("EatKath.API.Entities.SurpriseBag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Conditions")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<decimal?>("EstimatedValue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MaxPerCustomer")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly>("PickupDate")
+                        .HasColumnType("date");
+
+                    b.Property<TimeOnly>("PickupEndTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeOnly>("PickupStartTime")
+                        .HasColumnType("time");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("QuantityTotal")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RestaurantId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RestaurantId", "PickupDate");
+
+                    b.ToTable("SurpriseBags", t =>
+                        {
+                            t.HasCheckConstraint("CK_SurpriseBags_EstimatedValue", "[EstimatedValue] IS NULL OR [EstimatedValue] >= 0");
+
+                            t.HasCheckConstraint("CK_SurpriseBags_MaxPerCustomer", "[MaxPerCustomer] >= 1");
+
+                            t.HasCheckConstraint("CK_SurpriseBags_PickupWindow", "[PickupEndTime] > [PickupStartTime]");
+
+                            t.HasCheckConstraint("CK_SurpriseBags_Price", "[Price] >= 0");
+
+                            t.HasCheckConstraint("CK_SurpriseBags_QuantityTotal", "[QuantityTotal] >= 1");
+                        });
+                });
+
+            modelBuilder.Entity("EatKath.API.Entities.SurpriseBagReservation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CancelledAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("CollectedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ConfirmationCode")
+                        .IsRequired()
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SurpriseBagId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConfirmationCode")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("SurpriseBagId", "Status");
+
+                    b.HasIndex("SurpriseBagId", "UserId")
+                        .IsUnique()
+                        .HasFilter("[Status] = 1");
+
+                    b.ToTable("SurpriseBagReservations", t =>
+                        {
+                            t.HasCheckConstraint("CK_SurpriseBagReservations_ConfirmationCode", "[ConfirmationCode] <> N''");
+
+                            t.HasCheckConstraint("CK_SurpriseBagReservations_Quantity", "[Quantity] >= 1");
+
+                            t.HasCheckConstraint("CK_SurpriseBagReservations_UnitPrice", "[UnitPrice] >= 0");
+                        });
+                });
+
             modelBuilder.Entity("EatKath.API.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -767,6 +910,36 @@ namespace EatKath.API.Migrations
                     b.Navigation("Restaurant");
                 });
 
+            modelBuilder.Entity("EatKath.API.Entities.SurpriseBag", b =>
+                {
+                    b.HasOne("EatKath.API.Entities.Restaurant", "Restaurant")
+                        .WithMany()
+                        .HasForeignKey("RestaurantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Restaurant");
+                });
+
+            modelBuilder.Entity("EatKath.API.Entities.SurpriseBagReservation", b =>
+                {
+                    b.HasOne("EatKath.API.Entities.SurpriseBag", "SurpriseBag")
+                        .WithMany("Reservations")
+                        .HasForeignKey("SurpriseBagId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EatKath.API.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("SurpriseBag");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("EatKath.API.Entities.User", b =>
                 {
                     b.HasOne("EatKath.API.Entities.Role", "Role")
@@ -844,6 +1017,11 @@ namespace EatKath.API.Migrations
             modelBuilder.Entity("EatKath.API.Entities.Role", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("EatKath.API.Entities.SurpriseBag", b =>
+                {
+                    b.Navigation("Reservations");
                 });
 
             modelBuilder.Entity("EatKath.API.Entities.User", b =>
