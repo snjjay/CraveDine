@@ -236,6 +236,78 @@ public class UserServiceTests
         _context.Users.Count().Should().Be(1);
     }
 
+    // Any status counts: cancelled reservations are history too, and the
+    // database would block the delete (generic 500 without this check).
+    [TestMethod]
+    [DataRow(SurpriseBagReservationStatus.Reserved)]
+    [DataRow(SurpriseBagReservationStatus.Cancelled)]
+    public async Task DeleteAsync_ShouldThrowBusinessRuleException_WhenUserHasSurpriseBagReservations(
+        SurpriseBagReservationStatus status)
+    {
+        // -----------------------------
+        // Arrange
+        // -----------------------------
+
+        var user = await SeedUserAsync();
+
+        _context.SurpriseBagReservations.Add(new SurpriseBagReservation
+        {
+            SurpriseBagId = 1,
+            UserId = user.Id,
+            Quantity = 1,
+            UnitPrice = 250m,
+            ConfirmationCode = "K7M2Q9XA",
+            Status = status
+        });
+
+        await _context.SaveChangesAsync();
+
+        // -----------------------------
+        // Act & Assert
+        // -----------------------------
+
+        var ex = await Assert.ThrowsExceptionAsync<BusinessRuleException>(
+            () => _service.DeleteAsync(user.Id));
+
+        ex.Message.Should().Be("Cannot delete this user because they have Surprise Bag reservations.");
+
+        _context.Users.Count().Should().Be(1);
+    }
+
+    [TestMethod]
+    public async Task DeleteAsync_ShouldSucceed_WhenOnlyOtherUsersHaveSurpriseBagReservations()
+    {
+        // -----------------------------
+        // Arrange
+        // -----------------------------
+
+        var user = await SeedUserAsync();
+
+        _context.SurpriseBagReservations.Add(new SurpriseBagReservation
+        {
+            SurpriseBagId = 1,
+            UserId = user.Id + 1,
+            Quantity = 1,
+            UnitPrice = 250m,
+            ConfirmationCode = "K7M2Q9XA"
+        });
+
+        await _context.SaveChangesAsync();
+
+        // -----------------------------
+        // Act
+        // -----------------------------
+
+        var result = await _service.DeleteAsync(user.Id);
+
+        // -----------------------------
+        // Assert
+        // -----------------------------
+
+        result.Should().BeTrue();
+        _context.Users.Count().Should().Be(0);
+    }
+
 
     // -----------------------------
     // UpdateAsync / DeleteAsync - Admin self-protection and

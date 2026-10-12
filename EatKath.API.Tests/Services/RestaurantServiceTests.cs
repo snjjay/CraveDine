@@ -1105,6 +1105,122 @@ public class RestaurantServiceTests
         _context.Restaurants.Count().Should().Be(1);
     }
 
+    private async Task<(Restaurant Restaurant, SurpriseBag Bag)> SeedRestaurantWithBagAsync(int ownerId)
+    {
+        var restaurant = new Restaurant
+        {
+            Name = "Himalayan Bakery",
+            OwnerId = ownerId,
+            IsActive = true
+        };
+
+        _context.Restaurants.Add(restaurant);
+        await _context.SaveChangesAsync();
+
+        var bag = new SurpriseBag
+        {
+            RestaurantId = restaurant.Id,
+            Title = "End-of-day bakery bag",
+            Category = SurpriseBagCategory.Bakery,
+            Price = 250m,
+            QuantityTotal = 5,
+            PickupDate = new DateOnly(2026, 11, 10),
+            PickupStartTime = new TimeOnly(18, 0),
+            PickupEndTime = new TimeOnly(19, 30)
+        };
+
+        _context.SurpriseBags.Add(bag);
+        await _context.SaveChangesAsync();
+
+        return (restaurant, bag);
+    }
+
+    // Any status counts: cancelled reservations are history too, and the
+    // database would block the cascade to the bag (generic 500 without
+    // this check).
+    [TestMethod]
+    [DataRow(SurpriseBagReservationStatus.Reserved)]
+    [DataRow(SurpriseBagReservationStatus.Cancelled)]
+    public async Task DeleteAsync_ShouldThrowBusinessRuleException_WhenRestaurantHasSurpriseBagReservations(
+        SurpriseBagReservationStatus status)
+    {
+        // -----------------------------
+        // Arrange
+        // -----------------------------
+
+        _currentUser.Setup(x => x.IsAdmin).Returns(false);
+        _currentUser.Setup(x => x.UserId).Returns(1);
+
+        var (restaurant, bag) = await SeedRestaurantWithBagAsync(ownerId: 1);
+
+        _context.SurpriseBagReservations.Add(new SurpriseBagReservation
+        {
+            SurpriseBagId = bag.Id,
+            UserId = 50,
+            Quantity = 1,
+            UnitPrice = 250m,
+            ConfirmationCode = "K7M2Q9XA",
+            Status = status
+        });
+
+        await _context.SaveChangesAsync();
+
+        // -----------------------------
+        // Act & Assert
+        // -----------------------------
+
+        var ex = await Assert.ThrowsExceptionAsync<BusinessRuleException>(
+            () => _service.DeleteAsync(restaurant.Id));
+
+        ex.Message.Should().Be("Cannot delete this restaurant because it has Surprise Bag reservations.");
+
+        _context.Restaurants.Count().Should().Be(1);
+        _context.SurpriseBags.Count().Should().Be(1);
+    }
+
+    [TestMethod]
+    public async Task DeleteAsync_ShouldSucceed_AndRemoveBags_WhenBagsHaveNoReservations()
+    {
+        // -----------------------------
+        // Arrange
+        // Purpose:
+        // Bags without reservations don't block the delete and go with
+        // the restaurant (cascade). Another restaurant's bag reservations
+        // must not block it either.
+        // -----------------------------
+
+        _currentUser.Setup(x => x.IsAdmin).Returns(false);
+        _currentUser.Setup(x => x.UserId).Returns(1);
+
+        var (restaurant, _) = await SeedRestaurantWithBagAsync(ownerId: 1);
+        var (otherRestaurant, otherBag) = await SeedRestaurantWithBagAsync(ownerId: 2);
+
+        _context.SurpriseBagReservations.Add(new SurpriseBagReservation
+        {
+            SurpriseBagId = otherBag.Id,
+            UserId = 50,
+            Quantity = 1,
+            UnitPrice = 250m,
+            ConfirmationCode = "K7M2Q9XA"
+        });
+
+        await _context.SaveChangesAsync();
+
+        // -----------------------------
+        // Act
+        // -----------------------------
+
+        var result = await _service.DeleteAsync(restaurant.Id);
+
+        // -----------------------------
+        // Assert
+        // -----------------------------
+
+        result.Should().BeTrue();
+        _context.Restaurants.Select(r => r.Id).Should().Equal(otherRestaurant.Id);
+        _context.SurpriseBags.Select(b => b.Id).Should().Equal(otherBag.Id);
+    }
+
     [TestMethod]
     public async Task DeleteAsync_ShouldSucceed_WhenUserIsAdmin_EvenIfNotOwner()
     {

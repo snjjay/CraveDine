@@ -582,6 +582,15 @@ namespace EatKath.API.Services
                     "Cannot delete this restaurant because it has existing menu items or redeemed deals.");
             }
 
+            // Bags without reservations are deleted with the restaurant
+            // (cascade); reservations (any status) are kept as history and
+            // the database blocks deleting their bag.
+            if (await _context.SurpriseBagReservations.AnyAsync(r => r.SurpriseBag.RestaurantId == id))
+            {
+                throw new BusinessRuleException(
+                    "Cannot delete this restaurant because it has Surprise Bag reservations.");
+            }
+
             _context.Restaurants.Remove(restaurant);
 
             await _context.SaveChangesAsync();

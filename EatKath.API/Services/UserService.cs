@@ -188,6 +188,14 @@ namespace EatKath.API.Services
                     "Cannot delete this user because they have existing reservations, redemptions, or restaurants.");
             }
 
+            // Surprise Bag reservations (any status) are kept as history:
+            // the database blocks deleting their customer.
+            if (await _context.SurpriseBagReservations.AnyAsync(r => r.UserId == id))
+            {
+                throw new BusinessRuleException(
+                    "Cannot delete this user because they have Surprise Bag reservations.");
+            }
+
             _context.Users.Remove(user);
 
             await _context.SaveChangesAsync();
