@@ -107,6 +107,7 @@ builder.Services.AddHttpContextAccessor(); //"Allow my services to find informat
 builder.Services.AddValidatorsFromAssemblyContaining<CreateAreaValidator>(); // "Find and register my validation rules. // Create Area request.>Validator>Is this data valid?
 
 builder.Services.AddScoped<IReservationService, ReservationService>();
+builder.Services.AddScoped<ISurpriseBagService, SurpriseBagService>();
 
 // ==========================================================
 // Swagger: Give me a screen where I can see and test my APIs

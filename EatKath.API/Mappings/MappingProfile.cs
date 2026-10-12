@@ -8,6 +8,7 @@ using EatKath.API.DTOs.MenuItem;
 using EatKath.API.DTOs.Redemption;
 using EatKath.API.DTOs.RestaurantImage;
 using EatKath.API.DTOs.RestaurantOpeningHour;
+using EatKath.API.DTOs.SurpriseBag;
 using EatKath.API.DTOs.User;
 using EatKath.API.DTOs.UserFavorite;
 using EatKath.API.Entities;
@@ -148,6 +149,30 @@ public class MappingProfile : Profile
                 opt => opt.MapFrom(src => src.Deal.Restaurant.Name));
 
         CreateMap<CreateReservationDto, Reservation>();
+
+        // ============================
+        // Surprise Bag
+        // ============================
+
+        // RemainingQuantity, IsSoldOut and the reservation counts are
+        // calculated by SurpriseBagService, not mapped.
+        CreateMap<SurpriseBag, SurpriseBagDto>()
+            .ForMember(dest => dest.RestaurantName,
+                opt => opt.MapFrom(src => src.Restaurant.Name))
+            .ForMember(dest => dest.CurrencyCode,
+                opt => opt.MapFrom(src => src.Restaurant.CurrencyCode))
+            .ForMember(dest => dest.RemainingQuantity, opt => opt.Ignore())
+            .ForMember(dest => dest.IsSoldOut, opt => opt.Ignore());
+
+        CreateMap<SurpriseBag, OwnerSurpriseBagDto>()
+            .IncludeBase<SurpriseBag, SurpriseBagDto>()
+            .ForMember(dest => dest.ReservedQuantity, opt => opt.Ignore())
+            .ForMember(dest => dest.CollectedQuantity, opt => opt.Ignore())
+            .ForMember(dest => dest.IsPickupLocked, opt => opt.Ignore());
+
+        CreateMap<CreateSurpriseBagDto, SurpriseBag>();
+
+        CreateMap<UpdateSurpriseBagDto, SurpriseBag>();
     }
 }
 
