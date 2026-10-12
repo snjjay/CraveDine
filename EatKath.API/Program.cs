@@ -90,7 +90,12 @@ builder.Services.AddScoped<IRestaurantImageService, RestaurantImageService>();
 builder.Services.AddScoped<IRestaurantOpeningHourService, RestaurantOpeningHourService>();
 builder.Services.AddScoped<IUserFavoriteService, UserFavoriteService>();
 builder.Services.AddScoped<IRedemptionService, RedemptionService>();
-builder.Services.AddSingleton(TimeProvider.System); // Current date/time for redemption rules (replaceable in tests)
+// Current date/time for deal/redemption rules (replaceable in tests): UTC
+// from the system clock, "local" time in Kathmandu rather than the server's
+// zone (UTC on Azure). Registered as TimeProvider - services inject that.
+var businessTime = BusinessTimeProvider.CreateKathmandu();
+builder.Services.AddSingleton<TimeProvider>(businessTime);
+Console.WriteLine($"Business time zone: {businessTime.LocalTimeZone.Id} (UTC+{businessTime.LocalTimeZone.BaseUtcOffset:hh\\:mm})");
 builder.Services.AddScoped<IOwnerDashboardService, OwnerDashboardService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<FileStorageService>();
