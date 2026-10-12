@@ -173,7 +173,13 @@ public class MappingProfile : Profile
 
         CreateMap<CreateSurpriseBagDto, SurpriseBag>();
 
-        CreateMap<UpdateSurpriseBagDto, SurpriseBag>();
+        // IsActive only when the request sets it (null = unchanged).
+        CreateMap<UpdateSurpriseBagDto, SurpriseBag>()
+            .ForMember(dest => dest.IsActive, opt =>
+            {
+                opt.PreCondition(src => src.IsActive.HasValue);
+                opt.MapFrom(src => src.IsActive!.Value);
+            });
 
         // ============================
         // Surprise Bag Reservation

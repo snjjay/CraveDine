@@ -574,6 +574,55 @@ public class SurpriseBagServiceTests
         ex.Message.Should().Be("The pickup window has already ended.");
     }
 
+    // A PUT that leaves IsActive out must not reactivate (or deactivate) a bag.
+    [TestMethod]
+    [DataRow(false)]
+    [DataRow(true)]
+    public async Task UpdateAsync_ShouldKeepTheCurrentState_WhenIsActiveIsOmitted(bool currentlyActive)
+    {
+        var restaurant = await SeedRestaurantAsync();
+        var bag = await SeedBagAsync(restaurant, "Tomorrow", Today.AddDays(1), isActive: currentlyActive);
+
+        var dto = UpdateDtoFrom(bag);
+        dto.IsActive = null;
+        dto.Title = "Renamed";
+
+        var result = await _service.UpdateAsync(bag.Id, dto);
+
+        result.Title.Should().Be("Renamed");
+        result.IsActive.Should().Be(currentlyActive);
+        bag.IsActive.Should().Be(currentlyActive);
+    }
+
+    [TestMethod]
+    public async Task UpdateAsync_ShouldDeactivate_WhenIsActiveIsFalse()
+    {
+        var restaurant = await SeedRestaurantAsync();
+        var bag = await SeedBagAsync(restaurant, "Tomorrow", Today.AddDays(1));
+
+        var dto = UpdateDtoFrom(bag);
+        dto.IsActive = false;
+
+        (await _service.UpdateAsync(bag.Id, dto)).IsActive.Should().BeFalse();
+        (await _service.GetPublicByIdAsync(bag.Id)).Should().BeNull();
+    }
+
+    // How ASP.NET Core binds the PUT body ([FromBody] uses the Web defaults;
+    // Program.cs adds no JSON options): a missing isActive is null, not true.
+    [TestMethod]
+    public void UpdateSurpriseBagDto_ShouldBindAMissingIsActiveAsNull()
+    {
+        var options = new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web);
+
+        var withoutFlag = System.Text.Json.JsonSerializer.Deserialize<UpdateSurpriseBagDto>(
+            """{"title":"Bag","price":250,"quantityTotal":5}""", options)!;
+        var withFlag = System.Text.Json.JsonSerializer.Deserialize<UpdateSurpriseBagDto>(
+            """{"title":"Bag","isActive":false}""", options)!;
+
+        withoutFlag.IsActive.Should().BeNull();
+        withFlag.IsActive.Should().BeFalse();
+    }
+
     // =========================================================
     // DeactivateAsync
     // =========================================================
