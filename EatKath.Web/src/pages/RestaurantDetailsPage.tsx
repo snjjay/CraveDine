@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useContext, useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import MenuCategoryService from "../services/MenuCategoryService";
 import MenuItemService from "../services/MenuItemService";
 
@@ -32,13 +32,20 @@ import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import RestaurantService from "../services/RestaurantService";
 import DealService from "../services/DealService";
 import RestaurantImageService from "../services/RestaurantImageService";
+import SurpriseBagService from "../services/SurpriseBagService";
+import SurpriseBagReservationService from "../services/SurpriseBagReservationService";
+import AuthContext from "../features/auth/AuthContext";
 import { useNotification } from "../features/notifications/NotificationContext";
+import { SurpriseBagReservationStatus } from "../utils/surpriseBag";
 
 import type { Restaurant } from "../types/Restaurant";
 import type { Deal } from "../types/Deal";
 import type { RestaurantImage } from "../types/RestaurantImage";
+import type { SurpriseBag } from "../types/SurpriseBag";
 
 import DealCard from "../components/deals/DealCard";
+import SurpriseBagCard from "../components/surpriseBags/SurpriseBagCard";
+import ReserveSurpriseBagDialog from "../components/surpriseBags/ReserveSurpriseBagDialog";
 import OpeningStatus from "../components/restaurants/OpeningStatus";
 import RestaurantImageFallback from "../components/restaurants/RestaurantImageFallback";
 import RestaurantMonogram from "../components/restaurants/RestaurantMonogram";
@@ -103,11 +110,82 @@ function RestaurantDetailsPage() {
 
     const { id } = useParams();
 
+    const navigate = useNavigate();
+
     const { notify } = useNotification();
 
     const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
     const [deals, setDeals] = useState<Deal[]>([]);
+    const [surpriseBags, setSurpriseBags] = useState<SurpriseBag[]>([]);
     const [categories, setCategories] = useState<MenuCategory[]>([]);
+
+    // Bag the customer is reserving (the reservation dialog is open).
+    const [reserveTarget, setReserveTarget] = useState<SurpriseBag | null>(null);
+
+    // Another restaurant's page: its Surprise Bags (and an open
+    // reservation dialog) must not carry over to this one.
+    const [surpriseBagsFor, setSurpriseBagsFor] = useState(id);
+
+    if (id !== surpriseBagsFor) {
+        setSurpriseBagsFor(id);
+        setSurpriseBags([]);
+        setReserveTarget(null);
+    }
+
+    // Restaurant whose bags may be shown, so a late response for a
+    // previous restaurant is ignored.
+    const surpriseBagsRestaurantId = useRef<number | null>(null);
+
+    // Only customers can reserve.
+    const auth = useContext(AuthContext);
+    const customerId = auth?.user?.role === "Customer" ? auth.user.userId : null;
+
+    // Bags this customer already holds a Reserved reservation for, so their
+    // cards show "Already reserved" instead of Reserve. Loaded only for a
+    // customer on a restaurant with bags. The API still rejects a duplicate
+    // reservation by itself; if this fails, cards simply offer Reserve.
+    const [reservedBags, setReservedBags] =
+        useState<{ customerId: number; bagIds: Set<number> } | null>(null);
+
+    // Incremented to reload them (after a reservation attempt).
+    const [reservedBagsKey, setReservedBagsKey] = useState(0);
+
+    const hasSurpriseBags = surpriseBags.length > 0;
+
+    useEffect(() => {
+
+        if (customerId === null || !hasSurpriseBags)
+            return;
+
+        let active = true;
+
+        SurpriseBagReservationService.getMine()
+            .then(reservations => {
+
+                if (active)
+                    setReservedBags({
+                        customerId,
+                        bagIds: new Set(reservations
+                            .filter(r => r.status === SurpriseBagReservationStatus.Reserved)
+                            .map(r => r.surpriseBagId))
+                    });
+
+            })
+            .catch(error => console.error(error));
+
+        return () => {
+            active = false;
+        };
+
+    }, [customerId, hasSurpriseBags, reservedBagsKey]);
+
+    function isAlreadyReserved(bagId: number): boolean {
+
+        return reservedBags !== null &&
+            reservedBags.customerId === customerId &&
+            reservedBags.bagIds.has(bagId);
+
+    }
 
     const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 
@@ -126,6 +204,8 @@ function RestaurantDetailsPage() {
             loadRestaurant(Number(id));
 
             loadDeals(Number(id));
+            surpriseBagsRestaurantId.current = Number(id);
+            loadSurpriseBags(Number(id));
             loadMenu(Number(id));
             loadGallery(Number(id));
 
@@ -160,6 +240,48 @@ function RestaurantDetailsPage() {
             setLoading(false);
 
         }
+
+    }
+
+    // Separate from Deals: the page doesn't wait for bags, and a failure
+    // only leaves the Surprise Bags section hidden (no error message).
+    // Also refreshes the bags after a reservation or an availability
+    // error (e.g. sold out).
+    async function loadSurpriseBags(id: number) {
+
+        try {
+
+            const data = await SurpriseBagService.getByRestaurant(id);
+
+            if (surpriseBagsRestaurantId.current !== id)
+                return;
+
+            setSurpriseBags(data);
+
+            // An open reservation dialog shows the refreshed bag (e.g. fewer
+            // left). A bag no longer listed keeps its last details there and
+            // is shown as no longer available (isListed).
+            setReserveTarget(target =>
+                target ? data.find(b => b.id === target.id) ?? target : null
+            );
+
+        }
+        catch (error) {
+
+            // The list is empty until the first load succeeds (and is reset
+            // for another restaurant), so the section stays hidden. A failed
+            // refresh keeps the last bags, so an open reservation dialog
+            // doesn't wrongly show its bag as no longer available.
+            console.error(error);
+
+        }
+
+    }
+
+    // A logged-in customer chose a bag (see SurpriseBagCard).
+    function handleReserveSurpriseBag(bag: SurpriseBag) {
+
+        setReserveTarget(bag);
 
     }
 
@@ -255,6 +377,16 @@ function RestaurantDetailsPage() {
 
     const hasOpeningHours =
         !!restaurant.openingHours && restaurant.openingHours.length > 0;
+
+    // Only this restaurant's bags - never a previous restaurant's, even for
+    // a moment after switching restaurants.
+    const visibleSurpriseBags =
+        surpriseBags.filter(bag => bag.restaurantId === Number(id));
+
+    // false once the bag being reserved drops out of the refreshed list.
+    const reserveTargetListed =
+        reserveTarget !== null &&
+        visibleSurpriseBags.some(bag => bag.id === reserveTarget.id);
 
     return (
 
@@ -524,6 +656,40 @@ function RestaurantDetailsPage() {
 
                         </Box>
 
+                        {/* Surprise Bags - only shown when the restaurant has bags available */}
+                        {visibleSurpriseBags.length > 0 && (
+
+                            <Box component="section" aria-labelledby="surprise-bags-heading">
+
+                                <SectionHeader
+                                    id="surprise-bags-heading"
+                                    title="Surprise Bags"
+                                    subtitle="Reserve surplus food at a lower price, then pay and collect it during the pickup time."
+                                />
+
+                                <Box
+                                    sx={{
+                                        display: "grid",
+                                        gap: 2,
+                                        gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 380px), 1fr))"
+                                    }}
+                                >
+                                    {visibleSurpriseBags.map((bag) => (
+
+                                        <SurpriseBagCard
+                                            key={bag.id}
+                                            bag={bag}
+                                            onReserve={handleReserveSurpriseBag}
+                                            alreadyReserved={isAlreadyReserved(bag.id)}
+                                        />
+
+                                    ))}
+                                </Box>
+
+                            </Box>
+
+                        )}
+
                         {/* Digital menu */}
                         <Box
                             component="section"
@@ -610,6 +776,23 @@ function RestaurantDetailsPage() {
                 </Grid>
 
             </Grid>
+
+            {/* Mounted only while open, so each opening starts fresh. */}
+            {reserveTarget && (
+                <ReserveSurpriseBagDialog
+                    open
+                    onClose={() => setReserveTarget(null)}
+                    bag={reserveTarget}
+                    isListed={reserveTargetListed}
+                    onAvailabilityChanged={() => {
+                        loadSurpriseBags(reserveTarget.restaurantId);
+                        // A new reservation changes which bags are already
+                        // reserved.
+                        setReservedBagsKey(key => key + 1);
+                    }}
+                    onViewReservations={() => navigate("/my-surprise-bags")}
+                />
+            )}
 
         </>
 

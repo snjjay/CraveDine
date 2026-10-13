@@ -400,6 +400,28 @@ function OwnerDashboardPage() {
                             variant="contained"
                             onClick={() =>
                                 navigate(
+                                    `/owner/surprise-bags?restaurantId=${selectedRestaurantId}`
+                                )
+                            }
+                        >
+                            Surprise Bags
+                        </Button>
+
+                        <Button
+                            variant="contained"
+                            onClick={() =>
+                                navigate(
+                                    `/owner/surprise-bag-reservations?restaurantId=${selectedRestaurantId}`
+                                )
+                            }
+                        >
+                            Bag Reservations
+                        </Button>
+
+                        <Button
+                            variant="contained"
+                            onClick={() =>
+                                navigate(
                                     `/owner/opening-hours?restaurantId=${selectedRestaurantId}`
                                 )
                             }

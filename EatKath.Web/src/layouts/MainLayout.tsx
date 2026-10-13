@@ -36,6 +36,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
 import PersonAddAlt1OutlinedIcon from "@mui/icons-material/PersonAddAlt1Outlined";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 
 import AuthContext from "../features/auth/AuthContext";
@@ -45,6 +46,8 @@ import { PAGE_CONTAINER_SX } from "./layoutConstants";
 
 interface NavItem {
     label: string;
+    // Shorter label for narrow desktop headers (md up to lg).
+    shortLabel?: string;
     to: string;
     icon: ReactNode;
     // Paths (besides `to`) that should highlight this item.
@@ -105,9 +108,17 @@ function MainLayout() {
             },
             {
                 label: "My Redemptions",
+                shortLabel: "Redemptions",
                 to: "/my-redemptions",
                 icon: <ConfirmationNumberOutlinedIcon fontSize="small" />,
                 matches: p => p.startsWith("/my-redemptions")
+            },
+            {
+                label: "My Surprise Bags",
+                shortLabel: "Surprise Bags",
+                to: "/my-surprise-bags",
+                icon: <ShoppingBagOutlinedIcon fontSize="small" />,
+                matches: p => p.startsWith("/my-surprise-bags")
             }
         );
     }
@@ -193,7 +204,10 @@ function MainLayout() {
                             </Typography>
                         </Box>
 
-                        {/* Desktop navigation */}
+                        {/* Desktop navigation. For customers (the longest nav),
+                            narrow desktops (md up to lg) drop the icons and use
+                            short labels, so the links and account button fit at
+                            ~900px. Other roles keep their icons. */}
                         <Stack
                             component="nav"
                             aria-label="Main navigation"
@@ -216,6 +230,7 @@ function MainLayout() {
                                             position: "relative",
                                             color: active ? "primary.main" : "text.secondary",
                                             whiteSpace: "nowrap",
+                                            ...(isCustomer && { "& .MuiButton-startIcon": { display: { md: "none", lg: "inherit" } } }),
                                             "&:hover": {
                                                 backgroundColor: "action.hover",
                                                 color: active ? "primary.main" : "text.primary"
@@ -233,7 +248,16 @@ function MainLayout() {
                                             }
                                         }}
                                     >
-                                        {item.label}
+                                        {item.shortLabel ? (
+                                            <>
+                                                <Box component="span" sx={{ display: { md: "inline", lg: "none" } }}>
+                                                    {item.shortLabel}
+                                                </Box>
+                                                <Box component="span" sx={{ display: { md: "none", lg: "inline" } }}>
+                                                    {item.label}
+                                                </Box>
+                                            </>
+                                        ) : item.label}
                                     </Button>
                                 );
 

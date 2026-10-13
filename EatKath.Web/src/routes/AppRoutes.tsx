@@ -10,6 +10,8 @@ import MyFavoritesPage from "../pages/MyFavoritesPage";
 
 import OwnerDashboardPage from "../pages/OwnerDashboardPage";
 import OwnerDealsPage from "../pages/OwnerDealsPage";
+import OwnerSurpriseBagsPage from "../pages/OwnerSurpriseBagsPage";
+import OwnerSurpriseBagReservationsPage from "../pages/OwnerSurpriseBagReservationsPage";
 import CreateDealPage from "../pages/CreateDealPage";
 import EditDealPage from "../pages/EditDealPage";
 import OwnerRestaurantPage from "../pages/OwnerRestaurantPage";
@@ -24,6 +26,7 @@ import ProtectedRoute from "../features/auth/ProtectedRoute";
 import SessionExpiredRedirect from "../features/auth/SessionExpiredRedirect";
 import MyReservationsPage from "../pages/MyReservationsPage";
 import MyRedemptionsPage from "../pages/MyRedemptionsPage";
+import MySurpriseBagsPage from "../pages/MySurpriseBagsPage";
 import ProfilePage from "../pages/ProfilePage";
 
 // Informational pages (linked from the footer).
@@ -94,6 +97,15 @@ function AppRoutes() {
                     />
 
                     <Route
+                        path="/my-surprise-bags"
+                        element={
+                            <ProtectedRoute role="Customer">
+                                <MySurpriseBagsPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
                         path="/profile"
                         element={
                             <ProtectedRoute role="Customer">
@@ -153,6 +165,24 @@ function AppRoutes() {
                         element={
                             <ProtectedRoute role="Owner">
                                 <EditDealPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/owner/surprise-bags"
+                        element={
+                            <ProtectedRoute role="Owner">
+                                <OwnerSurpriseBagsPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/owner/surprise-bag-reservations"
+                        element={
+                            <ProtectedRoute role="Owner">
+                                <OwnerSurpriseBagReservationsPage />
                             </ProtectedRoute>
                         }
                     />
