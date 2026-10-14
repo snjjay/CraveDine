@@ -19,6 +19,10 @@ namespace EatKath.API.Services
         // deadlock victim.
         private const int SqlDeadlockErrorNumber = 1205;
 
+        // Public cross-restaurant listing size (GET api/SurpriseBag?take=N).
+        public const int DefaultPublicTake = 50;
+        public const int MaxPublicTake = 100;
+
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly ICurrentUserService _currentUser;
@@ -62,6 +66,31 @@ namespace EatKath.API.Services
 
             return bags
                 .Select(b => ToPublicDto(b, usage.GetValueOrDefault(b.Id, SurpriseBagUsage.None)))
+                .ToList();
+        }
+
+        public async Task<IEnumerable<SurpriseBagDto>> GetPublicAsync(int take)
+        {
+            take = Math.Clamp(take, 1, MaxPublicTake);
+
+            var (today, now) = BusinessNow();
+
+            var bags = await _context.SurpriseBags
+                .Include(b => b.Restaurant)
+                .PubliclyVisible(today, now)
+                .OrderBy(b => b.PickupDate)
+                .ThenBy(b => b.PickupStartTime)
+                .ThenBy(b => b.Id)
+                .ToListAsync();
+
+            var usage = await SurpriseBagAvailability.GetUsageAsync(_context, bags.Select(b => b.Id).ToList());
+
+            // Bags that can still be reserved first (soonest pickup first),
+            // then sold-out ones. OrderBy is stable, so pickup order is kept.
+            return bags
+                .Select(b => ToPublicDto(b, usage.GetValueOrDefault(b.Id, SurpriseBagUsage.None)))
+                .OrderBy(b => b.IsSoldOut)
+                .Take(take)
                 .ToList();
         }
 

@@ -7,6 +7,10 @@ namespace EatKath.API.Interfaces
         // Public (customer) views: only publicly visible bags.
         Task<IEnumerable<SurpriseBagDto>> GetPublicByRestaurantAsync(int restaurantId);
 
+        // Visible bags across all active restaurants: reservable ones first,
+        // then by pickup date and time. take is clamped to 1-100.
+        Task<IEnumerable<SurpriseBagDto>> GetPublicAsync(int take);
+
         Task<SurpriseBagDto?> GetPublicByIdAsync(int id);
 
         // Owner/Admin management views: include inactive and past bags.

@@ -1,5 +1,6 @@
 using EatKath.API.DTOs.SurpriseBag;
 using EatKath.API.Interfaces;
+using EatKath.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -17,6 +18,16 @@ namespace EatKath.API.Controllers
         public SurpriseBagController(ISurpriseBagService service)
         {
             _service = service;
+        }
+
+        // Open and upcoming bags across all active restaurants (e.g. the
+        // home page's featured bags). Reservable bags come first; take is
+        // clamped to 1-100.
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] int take = SurpriseBagService.DefaultPublicTake)
+        {
+            return Ok(await _service.GetPublicAsync(take));
         }
 
         // Today's open and upcoming bags of an active restaurant (sold-out

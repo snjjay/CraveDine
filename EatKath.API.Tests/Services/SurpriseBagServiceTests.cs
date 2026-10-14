@@ -256,6 +256,112 @@ public class SurpriseBagServiceTests
         (await _service.GetPublicByIdAsync(9999)).Should().BeNull();
     }
 
+    [TestMethod]
+    public async Task GetPublicAsync_ShouldListVisibleBagsAcrossActiveRestaurants_SoonestPickupFirst()
+    {
+        var restaurant = await SeedRestaurantAsync();
+        var other = await SeedRestaurantAsync(ownerId: 2);
+        var inactiveRestaurant = await SeedRestaurantAsync(ownerId: 3, isActive: false);
+
+        await SeedBagAsync(restaurant, "Yesterday", Today.AddDays(-1));
+        await SeedBagAsync(restaurant, "Ended this morning", Today, new TimeOnly(9, 0), new TimeOnly(11, 30));
+        await SeedBagAsync(other, "Ends at noon", Today, new TimeOnly(11, 0), new TimeOnly(12, 0));
+        await SeedBagAsync(other, "Tomorrow morning", Today.AddDays(1), new TimeOnly(8, 0), new TimeOnly(9, 0));
+        await SeedBagAsync(restaurant, "Tonight", Today);
+        await SeedBagAsync(other, "Open today", Today, new TimeOnly(11, 30), new TimeOnly(12, 30));
+        await SeedBagAsync(restaurant, "Inactive", Today.AddDays(1), isActive: false);
+        await SeedBagAsync(inactiveRestaurant, "Inactive restaurant", Today.AddDays(1));
+
+        var result = (await _service.GetPublicAsync(50)).ToList();
+
+        result.Select(b => b.Title).Should().Equal("Open today", "Tonight", "Tomorrow morning");
+        result[0].RestaurantId.Should().Be(other.Id);
+        result[0].RestaurantName.Should().Be("Himalayan Bakery");
+        result[0].RemainingQuantity.Should().Be(5);
+    }
+
+    [TestMethod]
+    public async Task GetPublicAsync_ShouldListSoldOutBagsAfterReservableOnes()
+    {
+        var restaurant = await SeedRestaurantAsync();
+        var soldOut = await SeedBagAsync(restaurant, "Sold out tonight", Today, quantityTotal: 2, maxPerCustomer: 2);
+        await SeedBagAsync(restaurant, "Tomorrow", Today.AddDays(1));
+
+        await SeedReservationAsync(soldOut, 50, 1, SurpriseBagReservationStatus.Reserved);
+        await SeedReservationAsync(soldOut, 51, 1, SurpriseBagReservationStatus.Collected);
+
+        var result = (await _service.GetPublicAsync(50)).ToList();
+
+        result.Select(b => b.Title).Should().Equal("Tomorrow", "Sold out tonight");
+        result[1].IsSoldOut.Should().BeTrue();
+        result[1].RemainingQuantity.Should().Be(0);
+
+        // The sold-out bag's pickup is sooner, but a single featured bag
+        // must be one that can still be reserved.
+        var first = (await _service.GetPublicAsync(1)).Single();
+
+        first.Title.Should().Be("Tomorrow");
+        first.IsSoldOut.Should().BeFalse();
+    }
+
+    // The anonymous listing returns the public DTO only: serialized as the
+    // API does (Web defaults; Program.cs adds no JSON options) and by runtime
+    // type, so an owner DTO subclass would show its extra fields here.
+    [TestMethod]
+    public async Task GetPublicAsync_ShouldExposeOnlyPublicSurpriseBagDtoFields()
+    {
+        var restaurant = await SeedRestaurantAsync();
+        var bag = await SeedBagAsync(restaurant, "Tomorrow", Today.AddDays(1));
+        await SeedReservationAsync(bag, 50, 1, SurpriseBagReservationStatus.Reserved);
+
+        var result = (await _service.GetPublicAsync(50)).ToList();
+
+        result.Should().ContainSingle();
+        result.Should().AllBeOfType<SurpriseBagDto>();
+        result[0].Should().NotBeOfType<OwnerSurpriseBagDto>();
+
+        var options = new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web);
+        using var json = System.Text.Json.JsonDocument.Parse(
+            System.Text.Json.JsonSerializer.Serialize<object>(result[0], options));
+        var fields = json.RootElement.EnumerateObject().Select(p => p.Name).ToList();
+
+        fields.Should().BeEquivalentTo(
+            "id", "restaurantId", "restaurantName", "currencyCode", "title", "category",
+            "description", "conditions", "price", "estimatedValue", "maxPerCustomer",
+            "pickupDate", "pickupStartTime", "pickupEndTime", "remainingQuantity", "isSoldOut");
+
+        // Owner-only (OwnerSurpriseBagDto) and customer/reservation fields.
+        fields.Should().NotContain(new[]
+        {
+            "isActive", "quantityTotal", "reservedQuantity", "collectedQuantity",
+            "isPickupLocked", "createdAt", "updatedAt",
+            "userId", "customerName", "customerEmail", "customerPhone", "confirmationCode"
+        });
+    }
+
+    [TestMethod]
+    public async Task GetPublicAsync_ShouldClampTake()
+    {
+        var restaurant = await SeedRestaurantAsync();
+
+        for (var i = 0; i < SurpriseBagService.MaxPublicTake + 1; i++)
+            await SeedBagAsync(restaurant, $"Bag {i}", Today.AddDays(1));
+
+        (await _service.GetPublicAsync(2)).Should().HaveCount(2);
+        (await _service.GetPublicAsync(0)).Should().HaveCount(1);
+        (await _service.GetPublicAsync(-5)).Should().HaveCount(1);
+        (await _service.GetPublicAsync(int.MaxValue)).Should().HaveCount(SurpriseBagService.MaxPublicTake);
+    }
+
+    [TestMethod]
+    public async Task GetPublicAsync_ShouldReturnEmpty_WhenNoBagsAreVisible()
+    {
+        var restaurant = await SeedRestaurantAsync();
+        await SeedBagAsync(restaurant, "Yesterday", Today.AddDays(-1));
+
+        (await _service.GetPublicAsync(50)).Should().BeEmpty();
+    }
+
     // =========================================================
     // Owner listings
     // =========================================================
