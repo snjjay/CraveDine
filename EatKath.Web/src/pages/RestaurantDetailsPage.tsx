@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import MenuCategoryService from "../services/MenuCategoryService";
 import MenuItemService from "../services/MenuItemService";
@@ -33,10 +33,8 @@ import RestaurantService from "../services/RestaurantService";
 import DealService from "../services/DealService";
 import RestaurantImageService from "../services/RestaurantImageService";
 import SurpriseBagService from "../services/SurpriseBagService";
-import SurpriseBagReservationService from "../services/SurpriseBagReservationService";
-import AuthContext from "../features/auth/AuthContext";
 import { useNotification } from "../features/notifications/NotificationContext";
-import { SurpriseBagReservationStatus } from "../utils/surpriseBag";
+import { useReservedSurpriseBags } from "../hooks/useReservedSurpriseBags";
 
 import type { Restaurant } from "../types/Restaurant";
 import type { Deal } from "../types/Deal";
@@ -136,56 +134,11 @@ function RestaurantDetailsPage() {
     // previous restaurant is ignored.
     const surpriseBagsRestaurantId = useRef<number | null>(null);
 
-    // Only customers can reserve.
-    const auth = useContext(AuthContext);
-    const customerId = auth?.user?.role === "Customer" ? auth.user.userId : null;
-
-    // Bags this customer already holds a Reserved reservation for, so their
-    // cards show "Already reserved" instead of Reserve. Loaded only for a
-    // customer on a restaurant with bags. The API still rejects a duplicate
-    // reservation by itself; if this fails, cards simply offer Reserve.
-    const [reservedBags, setReservedBags] =
-        useState<{ customerId: number; bagIds: Set<number> } | null>(null);
-
-    // Incremented to reload them (after a reservation attempt).
-    const [reservedBagsKey, setReservedBagsKey] = useState(0);
-
+    // Bags this customer already holds a Reserved reservation for (loaded
+    // only for a customer on a restaurant with bags).
     const hasSurpriseBags = surpriseBags.length > 0;
 
-    useEffect(() => {
-
-        if (customerId === null || !hasSurpriseBags)
-            return;
-
-        let active = true;
-
-        SurpriseBagReservationService.getMine()
-            .then(reservations => {
-
-                if (active)
-                    setReservedBags({
-                        customerId,
-                        bagIds: new Set(reservations
-                            .filter(r => r.status === SurpriseBagReservationStatus.Reserved)
-                            .map(r => r.surpriseBagId))
-                    });
-
-            })
-            .catch(error => console.error(error));
-
-        return () => {
-            active = false;
-        };
-
-    }, [customerId, hasSurpriseBags, reservedBagsKey]);
-
-    function isAlreadyReserved(bagId: number): boolean {
-
-        return reservedBags !== null &&
-            reservedBags.customerId === customerId &&
-            reservedBags.bagIds.has(bagId);
-
-    }
+    const reservedBags = useReservedSurpriseBags(hasSurpriseBags);
 
     const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 
@@ -680,7 +633,7 @@ function RestaurantDetailsPage() {
                                             key={bag.id}
                                             bag={bag}
                                             onReserve={handleReserveSurpriseBag}
-                                            alreadyReserved={isAlreadyReserved(bag.id)}
+                                            alreadyReserved={reservedBags.isAlreadyReserved(bag.id)}
                                         />
 
                                     ))}
@@ -788,7 +741,7 @@ function RestaurantDetailsPage() {
                         loadSurpriseBags(reserveTarget.restaurantId);
                         // A new reservation changes which bags are already
                         // reserved.
-                        setReservedBagsKey(key => key + 1);
+                        reservedBags.reload();
                     }}
                     onViewReservations={() => navigate("/my-surprise-bags")}
                 />

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { Link as RouterLink, useLocation, useSearchParams } from "react-router-dom";
 
 import {
     Alert,
@@ -21,21 +21,27 @@ import {
     type SelectChangeEvent
 } from "@mui/material";
 
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
 import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import SearchOffIcon from "@mui/icons-material/SearchOff";
+import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
+import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 
 import RestaurantCard from "../components/restaurants/RestaurantCard";
 import { RESTAURANT_GRID_ITEM_SIZE, RESTAURANT_GRID_SPACING } from "../components/restaurants/restaurantGrid";
 import LoadMoreButton from "../components/common/LoadMoreButton";
 import SectionHeader from "../components/common/SectionHeader";
+import NoSurpriseBagsCard from "../components/surpriseBags/NoSurpriseBagsCard";
+import PublicSurpriseBagList from "../components/surpriseBags/PublicSurpriseBagList";
 import AuthContext from "../features/auth/AuthContext";
 import { useLoadMore } from "../hooks/useLoadMore";
 import { hasEligibleOffer } from "../utils/cardOffers";
 import { getImageUrl } from "../utils/imageUrl";
 import HeroImageRotator from "../components/home/HeroImageRotator";
 import { APPROVED_RESTAURANT_HERO_PHOTOS, type HeroImage } from "../config/heroImages";
+import surpriseBagIllustration from "../assets/hero/surprise-bag.svg";
 import { MenuTab, type MenuTabValue } from "../utils/menuPricing";
 
 import RestaurantService from "../services/RestaurantService";
@@ -48,29 +54,152 @@ import type { UserFavorite } from "../types/UserFavorite";
 import type { Area } from "../types/Area";
 import type { Cuisine } from "../types/Cuisine";
 
+// Offer Type filter value for restaurants with a current deal of either
+// type (Dine-in or Takeaway), e.g. the header's Deals link.
+const ANY_DEAL_OFFER_VALUE = "deals";
+
 // Offer Type filter: matches restaurants with at least one eligible
 // deal of that type (same rules as the card overlays). Values are the
-// API's OfferType numbers as strings; "" = Any Offer.
+// API's OfferType numbers as strings, or ANY_DEAL_OFFER_VALUE;
+// "" = Any Offer (no offer filter).
 const OFFER_TYPE_OPTIONS = [
+    { value: ANY_DEAL_OFFER_VALUE, label: "Dine-in or Takeaway" },
     { value: String(MenuTab.DineIn), label: "Dine-in" },
     { value: String(MenuTab.Takeaway), label: "Takeaway" }
 ];
 
-// ?offer=dine-in / ?offer=takeaway (e.g. the footer's Dine-in Deals and
-// Takeaway Deals links) preselects the Offer Type filter.
+// ?offer=deals / ?offer=dine-in / ?offer=takeaway (e.g. the header's
+// Deals link and the footer's Dine-in Deals and Takeaway Deals links)
+// preselects the Offer Type filter.
 const OFFER_URL_VALUES: Record<string, string> = {
+    "deals": ANY_DEAL_OFFER_VALUE,
     "dine-in": String(MenuTab.DineIn),
     "takeaway": String(MenuTab.Takeaway)
 };
 
-// Top deals strip: 1 column on phones, 2 on tablets, 3 on laptops, 4 on large screens.
+// True when the restaurant matches the selected Offer Type filter.
+function matchesOfferFilter(restaurant: Restaurant, offerType: string, now: Date): boolean {
+
+    if (offerType === "")
+        return true;
+
+    if (offerType === ANY_DEAL_OFFER_VALUE)
+        return hasEligibleOffer(restaurant.dealSummaries, MenuTab.DineIn, now) ||
+            hasEligibleOffer(restaurant.dealSummaries, MenuTab.Takeaway, now);
+
+    return hasEligibleOffer(restaurant.dealSummaries, Number(offerType) as MenuTabValue, now);
+
+}
+
+// Home: Top Restaurant Deals and Featured Surprise Bags sit side by side
+// on large screens (deals 7/12, bags 5/12) and stack below that.
+const TOP_DEALS_COLUMN_SIZE = { xs: 12, lg: 7 };
+const FEATURED_BAGS_COLUMN_SIZE = { xs: 12, lg: 5 };
+
+// Top deal cards: 1 column on phones, 2 on tablets, 4 across the full
+// width on laptops, 2 within the deals column on large screens.
 // (The main listing uses the shared 3-across RESTAURANT_GRID_ITEM_SIZE.)
-const TOP_DEALS_GRID_ITEM_SIZE = { xs: 12, sm: 6, md: 4, lg: 3 };
+const TOP_DEALS_GRID_ITEM_SIZE = { xs: 12, sm: 6, md: 3, lg: 6 };
+
+// Featured bags: matches the deal cards' rows (2 x 2 on tablets and
+// laptops, one column beside the deals on large screens).
+const FEATURED_BAGS_COLUMNS = {
+    xs: "minmax(0, 1fr)",
+    sm: "repeat(2, minmax(0, 1fr))",
+    lg: "minmax(0, 1fr)"
+};
+
+const FEATURED_BAGS_COUNT = 4;
+
+// Hero panels: text beside the image on tablets and large screens; on
+// laptops (two narrow panels) the image sits above the text; phones show
+// text only.
+const HERO_PANEL_SX = {
+    borderRadius: "16px",
+    overflow: "hidden",
+    display: "grid",
+    gridTemplateAreas: { xs: '"text"', sm: '"text image"', md: '"image" "text"', lg: '"text image"' },
+    gridTemplateColumns: {
+        xs: "minmax(0, 1fr)",
+        sm: "minmax(0, 1.3fr) minmax(0, 1fr)",
+        md: "minmax(0, 1fr)",
+        lg: "minmax(0, 1.3fr) minmax(0, 1fr)"
+    },
+    gridTemplateRows: { md: "180px auto", lg: "auto" }
+};
+
+const HERO_TEXT_SX = {
+    gridArea: "text",
+    p: { xs: 3, sm: 4, lg: 5 },
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "flex-start"
+};
+
+const HERO_IMAGE_SX = {
+    gridArea: "image",
+    display: { xs: "none", sm: "block" },
+    position: "relative",
+    m: 1,
+    mb: { md: 0 },
+    minHeight: { sm: 280, md: 0, lg: 340 },
+    borderRadius: "12px",
+    overflow: "hidden"
+};
+
+const HERO_TITLE_SX = { mt: 2, color: "inherit", fontSize: { xs: "2rem", sm: "2.25rem", lg: "2.75rem" } };
+
+const HERO_BADGE_SX = {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 0.75,
+    px: 1.25,
+    py: 0.5,
+    borderRadius: "8px",
+    fontSize: "0.8125rem",
+    fontWeight: 600
+};
+
+// Home: how deals and Surprise Bags work, side by side (each step names
+// both, so bags are never described as deal redemptions).
+const HOW_IT_WORKS_STEPS = [
+    {
+        icon: <SearchIcon />,
+        title: "Find food near you",
+        text: "Browse restaurants by area or cuisine, or search for a place or a discount."
+    },
+    {
+        icon: <LocalOfferOutlinedIcon />,
+        title: "Choose a deal or a Surprise Bag",
+        text: "Pick a walk-in deal for a discount on your meal, or a Surprise Bag of a restaurant's surplus food at a lower price."
+    },
+    {
+        icon: <EventAvailableOutlinedIcon />,
+        title: "Redeem or reserve",
+        text: "Redeem a deal for the time you plan to arrive, or reserve a Surprise Bag for its pickup time."
+    },
+    {
+        icon: <StorefrontOutlinedIcon />,
+        title: "Visit the restaurant",
+        text: "Show your redemption to get the discount on your bill, or pay for your Surprise Bag and show its confirmation code when you collect it."
+    }
+];
 
 // Filter dropdowns keep a usable width and scroll sideways on phones.
 const FILTER_SX = { minWidth: { xs: 160, md: 180 }, flex: { md: 1 }, flexShrink: 0 };
 
-// Scroll target for "Browse restaurants" and the cuisine shortcuts.
+// Read by screen readers only (the page's h1 above the two hero panels).
+const VISUALLY_HIDDEN_SX = {
+    position: "absolute",
+    width: "1px",
+    height: "1px",
+    overflow: "hidden",
+    clip: "rect(0 0 0 0)",
+    whiteSpace: "nowrap"
+};
+
+// Scroll target for the Search button and the cuisine shortcuts.
 const RESULTS_ID = "restaurant-results";
 
 function scrollToResults() {
@@ -223,9 +352,7 @@ function RestaurantsPage() {
         // not the restaurant's dining-type tags.
         const matchesOfferType =
 
-            selectedOfferType === "" ||
-
-            hasEligibleOffer(r.dealSummaries, Number(selectedOfferType) as MenuTabValue, now);
+            matchesOfferFilter(r, selectedOfferType, now);
 
         return isActive &&
             matchesSearch &&
@@ -302,6 +429,8 @@ function RestaurantsPage() {
             onChange={(e) =>
                 setSearch(e.target.value)
             }
+            // On Home the results are further down: Enter jumps to them.
+            onKeyDown={isHome ? (e) => { if (e.key === "Enter") scrollToResults(); } : undefined}
             placeholder="Search restaurants, areas or discounts"
             sx={{ flex: { md: 1.6 } }}
             slotProps={{
@@ -331,95 +460,134 @@ function RestaurantsPage() {
 
                 <>
 
-                    {/* ---------- Home hero ---------- */}
+                    {/* ---------- Hero: restaurant deals | Surprise Bags ---------- */}
                     <Box
                         component="section"
                         aria-labelledby="home-hero-title"
                         sx={{
-                            borderRadius: "16px",
-                            overflow: "hidden",
-                            bgcolor: "inverse.main",
-                            color: "inverse.contrastText",
                             display: "grid",
-                            gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "minmax(0, 1.15fr) minmax(0, 1fr)" },
-                            mb: { xs: 4, md: 5 }
+                            gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "repeat(2, minmax(0, 1fr))" },
+                            gap: 2,
+                            mb: 2
                         }}
                     >
 
-                        <Box sx={{ p: { xs: 3, sm: 4, md: 6 }, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                        <Typography id="home-hero-title" variant="h1" sx={VISUALLY_HIDDEN_SX}>
+                            CraveDine: restaurant deals and Surprise Bags
+                        </Typography>
 
-                            <Box
-                                component="span"
-                                sx={{
-                                    alignSelf: "flex-start",
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    gap: 0.75,
-                                    px: 1.25,
-                                    py: 0.5,
-                                    borderRadius: "8px",
-                                    bgcolor: "rgba(255, 255, 255, 0.10)",
-                                    fontSize: "0.8125rem",
-                                    fontWeight: 600
-                                }}
-                            >
-                                <LocalOfferOutlinedIcon aria-hidden sx={{ fontSize: 16, color: "primary.light" }} />
-                                Walk-in restaurant deals
-                            </Box>
+                        {/* Restaurant deals */}
+                        <Box sx={{ ...HERO_PANEL_SX, bgcolor: "inverse.main", color: "inverse.contrastText" }}>
 
-                            <Typography
-                                id="home-hero-title"
-                                variant="h1"
-                                sx={{ mt: 2, color: "inherit", fontSize: { xs: "2.125rem", sm: "2.5rem", md: "3rem" } }}
-                            >
-                                Great food.{" "}
-                                <Box component="span" sx={{ color: "primary.light", whiteSpace: "nowrap" }}>Better deals.</Box>
-                            </Typography>
+                            <Box sx={HERO_TEXT_SX}>
 
-                            <Typography sx={{ mt: 1.5, color: "rgba(255, 255, 255, 0.82)", maxWidth: 520, fontSize: { md: "1.0625rem" } }}>
-                                Discover walk-in offers at restaurants near you. Pick your arrival time,
-                                redeem in seconds and save on your bill.
-                            </Typography>
-
-                            <Stack direction={{ xs: "column", sm: "row", md: "column", lg: "row" }} spacing={1.5} sx={{ mt: 3, maxWidth: 600 }}>
-                                <Box sx={{ flex: 1, display: "flex", "& > .MuiTextField-root": { flex: 1 } }}>
-                                    {searchField}
+                                <Box component="span" sx={{ ...HERO_BADGE_SX, bgcolor: "rgba(255, 255, 255, 0.10)" }}>
+                                    <LocalOfferOutlinedIcon aria-hidden sx={{ fontSize: 16, color: "primary.light" }} />
+                                    Walk-in restaurant deals
                                 </Box>
+
+                                <Typography variant="h1" component="h2" sx={HERO_TITLE_SX}>
+                                    Great food.{" "}
+                                    <Box component="span" sx={{ color: "primary.light", whiteSpace: "nowrap" }}>Better deals.</Box>
+                                </Typography>
+
+                                <Typography sx={{ mt: 1.5, color: "rgba(255, 255, 255, 0.82)", maxWidth: 480 }}>
+                                    Discover walk-in offers at restaurants near you. Pick your arrival time,
+                                    redeem in seconds and save on your bill.
+                                </Typography>
+
                                 <Button
+                                    component={RouterLink}
+                                    to="/restaurants?offer=deals"
                                     variant="contained"
                                     size="large"
-                                    endIcon={<ArrowDownwardIcon />}
-                                    onClick={scrollToResults}
-                                    sx={{ flexShrink: 0, minHeight: 56 }}
+                                    endIcon={<ArrowForwardIcon />}
+                                    sx={{ mt: 3 }}
                                 >
-                                    Browse restaurants
+                                    Browse restaurant deals
                                 </Button>
-                            </Stack>
 
-                            {!loading && !loadError && dealRestaurants.length > 0 && (
-                                <Typography variant="body2" sx={{ mt: 2, color: "rgba(255, 255, 255, 0.72)" }}>
-                                    {dealRestaurants.length} {dealRestaurants.length === 1 ? "restaurant" : "restaurants"} with offers
-                                    {bestDiscount != null && ` · up to ${bestDiscount}% off`}
-                                </Typography>
-                            )}
+                                {!loading && !loadError && dealRestaurants.length > 0 && (
+                                    <Typography variant="body2" sx={{ mt: 2, color: "rgba(255, 255, 255, 0.72)" }}>
+                                        {dealRestaurants.length} {dealRestaurants.length === 1 ? "restaurant" : "restaurants"} with offers
+                                        {bestDiscount != null && ` · up to ${bestDiscount}% off`}
+                                    </Typography>
+                                )}
+
+                            </Box>
+
+                            {/* Rotating food and restaurant imagery. Fixed size,
+                                so rotating images never shift the layout. */}
+                            <Box aria-hidden sx={HERO_IMAGE_SX}>
+                                <HeroImageRotator restaurantPhotos={heroPhotos} />
+                            </Box>
 
                         </Box>
 
-                        {/* Rotating food and restaurant imagery (desktop only).
-                            Fixed size, so rotating images never shift the layout. */}
-                        <Box
-                            aria-hidden
-                            sx={{
-                                display: { xs: "none", md: "block" },
-                                position: "relative",
-                                m: 1,
-                                minHeight: 380
-                            }}
-                        >
-                            <HeroImageRotator restaurantPhotos={heroPhotos} />
+                        {/* Surprise Bags */}
+                        <Box sx={{ ...HERO_PANEL_SX, bgcolor: "successSoft", color: "text.primary" }}>
+
+                            <Box sx={HERO_TEXT_SX}>
+
+                                <Box component="span" sx={{ ...HERO_BADGE_SX, bgcolor: "background.paper", color: "success.main" }}>
+                                    <ShoppingBagOutlinedIcon aria-hidden sx={{ fontSize: 16 }} />
+                                    Surprise Bags
+                                </Box>
+
+                                <Typography variant="h1" component="h2" sx={HERO_TITLE_SX}>
+                                    Good food.{" "}
+                                    <Box component="span" sx={{ color: "success.main", whiteSpace: "nowrap" }}>Less waste.</Box>
+                                </Typography>
+
+                                <Typography color="text.secondary" sx={{ mt: 1.5, maxWidth: 480 }}>
+                                    Reserve a bag of a restaurant's surplus food at a lower price,
+                                    then pay and collect it at the pickup time.
+                                </Typography>
+
+                                <Button
+                                    component={RouterLink}
+                                    to="/surprise-bags"
+                                    variant="contained"
+                                    color="success"
+                                    size="large"
+                                    endIcon={<ArrowForwardIcon />}
+                                    sx={{ mt: 3 }}
+                                >
+                                    Browse surprise bags
+                                </Button>
+
+                            </Box>
+
+                            <Box aria-hidden sx={HERO_IMAGE_SX}>
+                                <Box
+                                    component="img"
+                                    src={surpriseBagIllustration}
+                                    alt=""
+                                    sx={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                                />
+                            </Box>
+
                         </Box>
 
                     </Box>
+
+                    {/* ---------- Search (filters "All restaurants" below) ---------- */}
+                    <Card component="section" aria-label="Search restaurants" sx={{ mb: { xs: 4, md: 5 } }}>
+                        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} sx={{ p: { xs: 2, sm: 2.5 } }}>
+                            <Box sx={{ flex: 1, display: "flex", "& > .MuiTextField-root": { flex: 1 } }}>
+                                {searchField}
+                            </Box>
+                            <Button
+                                variant="contained"
+                                size="large"
+                                startIcon={<SearchIcon />}
+                                onClick={scrollToResults}
+                                sx={{ flexShrink: 0, minHeight: 56, px: 3 }}
+                            >
+                                Search
+                            </Button>
+                        </Stack>
+                    </Card>
 
                     {/* ---------- Explore by cuisine ---------- */}
                     {cuisineShortcuts.length > 0 && (
@@ -445,26 +613,97 @@ function RestaurantsPage() {
                         </Box>
                     )}
 
-                    {/* ---------- Top deals (unfiltered view only) ---------- */}
-                    {!loading && !loadError && !hasFilters && topDeals.length > 0 && (
-                        <Box component="section" aria-labelledby="top-deals-heading" sx={{ mb: { xs: 4, md: 5 } }}>
-                            <SectionHeader
-                                id="top-deals-heading"
-                                title="Top deals right now"
-                                subtitle="The biggest walk-in discounts available."
-                            />
-                            <Grid container spacing={3}>
-                                {topDeals.map(restaurant => (
-                                    <Grid key={restaurant.id} size={TOP_DEALS_GRID_ITEM_SIZE}>
-                                        <RestaurantCard
-                                            restaurant={restaurant}
-                                            isFavorite={favorites.some(f => f.restaurantId === restaurant.id)}
-                                            onFavoriteChanged={loadData}
-                                        />
+                    {/* ---------- Top Restaurant Deals | Featured Surprise Bags
+                         (unfiltered view only, like the old Top deals strip) ---------- */}
+                    {!hasFilters && (
+                        <Grid container spacing={{ xs: 4, lg: 3 }} sx={{ mb: { xs: 4, md: 5 } }}>
+
+                            <Grid component="section" aria-labelledby="top-deals-heading" size={TOP_DEALS_COLUMN_SIZE}>
+                                <SectionHeader
+                                    id="top-deals-heading"
+                                    title="Top Restaurant Deals"
+                                    subtitle="The biggest walk-in discounts available."
+                                    action={
+                                        <Button component={RouterLink} to="/restaurants?offer=deals" endIcon={<ArrowForwardIcon />}>
+                                            View all deals
+                                        </Button>
+                                    }
+                                />
+
+                                {loading ? (
+
+                                    <Grid container spacing={2} aria-busy="true" aria-label="Loading top deals">
+                                        {Array.from({ length: 4 }, (_, i) => (
+                                            <Grid key={i} size={TOP_DEALS_GRID_ITEM_SIZE}>
+                                                <Card>
+                                                    <Skeleton variant="rectangular" sx={{ aspectRatio: "16 / 10", height: "auto" }} />
+                                                    <CardContent>
+                                                        <Skeleton width="70%" height={28} />
+                                                        <Skeleton width="50%" />
+                                                    </CardContent>
+                                                </Card>
+                                            </Grid>
+                                        ))}
                                     </Grid>
-                                ))}
+
+                                ) : loadError ? (
+
+                                    <Alert severity="error">
+                                        We couldn't load restaurant deals right now. Please try again later.
+                                    </Alert>
+
+                                ) : topDeals.length === 0 ? (
+
+                                    <Card>
+                                        <CardContent sx={{ textAlign: "center", py: 4 }}>
+                                            <LocalOfferOutlinedIcon aria-hidden sx={{ fontSize: 40, color: "text.disabled" }} />
+                                            <Typography variant="h6" component="p" sx={{ mt: 1 }}>
+                                                No restaurant deals right now
+                                            </Typography>
+                                            <Typography color="text.secondary" sx={{ mt: 0.5 }}>
+                                                Check back soon, or browse all restaurants below.
+                                            </Typography>
+                                        </CardContent>
+                                    </Card>
+
+                                ) : (
+
+                                    <Grid container spacing={2}>
+                                        {topDeals.map(restaurant => (
+                                            <Grid key={restaurant.id} size={TOP_DEALS_GRID_ITEM_SIZE}>
+                                                <RestaurantCard
+                                                    restaurant={restaurant}
+                                                    isFavorite={favorites.some(f => f.restaurantId === restaurant.id)}
+                                                    onFavoriteChanged={loadData}
+                                                />
+                                            </Grid>
+                                        ))}
+                                    </Grid>
+
+                                )}
                             </Grid>
-                        </Box>
+
+                            <Grid component="section" aria-labelledby="featured-bags-heading" size={FEATURED_BAGS_COLUMN_SIZE}>
+                                <SectionHeader
+                                    id="featured-bags-heading"
+                                    title="Featured Surprise Bags"
+                                    subtitle="Surplus food from local restaurants, at a lower price."
+                                    action={
+                                        <Button component={RouterLink} to="/surprise-bags" color="success" endIcon={<ArrowForwardIcon />}>
+                                            View all surprise bags
+                                        </Button>
+                                    }
+                                />
+
+                                <PublicSurpriseBagList
+                                    take={FEATURED_BAGS_COUNT}
+                                    gridTemplateColumns={FEATURED_BAGS_COLUMNS}
+                                    emptyState={<NoSurpriseBagsCard compact />}
+                                    skeletonCount={2}
+                                />
+                            </Grid>
+
+                        </Grid>
                     )}
 
                     {/* ---------- All restaurants header ---------- */}
@@ -503,7 +742,7 @@ function RestaurantsPage() {
 
             )}
 
-            {/* Search and filters (on Home, search lives in the hero) */}
+            {/* Search and filters (on Home, search has its own band below the hero) */}
             <Stack
                 direction={{ xs: "column", md: "row" }}
                 spacing={1.5}
@@ -711,6 +950,58 @@ function RestaurantsPage() {
 
                 </>
 
+            )}
+
+            {/* ---------- How CraveDine works (home only) ---------- */}
+            {isHome && (
+                <Box component="section" aria-labelledby="how-it-works-heading" sx={{ mt: { xs: 5, md: 7 } }}>
+                    <SectionHeader
+                        id="how-it-works-heading"
+                        title="How CraveDine works"
+                        subtitle="Save with restaurant deals, or rescue surplus food with Surprise Bags."
+                        action={
+                            <Button component={RouterLink} to="/how-it-works" endIcon={<ArrowForwardIcon />}>
+                                Learn more
+                            </Button>
+                        }
+                    />
+                    <Grid container spacing={2} component="ol" sx={{ listStyle: "none", p: 0, m: 0 }}>
+                        {HOW_IT_WORKS_STEPS.map((step, index) => (
+                            <Grid key={step.title} component="li" size={{ xs: 12, sm: 6, md: 3 }}>
+                                <Card sx={{ height: "100%" }}>
+                                    <CardContent sx={{ p: { xs: 2.5, md: 3 } }}>
+                                        <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
+                                            <Box
+                                                aria-hidden
+                                                sx={{
+                                                    width: 40,
+                                                    height: 40,
+                                                    borderRadius: "10px",
+                                                    bgcolor: "primarySoft",
+                                                    color: "primary.main",
+                                                    display: "grid",
+                                                    placeItems: "center",
+                                                    flexShrink: 0
+                                                }}
+                                            >
+                                                {step.icon}
+                                            </Box>
+                                            <Typography variant="overline" color="text.secondary" sx={{ lineHeight: 1.4 }}>
+                                                Step {index + 1}
+                                            </Typography>
+                                        </Stack>
+                                        <Typography variant="subtitle1" component="h3" sx={{ mt: 1.5, fontWeight: 700 }}>
+                                            {step.title}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                                            {step.text}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Box>
             )}
 
         </>

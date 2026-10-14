@@ -6,6 +6,7 @@ import MainLayout from "../layouts/MainLayout";
 // restaurant list. To restore it, import it and use it for "/".
 import RestaurantsPage from "../pages/RestaurantsPage";
 import RestaurantDetailsPage from "../pages/RestaurantDetailsPage";
+import SurpriseBagsPage from "../pages/SurpriseBagsPage";
 import MyFavoritesPage from "../pages/MyFavoritesPage";
 
 import OwnerDashboardPage from "../pages/OwnerDashboardPage";
@@ -67,6 +68,12 @@ function AppRoutes() {
                     <Route
                         path="/restaurants/:id"
                         element={<RestaurantDetailsPage />}
+                    />
+
+                    {/* Public: Surprise Bags from all restaurants */}
+                    <Route
+                        path="/surprise-bags"
+                        element={<SurpriseBagsPage />}
                     />
 
                     <Route

@@ -59,6 +59,7 @@ const FOOTER_COLUMNS: { heading: string; links: FooterLink[] }[] = [
             { label: "Restaurants", to: "/restaurants" },
             { label: "Dine-in Deals", to: "/restaurants?offer=dine-in" },
             { label: "Takeaway Deals", to: "/restaurants?offer=takeaway" },
+            { label: "Surprise Bags", to: "/surprise-bags" },
             { label: "How It Works", to: "/how-it-works" }
         ]
     },

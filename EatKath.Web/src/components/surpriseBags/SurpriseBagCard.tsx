@@ -5,6 +5,7 @@ import {
     Box,
     Button,
     Card,
+    Link,
     Stack,
     Typography
 } from "@mui/material";
@@ -13,6 +14,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
+import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 
 import AuthContext from "../../features/auth/AuthContext";
 import { useNotification } from "../../features/notifications/NotificationContext";
@@ -28,9 +30,12 @@ interface Props {
     // The logged-in customer already holds a Reserved reservation for this
     // bag (the API would reject another), so Reserve isn't offered.
     alreadyReserved?: boolean;
+    // Lists with bags from many restaurants (home page, /surprise-bags)
+    // name the restaurant and link to it.
+    showRestaurant?: boolean;
 }
 
-function SurpriseBagCard({ bag, onReserve, alreadyReserved = false }: Props) {
+function SurpriseBagCard({ bag, onReserve, alreadyReserved = false, showRestaurant = false }: Props) {
 
     const navigate = useNavigate();
     const { notify } = useNotification();
@@ -106,6 +111,22 @@ function SurpriseBagCard({ bag, onReserve, alreadyReserved = false }: Props) {
                 <Typography variant="subtitle1" component="h3" sx={{ fontWeight: 700, overflowWrap: "anywhere" }}>
                     {bag.title}
                 </Typography>
+
+                {showRestaurant && (
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center", minWidth: 0 }}>
+                        <StorefrontOutlinedIcon aria-hidden sx={{ fontSize: 18, color: "text.secondary" }} />
+                        <Link
+                            component={RouterLink}
+                            to={`/restaurants/${bag.restaurantId}`}
+                            variant="body2"
+                            color="text.secondary"
+                            underline="hover"
+                            sx={{ fontWeight: 600, overflowWrap: "anywhere" }}
+                        >
+                            {bag.restaurantName}
+                        </Link>
+                    </Stack>
+                )}
 
                 <Stack direction="row" sx={{ alignItems: "baseline", flexWrap: "wrap", columnGap: 1 }}>
                     <Typography variant="h6" component="p" sx={{ fontWeight: 700 }}>

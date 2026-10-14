@@ -28,14 +28,18 @@ import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettin
 import CloseIcon from "@mui/icons-material/Close";
 import ConfirmationNumberOutlinedIcon from "@mui/icons-material/ConfirmationNumberOutlined";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import HandshakeOutlinedIcon from "@mui/icons-material/HandshakeOutlined";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import LocalDiningIcon from "@mui/icons-material/LocalDining";
+import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
 import PersonAddAlt1OutlinedIcon from "@mui/icons-material/PersonAddAlt1Outlined";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import RestaurantOutlinedIcon from "@mui/icons-material/RestaurantOutlined";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 
@@ -46,13 +50,88 @@ import { PAGE_CONTAINER_SX } from "./layoutConstants";
 
 interface NavItem {
     label: string;
-    // Shorter label for narrow desktop headers (md up to lg).
-    shortLabel?: string;
     to: string;
     icon: ReactNode;
-    // Paths (besides `to`) that should highlight this item.
-    matches: (pathname: string) => boolean;
+    // Whether the current page (path and query) highlights this item.
+    matches: (pathname: string, search: URLSearchParams) => boolean;
 }
+
+// /restaurants?offer=deals is the Deals page (restaurants with a current
+// dine-in or takeaway deal); the rest of /restaurants is Restaurants.
+function isDealsPage(pathname: string, search: URLSearchParams): boolean {
+
+    return pathname === "/restaurants" && search.get("offer") === "deals";
+
+}
+
+// Public links, shown to everyone (header and mobile drawer).
+const PUBLIC_NAV_ITEMS: NavItem[] = [
+    {
+        label: "Home",
+        to: "/",
+        icon: <HomeOutlinedIcon fontSize="small" />,
+        matches: p => p === "/"
+    },
+    {
+        label: "Restaurants",
+        to: "/restaurants",
+        icon: <RestaurantOutlinedIcon fontSize="small" />,
+        matches: (p, q) => p.startsWith("/restaurants") && !isDealsPage(p, q)
+    },
+    {
+        label: "Deals",
+        to: "/restaurants?offer=deals",
+        icon: <LocalOfferOutlinedIcon fontSize="small" />,
+        matches: isDealsPage
+    },
+    {
+        label: "Surprise Bags",
+        to: "/surprise-bags",
+        icon: <ShoppingBagOutlinedIcon fontSize="small" />,
+        matches: p => p.startsWith("/surprise-bags")
+    },
+    {
+        label: "How It Works",
+        to: "/how-it-works",
+        icon: <HelpOutlineIcon fontSize="small" />,
+        matches: p => p.startsWith("/how-it-works")
+    },
+    {
+        label: "For Restaurants",
+        to: "/partner",
+        icon: <HandshakeOutlinedIcon fontSize="small" />,
+        matches: p => p.startsWith("/partner")
+    }
+];
+
+// A customer's own pages: in the account menu (desktop) and the
+// drawer's account section (mobile).
+const CUSTOMER_ACCOUNT_ITEMS: NavItem[] = [
+    {
+        label: "Favourites",
+        to: "/favorites",
+        icon: <FavoriteBorderIcon fontSize="small" />,
+        matches: p => p.startsWith("/favorites")
+    },
+    {
+        label: "My Redemptions",
+        to: "/my-redemptions",
+        icon: <ConfirmationNumberOutlinedIcon fontSize="small" />,
+        matches: p => p.startsWith("/my-redemptions")
+    },
+    {
+        label: "My Surprise Bags",
+        to: "/my-surprise-bags",
+        icon: <ShoppingBagOutlinedIcon fontSize="small" />,
+        matches: p => p.startsWith("/my-surprise-bags")
+    },
+    {
+        label: "Profile",
+        to: "/profile",
+        icon: <PersonOutlineIcon fontSize="small" />,
+        matches: p => p.startsWith("/profile")
+    }
+];
 
 function MainLayout() {
 
@@ -67,15 +146,17 @@ function MainLayout() {
     const isOwner = user?.role === "Owner";        // Is the user an owner?
     const isAdmin = user?.role === "Admin";        // Is the user an admin?
 
-    const { pathname } = useLocation();
+    const { pathname, search } = useLocation();
+    const searchParams = new URLSearchParams(search);
 
     const [drawerOpen, setDrawerOpen] = useState(false);
 
     // Customer account dropdown (desktop header only). It is also shut
     // when the screen narrows to the mobile layout, where its anchor
-    // button is hidden and the drawer takes over.
+    // button is hidden and the drawer takes over. The header links need
+    // a large screen (lg); below that the drawer lists them.
     const [accountAnchor, setAccountAnchor] = useState<HTMLElement | null>(null);
-    const isDesktop = useMediaQuery(useTheme().breakpoints.up("md"));
+    const isDesktop = useMediaQuery(useTheme().breakpoints.up("lg"));
     const accountMenuOpen = Boolean(accountAnchor) && isDesktop;
 
     // Account identity: the full name (account menu and the button's
@@ -87,41 +168,9 @@ function MainLayout() {
         .join("")
         .toUpperCase();
 
-    // Navigation for the current role. Home (the restaurant list) is
-    // shared; restaurant detail pages also count as Home.
-    const navItems: NavItem[] = [
-        {
-            label: "Home",
-            to: "/",
-            icon: <HomeOutlinedIcon fontSize="small" />,
-            matches: p => p === "/" || p.startsWith("/restaurants")
-        }
-    ];
-
-    if (isCustomer) {
-        navItems.push(
-            {
-                label: "Favourites",
-                to: "/favorites",
-                icon: <FavoriteBorderIcon fontSize="small" />,
-                matches: p => p.startsWith("/favorites")
-            },
-            {
-                label: "My Redemptions",
-                shortLabel: "Redemptions",
-                to: "/my-redemptions",
-                icon: <ConfirmationNumberOutlinedIcon fontSize="small" />,
-                matches: p => p.startsWith("/my-redemptions")
-            },
-            {
-                label: "My Surprise Bags",
-                shortLabel: "Surprise Bags",
-                to: "/my-surprise-bags",
-                icon: <ShoppingBagOutlinedIcon fontSize="small" />,
-                matches: p => p.startsWith("/my-surprise-bags")
-            }
-        );
-    }
+    // Navigation for the current role: the public links, plus the Owner
+    // or Admin dashboard. (Customers' own pages are in the account menu.)
+    const navItems: NavItem[] = [...PUBLIC_NAV_ITEMS];
 
     if (isOwner) {
         navItems.push({
@@ -139,6 +188,37 @@ function MainLayout() {
             icon: <AdminPanelSettingsOutlinedIcon fontSize="small" />,
             matches: p => p.startsWith("/admin")
         });
+    }
+
+    // A link in the mobile drawer (closes the drawer when followed).
+    function renderDrawerItem(item: NavItem) {
+
+        const active = item.matches(pathname, searchParams);
+
+        return (
+            <ListItemButton
+                key={item.to}
+                component={Link}
+                to={item.to}
+                selected={active}
+                aria-current={active ? "page" : undefined}
+                onClick={() => setDrawerOpen(false)}
+                // Active item: a deeper coral (Day) / lighter coral
+                // (Night) so it stays readable on the selected tint.
+                sx={theme => ({
+                    borderRadius: "10px",
+                    minHeight: 48,
+                    color: active ? "primary.dark" : "text.primary",
+                    ...(active && theme.applyStyles("dark", { color: (theme.vars || theme).palette.deal.text }))
+                })}
+            >
+                <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>
+                    {item.icon}
+                </ListItemIcon>
+                <ListItemText primary={item.label} slotProps={{ primary: { sx: { fontWeight: 600 } } }} />
+            </ListItemButton>
+        );
+
     }
 
     function handleLogout() {
@@ -204,33 +284,31 @@ function MainLayout() {
                             </Typography>
                         </Box>
 
-                        {/* Desktop navigation. For customers (the longest nav),
-                            narrow desktops (md up to lg) drop the icons and use
-                            short labels, so the links and account button fit at
-                            ~900px. Other roles keep their icons. */}
+                        {/* Desktop navigation (large screens). Text links only,
+                            so all public links plus a dashboard and the account
+                            actions fit; the mobile drawer shows their icons. */}
                         <Stack
                             component="nav"
                             aria-label="Main navigation"
                             direction="row"
-                            spacing={0.5}
-                            sx={{ display: { xs: "none", md: "flex" }, flexGrow: 1 }}
+                            spacing={0.25}
+                            sx={{ display: { xs: "none", lg: "flex" }, flexGrow: 1 }}
                         >
                             {navItems.map(item => {
 
-                                const active = item.matches(pathname);
+                                const active = item.matches(pathname, searchParams);
 
                                 return (
                                     <Button
                                         key={item.to}
                                         component={Link}
                                         to={item.to}
-                                        startIcon={item.icon}
                                         aria-current={active ? "page" : undefined}
                                         sx={{
                                             position: "relative",
                                             color: active ? "primary.main" : "text.secondary",
                                             whiteSpace: "nowrap",
-                                            ...(isCustomer && { "& .MuiButton-startIcon": { display: { md: "none", lg: "inherit" } } }),
+                                            px: 1.25,
                                             "&:hover": {
                                                 backgroundColor: "action.hover",
                                                 color: active ? "primary.main" : "text.primary"
@@ -248,16 +326,7 @@ function MainLayout() {
                                             }
                                         }}
                                     >
-                                        {item.shortLabel ? (
-                                            <>
-                                                <Box component="span" sx={{ display: { md: "inline", lg: "none" } }}>
-                                                    {item.shortLabel}
-                                                </Box>
-                                                <Box component="span" sx={{ display: { md: "none", lg: "inline" } }}>
-                                                    {item.label}
-                                                </Box>
-                                            </>
-                                        ) : item.label}
+                                        {item.label}
                                     </Button>
                                 );
 
@@ -268,7 +337,7 @@ function MainLayout() {
                         <Stack
                             direction="row"
                             spacing={1}
-                            sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}
+                            sx={{ display: { xs: "none", lg: "flex" }, alignItems: "center", flexShrink: 0 }}
                         >
                             <ThemeToggle />
 
@@ -359,17 +428,20 @@ function MainLayout() {
 
                                 <Divider sx={{ my: 0.5 }} />
 
-                                {/* Favourites and My Redemptions are in the main
-                                    navigation, so the menu only holds account items. */}
-                                <MenuItem
-                                    component={Link}
-                                    to="/profile"
-                                    selected={pathname.startsWith("/profile")}
-                                    onClick={closeAccountMenu}
-                                >
-                                    <ListItemIcon><PersonOutlineIcon fontSize="small" /></ListItemIcon>
-                                    Profile
-                                </MenuItem>
+                                {/* The customer's own pages (the header holds the
+                                    public links). */}
+                                {CUSTOMER_ACCOUNT_ITEMS.map(item => (
+                                    <MenuItem
+                                        key={item.to}
+                                        component={Link}
+                                        to={item.to}
+                                        selected={item.matches(pathname, searchParams)}
+                                        onClick={closeAccountMenu}
+                                    >
+                                        <ListItemIcon>{item.icon}</ListItemIcon>
+                                        {item.label}
+                                    </MenuItem>
+                                ))}
 
                                 <Divider sx={{ my: 0.5 }} />
 
@@ -381,7 +453,7 @@ function MainLayout() {
                         )}
 
                         {/* Mobile menu button */}
-                        <Box sx={{ display: { xs: "flex", md: "none" }, ml: "auto" }}>
+                        <Box sx={{ display: { xs: "flex", lg: "none" }, ml: "auto" }}>
                             <IconButton
                                 aria-label="Open navigation menu"
                                 aria-controls={drawerOpen ? "mobile-navigation" : undefined}
@@ -428,36 +500,25 @@ function MainLayout() {
                 )}
 
                 <List component="nav" aria-label="Main navigation" sx={{ px: 1, py: 1 }}>
-                    {navItems.map(item => {
-
-                        const active = item.matches(pathname);
-
-                        return (
-                            <ListItemButton
-                                key={item.to}
-                                component={Link}
-                                to={item.to}
-                                selected={active}
-                                aria-current={active ? "page" : undefined}
-                                onClick={() => setDrawerOpen(false)}
-                                // Active item: a deeper coral (Day) / lighter coral
-                                // (Night) so it stays readable on the selected tint.
-                                sx={theme => ({
-                                    borderRadius: "10px",
-                                    minHeight: 48,
-                                    color: active ? "primary.dark" : "text.primary",
-                                    ...(active && theme.applyStyles("dark", { color: (theme.vars || theme).palette.deal.text }))
-                                })}
-                            >
-                                <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>
-                                    {item.icon}
-                                </ListItemIcon>
-                                <ListItemText primary={item.label} slotProps={{ primary: { sx: { fontWeight: 600 } } }} />
-                            </ListItemButton>
-                        );
-
-                    })}
+                    {navItems.map(renderDrawerItem)}
                 </List>
+
+                {isCustomer && (
+                    <>
+                        <Divider />
+                        <List
+                            aria-labelledby="drawer-account-heading"
+                            sx={{ px: 1, py: 1 }}
+                            subheader={
+                                <ListSubheader id="drawer-account-heading" disableSticky sx={{ bgcolor: "transparent", lineHeight: "36px" }}>
+                                    My account
+                                </ListSubheader>
+                            }
+                        >
+                            {CUSTOMER_ACCOUNT_ITEMS.map(renderDrawerItem)}
+                        </List>
+                    </>
+                )}
 
                 <Divider />
 
