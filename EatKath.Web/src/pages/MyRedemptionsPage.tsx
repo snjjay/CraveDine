@@ -206,7 +206,7 @@ function MyRedemptionsPage() {
 
                                 <Typography>
 
-                                    Redeemed: {new Date(r.redeemedAt).toLocaleString()}
+                                    Claimed: {new Date(r.redeemedAt).toLocaleString()}
 
                                 </Typography>
 

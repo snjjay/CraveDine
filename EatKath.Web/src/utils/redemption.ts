@@ -19,8 +19,9 @@ export function getRedemptionStatusLabel(status: number): string {
 
     switch (status) {
 
+        // Claimed and not yet visited (the stored status stays Redeemed).
         case RedemptionStatus.Redeemed:
-            return "Redeemed";
+            return "Confirmed";
 
         case RedemptionStatus.Completed:
             return "Completed";
