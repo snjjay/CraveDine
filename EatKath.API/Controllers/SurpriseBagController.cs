@@ -92,6 +92,27 @@ namespace EatKath.API.Controllers
             return Ok(await _service.UpdateAsync(id, dto));
         }
 
+        // Uploads or replaces the bag's optional image (multipart/form-data,
+        // field "file"; JPG, PNG or WEBP up to 5 MB). Allowed for inactive
+        // bags and when the pickup details are locked.
+        [Authorize(Roles = "Admin,Owner")]
+        [HttpPost("{id:int}/image")]
+        public async Task<IActionResult> UploadImage(int id, [FromForm] UploadSurpriseBagImageDto dto)
+        {
+            var imageUrl = await _service.UploadImageAsync(id, dto.File);
+
+            return Ok(new { ImageUrl = imageUrl });
+        }
+
+        [Authorize(Roles = "Admin,Owner")]
+        [HttpDelete("{id:int}/image")]
+        public async Task<IActionResult> DeleteImage(int id)
+        {
+            await _service.DeleteImageAsync(id);
+
+            return NoContent();
+        }
+
         // Soft delete: deactivates the bag; existing reservations are kept.
         [Authorize(Roles = "Admin,Owner")]
         [HttpDelete("{id:int}")]

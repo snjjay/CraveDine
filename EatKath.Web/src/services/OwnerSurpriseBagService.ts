@@ -67,6 +67,47 @@ class OwnerSurpriseBagService {
 
     }
 
+    // Uploads (or replaces) the bag's image and returns its new stored
+    // path. Allowed for inactive and pickup-locked bags. onProgress
+    // receives 0-100 while the file is sent.
+    async uploadImage(
+        id: number,
+        file: File,
+        onProgress?: (percent: number) => void
+    ): Promise<string> {
+
+        const formData = new FormData();
+
+        formData.append("file", file);
+
+        const response =
+            await api.post<{ imageUrl: string }>(
+                `/SurpriseBag/${id}/image`,
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    },
+                    // Longer than the default 30s: a 5 MB photo on a slow
+                    // connection can take a while to send.
+                    timeout: 120_000,
+                    onUploadProgress: event => {
+                        if (onProgress && event.total)
+                            onProgress(Math.round((event.loaded / event.total) * 100));
+                    }
+                }
+            );
+
+        return response.data.imageUrl;
+
+    }
+
+    async deleteImage(id: number): Promise<void> {
+
+        await api.delete(`/SurpriseBag/${id}/image`);
+
+    }
+
 }
 
 export default new OwnerSurpriseBagService();

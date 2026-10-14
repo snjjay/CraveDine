@@ -9,22 +9,30 @@
 // The parent mounts this dialog only while it is open, so every opening
 // starts with a fresh form.
 
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import axios from "axios";
 
 import {
     Alert,
+    Box,
     Button,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
+    LinearProgress,
     MenuItem,
     Stack,
-    TextField
+    TextField,
+    Typography
 } from "@mui/material";
 
+import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
+
 import OwnerSurpriseBagService from "../../services/OwnerSurpriseBagService";
+import { getApiErrorMessage } from "../../utils/apiError";
+import { IMAGE_ACCEPT, validateImage } from "../../utils/imageUpload";
+import { getImageUrl } from "../../utils/imageUrl";
 import type {
     OwnerSurpriseBag,
     SurpriseBagInput
@@ -75,7 +83,8 @@ function toFormValues(bag: OwnerSurpriseBag | null): FormValues {
             conditions: "",
             price: "",
             estimatedValue: "",
-            quantityTotal: "5",
+            // No preset: the owner enters how many bags they offer.
+            quantityTotal: "",
             maxPerCustomer: "1",
             pickupDate: "",
             pickupStartTime: "18:00",
@@ -224,11 +233,24 @@ function getSaveErrorMessages(error: unknown): string[] {
 
 }
 
+// Image upload/removal errors. No response: the change may still have
+// happened (the list is reloaded when the form closes).
+function getImageErrorMessage(error: unknown, fallback: string): string {
+
+    if (axios.isAxiosError(error) && !error.response)
+        return "We couldn't confirm the image change because the connection was interrupted. Check the bag before trying again.";
+
+    return getApiErrorMessage(error, fallback);
+
+}
+
 interface Props {
     open: boolean;
     onClose: () => void;
-    // Called with the saved bag after a successful create or update.
-    onSaved: (bag: OwnerSurpriseBag) => void;
+    // Called with the saved bag after a successful create or update;
+    // warning is set when a new bag was created but its image wasn't
+    // uploaded.
+    onSaved: (bag: OwnerSurpriseBag, warning?: string) => void;
     // Restaurant a new bag is created for.
     restaurantId: number;
     // Bag to edit; null creates a new bag.
@@ -260,6 +282,46 @@ function SurpriseBagFormDialog({
 
     // Blocks a second request before the disabled button re-renders.
     const savingRef = useRef(false);
+
+    // ---------- Optional image (cosmetic: also for inactive and
+    // pickup-locked bags) ----------
+
+    // Saved image of the bag being edited; changed straight away.
+    const [imageUrl, setImageUrl] = useState<string | null>(bag?.imageUrl ?? null);
+
+    // Image chosen for a new bag, uploaded once the bag is created.
+    const [pendingImage, setPendingImage] = useState<File | null>(null);
+
+    const [imageAction, setImageAction] = useState<"upload" | "remove" | null>(null);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [imageError, setImageError] = useState<string | null>(null);
+    const [confirmRemove, setConfirmRemove] = useState(false);
+
+    // Saved image that failed to load (shows the fallback instead).
+    const [failedImageSrc, setFailedImageSrc] = useState<string | null>(null);
+
+    const imageBusyRef = useRef(false);
+    const imageBusy = imageAction !== null;
+
+    const pendingPreview = useMemo(
+        () => pendingImage ? URL.createObjectURL(pendingImage) : null,
+        [pendingImage]
+    );
+
+    useEffect(() => {
+
+        return () => {
+            if (pendingPreview)
+                URL.revokeObjectURL(pendingPreview);
+        };
+
+    }, [pendingPreview]);
+
+    const savedImageSrc = imageUrl ? getImageUrl(imageUrl) : null;
+
+    const previewSrc = isEdit
+        ? (savedImageSrc && savedImageSrc !== failedImageSrc ? savedImageSrc : null)
+        : pendingPreview;
 
     const errors = validate(values, usedQuantity);
     const hasErrors = Object.keys(errors).length > 0;
@@ -295,11 +357,48 @@ function SurpriseBagFormDialog({
             const input = toInput(values, bag);
 
             // Edits leave isActive out, so the bag keeps its active state.
-            const saved = bag
-                ? await OwnerSurpriseBagService.update(bag.id, input)
-                : await OwnerSurpriseBagService.create({ ...input, restaurantId });
+            if (bag) {
+                onSaved(await OwnerSurpriseBagService.update(bag.id, input));
+                return;
+            }
 
-            onSaved(saved);
+            const created = await OwnerSurpriseBagService.create({ ...input, restaurantId });
+
+            // The upload needs the new bag's id, so it happens after the
+            // bag is created. A failed upload doesn't undo the bag.
+            if (pendingImage) {
+
+                setImageAction("upload");
+                setUploadProgress(0);
+
+                try {
+
+                    const uploaded = await OwnerSurpriseBagService.uploadImage(created.id, pendingImage, setUploadProgress);
+
+                    onSaved({ ...created, imageUrl: uploaded });
+
+                }
+                catch (error) {
+
+                    console.error(error);
+
+                    onSaved(
+                        created,
+                        `"${created.title}" was created, but its image wasn't uploaded: ${getImageErrorMessage(error, "please try again.")} Open Edit to add it.`
+                    );
+
+                }
+                finally {
+
+                    setImageAction(null);
+
+                }
+
+                return;
+
+            }
+
+            onSaved(created);
 
         }
         catch (error) {
@@ -318,13 +417,100 @@ function SurpriseBagFormDialog({
 
     }
 
-    // Closing (Escape, backdrop) waits for a running save.
+    // Closing (Escape, backdrop) waits for a running save or image change.
     function handleClose() {
 
-        if (!saving)
+        if (!saving && !imageBusy)
             onClose();
 
     }
+
+    async function handleImageSelected(e: ChangeEvent<HTMLInputElement>) {
+
+        const file = e.target.files?.[0];
+
+        // Allows choosing the same file again after an error.
+        e.target.value = "";
+
+        if (!file || imageBusyRef.current)
+            return;
+
+        setImageError(null);
+        setConfirmRemove(false);
+
+        const problem = validateImage(file);
+
+        if (problem) {
+            setImageError(problem);
+            return;
+        }
+
+        if (!bag) {
+            setPendingImage(file);
+            return;
+        }
+
+        imageBusyRef.current = true;
+        setImageAction("upload");
+        setUploadProgress(0);
+
+        try {
+
+            setImageUrl(await OwnerSurpriseBagService.uploadImage(bag.id, file, setUploadProgress));
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            setImageError(getImageErrorMessage(error, "Failed to upload the image. Please try again."));
+
+        }
+        finally {
+
+            imageBusyRef.current = false;
+            setImageAction(null);
+
+        }
+
+    }
+
+    async function handleRemoveImage() {
+
+        if (!bag || imageBusyRef.current)
+            return;
+
+        imageBusyRef.current = true;
+        setImageAction("remove");
+        setImageError(null);
+
+        try {
+
+            await OwnerSurpriseBagService.deleteImage(bag.id);
+
+            setImageUrl(null);
+            setConfirmRemove(false);
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            setImageError(getImageErrorMessage(error, "Failed to remove the image. Please try again."));
+
+        }
+        finally {
+
+            imageBusyRef.current = false;
+            setImageAction(null);
+
+        }
+
+    }
+
+    const chooseImageLabel = isEdit
+        ? (imageUrl ? "Replace Image" : "Upload Image")
+        : (pendingImage ? "Change Image" : "Choose Image");
 
     const amountAdornment = currencyCode ? ` (${currencyCode})` : "";
 
@@ -399,6 +585,103 @@ function SurpriseBagFormDialog({
                         helperText={fieldError("conditions") ?? "E.g. allergens, or bring your own bag."}
                         disabled={saving}
                     />
+
+                    {/* Optional image */}
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ alignItems: { sm: "center" } }}>
+
+                        <Box
+                            sx={{
+                                width: 128,
+                                height: 96,
+                                flexShrink: 0,
+                                borderRadius: "10px",
+                                border: "1px solid",
+                                borderColor: "divider",
+                                bgcolor: "primarySoft",
+                                color: "primary.main",
+                                overflow: "hidden",
+                                display: "grid",
+                                placeItems: "center"
+                            }}
+                        >
+                            {previewSrc ? (
+                                <Box
+                                    component="img"
+                                    src={previewSrc}
+                                    alt={values.title.trim() ? `Image of ${values.title.trim()}` : "Surprise Bag image"}
+                                    onError={() => setFailedImageSrc(previewSrc)}
+                                    sx={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                                />
+                            ) : (
+                                <ShoppingBagOutlinedIcon aria-hidden sx={{ fontSize: 36 }} />
+                            )}
+                        </Box>
+
+                        <Stack spacing={1} sx={{ minWidth: 0 }}>
+
+                            <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: "wrap" }}>
+
+                                <Button variant="outlined" component="label" disabled={saving || imageBusy}>
+                                    {chooseImageLabel}
+                                    <input hidden type="file" accept={IMAGE_ACCEPT} onChange={handleImageSelected} />
+                                </Button>
+
+                                {isEdit && imageUrl && !confirmRemove && (
+                                    <Button color="error" disabled={saving || imageBusy} onClick={() => setConfirmRemove(true)}>
+                                        Remove Image
+                                    </Button>
+                                )}
+
+                                {!isEdit && pendingImage && (
+                                    <Button disabled={saving} onClick={() => setPendingImage(null)}>
+                                        Clear
+                                    </Button>
+                                )}
+
+                            </Stack>
+
+                            {confirmRemove && (
+                                <Alert
+                                    severity="warning"
+                                    action={
+                                        <Stack direction="row" spacing={1}>
+                                            <Button color="inherit" size="small" disabled={imageBusy} onClick={() => setConfirmRemove(false)}>
+                                                Keep
+                                            </Button>
+                                            <Button color="error" size="small" disabled={imageBusy} onClick={handleRemoveImage}>
+                                                {imageAction === "remove" ? "Removing..." : "Remove"}
+                                            </Button>
+                                        </Stack>
+                                    }
+                                >
+                                    Remove this bag's image? The category icon is shown instead.
+                                </Alert>
+                            )}
+
+                            <Typography variant="caption" color="text.secondary">
+                                {isEdit
+                                    ? "Optional. JPG, PNG or WEBP, up to 5 MB. Image changes are saved straight away."
+                                    : "Optional. JPG, PNG or WEBP, up to 5 MB. Uploaded when you create the bag."}
+                            </Typography>
+
+                            {imageAction === "upload" && (
+                                <Box sx={{ width: 220, maxWidth: "100%" }} role="status">
+                                    <LinearProgress variant="determinate" value={uploadProgress} aria-label="Image upload progress" />
+                                    <Typography variant="caption" color="text.secondary">
+                                        Uploading image... {uploadProgress}%
+                                    </Typography>
+                                </Box>
+                            )}
+
+                            {imageError && (
+                                <Alert severity="error" role="alert" onClose={() => setImageError(null)}>
+                                    {imageError}
+                                </Alert>
+                            )}
+
+                        </Stack>
+
+                    </Stack>
 
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
 
@@ -523,14 +806,14 @@ function SurpriseBagFormDialog({
 
             <DialogActions>
 
-                <Button onClick={onClose} disabled={saving}>
+                <Button onClick={onClose} disabled={saving || imageBusy}>
                     Cancel
                 </Button>
 
                 <Button
                     variant="contained"
                     onClick={handleSave}
-                    disabled={saving}
+                    disabled={saving || imageBusy}
                 >
                     {saving ? "Saving..." : isEdit ? "Save Changes" : "Create Bag"}
                 </Button>

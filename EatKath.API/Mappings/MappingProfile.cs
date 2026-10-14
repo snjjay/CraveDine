@@ -171,7 +171,10 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.CollectedQuantity, opt => opt.Ignore())
             .ForMember(dest => dest.IsPickupLocked, opt => opt.Ignore());
 
-        CreateMap<CreateSurpriseBagDto, SurpriseBag>();
+        // The image is changed only through the image endpoints, never by
+        // a create or edit of the bag's details.
+        CreateMap<CreateSurpriseBagDto, SurpriseBag>()
+            .ForMember(dest => dest.ImageUrl, opt => opt.Ignore());
 
         // IsActive only when the request sets it (null = unchanged).
         CreateMap<UpdateSurpriseBagDto, SurpriseBag>()
@@ -179,7 +182,8 @@ public class MappingProfile : Profile
             {
                 opt.PreCondition(src => src.IsActive.HasValue);
                 opt.MapFrom(src => src.IsActive!.Value);
-            });
+            })
+            .ForMember(dest => dest.ImageUrl, opt => opt.Ignore());
 
         // ============================
         // Surprise Bag Reservation

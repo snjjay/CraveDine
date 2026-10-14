@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import {
@@ -20,6 +20,7 @@ import AuthContext from "../../features/auth/AuthContext";
 import { useNotification } from "../../features/notifications/NotificationContext";
 import type { SurpriseBag } from "../../types/SurpriseBag";
 import { formatCurrency } from "../../utils/currency";
+import { getImageUrl } from "../../utils/imageUrl";
 import { getSurpriseBagCategoryLabel } from "../../utils/surpriseBag";
 import { formatDate, formatTime12Hour } from "../../utils/time";
 
@@ -44,6 +45,12 @@ function SurpriseBagCard({ bag, onReserve, alreadyReserved = false, showRestaura
     const user = auth?.user ?? null;
 
     const categoryLabel = getSurpriseBagCategoryLabel(bag.category);
+
+    // Image that failed to load: the category icon is shown instead.
+    const [failedImageSrc, setFailedImageSrc] = useState<string | null>(null);
+
+    const bagImageSrc = bag.imageUrl ? getImageUrl(bag.imageUrl) : null;
+    const imageSrc = bagImageSrc && bagImageSrc !== failedImageSrc ? bagImageSrc : null;
 
     // The API only lists bags whose pickup window hasn't ended, so the
     // card shows the pickup date as sent (Kathmandu time) and never
@@ -84,27 +91,69 @@ function SurpriseBagCard({ bag, onReserve, alreadyReserved = false, showRestaura
             sx={{ height: "100%", display: "flex", alignItems: "stretch" }}
         >
 
-            <Box
-                sx={{
-                    width: { xs: 92, sm: 112 },
-                    flexShrink: 0,
-                    bgcolor: "primarySoft",
-                    color: "primary.main",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 0.5,
-                    textAlign: "center",
-                    px: 1,
-                    py: 2
-                }}
-            >
-                <ShoppingBagOutlinedIcon aria-hidden sx={{ fontSize: { xs: 32, sm: 36 } }} />
-                <Typography variant="caption" sx={{ color: "inherit", fontWeight: 600 }}>
-                    {categoryLabel}
-                </Typography>
-            </Box>
+            {imageSrc ? (
+
+                // The bag's photo, with its category over the bottom edge.
+                <Box
+                    sx={{
+                        width: { xs: 92, sm: 112 },
+                        flexShrink: 0,
+                        position: "relative",
+                        bgcolor: "primarySoft",
+                        minHeight: 140
+                    }}
+                >
+                    <Box
+                        component="img"
+                        src={imageSrc}
+                        alt=""
+                        loading="lazy"
+                        onError={() => setFailedImageSrc(imageSrc)}
+                        sx={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                    />
+                    <Typography
+                        variant="caption"
+                        sx={{
+                            position: "absolute",
+                            left: 6,
+                            bottom: 6,
+                            px: 0.75,
+                            borderRadius: "6px",
+                            bgcolor: "rgba(0, 0, 0, 0.6)",
+                            color: "#FFFFFF",
+                            fontWeight: 600
+                        }}
+                    >
+                        {categoryLabel}
+                    </Typography>
+                </Box>
+
+            ) : (
+
+                // No image (or it failed to load): the category icon.
+                <Box
+                    sx={{
+                        width: { xs: 92, sm: 112 },
+                        flexShrink: 0,
+                        bgcolor: "primarySoft",
+                        color: "primary.main",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 0.5,
+                        textAlign: "center",
+                        px: 1,
+                        py: 2
+                    }}
+                >
+                    <ShoppingBagOutlinedIcon aria-hidden sx={{ fontSize: { xs: 32, sm: 36 } }} />
+                    <Typography variant="caption" sx={{ color: "inherit", fontWeight: 600 }}>
+                        {categoryLabel}
+                    </Typography>
+                </Box>
+
+            )}
 
             <Stack spacing={1} sx={{ p: { xs: 2, sm: 2.5 }, flex: 1, minWidth: 0 }}>
 

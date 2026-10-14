@@ -24,5 +24,10 @@ namespace EatKath.API.Interfaces
 
         // Soft delete: IsActive = false; existing reservations are kept.
         Task<bool> DeactivateAsync(int id);
+
+        // Optional image (uploads or replaces it; returns its stored path).
+        Task<string> UploadImageAsync(int id, IFormFile file);
+
+        Task DeleteImageAsync(int id);
     }
 }

@@ -186,12 +186,16 @@ function OwnerSurpriseBagsPage() {
 
     }
 
-    function handleSaved(bag: OwnerSurpriseBag) {
+    // warning: a new bag was created but its image wasn't uploaded.
+    function handleSaved(bag: OwnerSurpriseBag, warning?: string) {
 
-        notify(
-            formTarget?.bag ? "Surprise Bag updated." : `"${bag.title}" created.`,
-            "success"
-        );
+        if (warning)
+            notify(warning, "warning");
+        else
+            notify(
+                formTarget?.bag ? "Surprise Bag updated." : `"${bag.title}" created.`,
+                "success"
+            );
 
         setFormTarget(null);
 

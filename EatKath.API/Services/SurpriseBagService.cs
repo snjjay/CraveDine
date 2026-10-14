@@ -23,12 +23,21 @@ namespace EatKath.API.Services
         public const int DefaultPublicTake = 50;
         public const int MaxPublicTake = 100;
 
+        // Largest accepted bag image (the owner form checks the same limit
+        // before uploading). Same as menu-item images.
+        public const long MaxImageBytes = 5 * 1024 * 1024;
+
+        // Bag images live under the web root (the persistent uploads store
+        // in production): /uploads/surprisebags/{bagId}/image-<guid>.<ext>.
+        private const string ImageFolderPrefix = "/uploads/surprisebags/";
+
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly ICurrentUserService _currentUser;
         private readonly TimeProvider _timeProvider;
         private readonly IValidator<CreateSurpriseBagDto> _createValidator;
         private readonly IValidator<UpdateSurpriseBagDto> _updateValidator;
+        private readonly FileStorageService _fileStorage;
 
         public SurpriseBagService(
             ApplicationDbContext context,
@@ -36,7 +45,8 @@ namespace EatKath.API.Services
             ICurrentUserService currentUser,
             TimeProvider timeProvider,
             IValidator<CreateSurpriseBagDto> createValidator,
-            IValidator<UpdateSurpriseBagDto> updateValidator)
+            IValidator<UpdateSurpriseBagDto> updateValidator,
+            FileStorageService fileStorage)
         {
             _context = context;
             _mapper = mapper;
@@ -44,6 +54,7 @@ namespace EatKath.API.Services
             _timeProvider = timeProvider;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
+            _fileStorage = fileStorage;
         }
 
         // ==========================================================
@@ -276,6 +287,86 @@ namespace EatKath.API.Services
         // ==========================================================
         // Helpers
         // ==========================================================
+
+        // ==========================================================
+        // Image (cosmetic: allowed for inactive bags and when the pickup
+        // details are locked)
+        // ==========================================================
+
+        // Uploads or replaces the bag's image and returns its stored path.
+        // The previous file is deleted only after the new path is saved.
+        public async Task<string> UploadImageAsync(int id, IFormFile file)
+        {
+            var bag = await FindWithRestaurantAsync(id);
+
+            if (bag == null)
+                throw new NotFoundException("Surprise Bag not found.");
+
+            EnsureCanManage(bag.Restaurant, "change the image of this Surprise Bag");
+
+            var previousImageUrl = bag.ImageUrl;
+
+            var imagePath = await _fileStorage.SaveValidatedImageAsync(
+                file,
+                $"uploads/surprisebags/{bag.Id}",
+                MaxImageBytes);
+
+            bag.ImageUrl = imagePath;
+            bag.UpdatedAt = DateTime.UtcNow;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                // Not saved: the new file would be orphaned.
+                await DeleteUploadedImageAsync(imagePath);
+                throw;
+            }
+
+            await DeleteUploadedImageAsync(previousImageUrl);
+
+            return imagePath;
+        }
+
+        // Removes the bag's image (nothing to do when it has none). The
+        // file is deleted only after the cleared path is saved.
+        public async Task DeleteImageAsync(int id)
+        {
+            var bag = await FindWithRestaurantAsync(id);
+
+            if (bag == null)
+                throw new NotFoundException("Surprise Bag not found.");
+
+            EnsureCanManage(bag.Restaurant, "remove the image of this Surprise Bag");
+
+            var previousImageUrl = bag.ImageUrl;
+
+            if (previousImageUrl == null)
+                return;
+
+            bag.ImageUrl = null;
+            bag.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            await DeleteUploadedImageAsync(previousImageUrl);
+        }
+
+        // Deletes a bag image uploaded through this service. Any other value
+        // (empty, outside /uploads/surprisebags/, or with "..") is left alone.
+        private async Task DeleteUploadedImageAsync(string? imageUrl)
+        {
+            if (string.IsNullOrEmpty(imageUrl) ||
+                !imageUrl.StartsWith(ImageFolderPrefix, StringComparison.OrdinalIgnoreCase) ||
+                imageUrl.Contains(".."))
+            {
+                return;
+            }
+
+            await _fileStorage.DeleteFileAsync(imageUrl);
+        }
 
         private async Task<SurpriseBag?> FindWithRestaurantAsync(int id)
         {

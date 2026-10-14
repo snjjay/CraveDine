@@ -8,6 +8,8 @@ using EatKath.API.Tests.Helpers;
 using EatKath.API.Validators.SurpriseBag;
 using FluentAssertions;
 using FluentValidation;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -21,9 +23,19 @@ public class SurpriseBagServiceTests
     private static readonly DateTime NoonInKathmanduUtc = new(2026, 11, 10, 6, 15, 0);
     private static readonly DateOnly Today = new(2026, 11, 10);
 
+    // Smallest headers the image upload's content check recognises.
+    private static readonly byte[] PngBytes =
+        { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D };
+
     private ApplicationDbContext _context = null!;
     private Mock<ICurrentUserService> _currentUser = null!;
     private SurpriseBagService _service = null!;
+
+    // FileStorageService is a concrete class (no interface to mock), so the
+    // image tests use it for real over a throwaway web root (as the
+    // menu-item image tests do); Cleanup removes it.
+    private string _testRootPath = null!;
+    private FileStorageService _fileStorage = null!;
 
     [TestInitialize]
     public void Setup()
@@ -35,7 +47,21 @@ public class SurpriseBagServiceTests
         _currentUser.Setup(x => x.UserId).Returns(1);
         _currentUser.Setup(x => x.IsAdmin).Returns(false);
 
+        _testRootPath = Path.Combine(Path.GetTempPath(), "EatKathTests_SurpriseBag_" + Guid.NewGuid());
+
+        var webHostEnvironment = new Mock<IWebHostEnvironment>();
+        webHostEnvironment.Setup(e => e.WebRootPath).Returns(_testRootPath);
+
+        _fileStorage = new FileStorageService(webHostEnvironment.Object);
+
         UseClock(NoonInKathmanduUtc);
+    }
+
+    [TestCleanup]
+    public void Cleanup()
+    {
+        if (Directory.Exists(_testRootPath))
+            Directory.Delete(_testRootPath, recursive: true);
     }
 
     private void UseClock(DateTime utc)
@@ -46,7 +72,8 @@ public class SurpriseBagServiceTests
             _currentUser.Object,
             BusinessTimeProvider.CreateKathmandu(new FixedTimeProvider(utc)),
             new CreateSurpriseBagValidator(),
-            new UpdateSurpriseBagValidator());
+            new UpdateSurpriseBagValidator(),
+            _fileStorage);
     }
 
     private async Task<Restaurant> SeedRestaurantAsync(int ownerId = 1, bool isActive = true, string currencyCode = "NPR")
@@ -328,7 +355,7 @@ public class SurpriseBagServiceTests
         fields.Should().BeEquivalentTo(
             "id", "restaurantId", "restaurantName", "currencyCode", "title", "category",
             "description", "conditions", "price", "estimatedValue", "maxPerCustomer",
-            "pickupDate", "pickupStartTime", "pickupEndTime", "remainingQuantity", "isSoldOut");
+            "pickupDate", "pickupStartTime", "pickupEndTime", "imageUrl", "remainingQuantity", "isSoldOut");
 
         // Owner-only (OwnerSurpriseBagDto) and customer/reservation fields.
         fields.Should().NotContain(new[]
@@ -456,6 +483,34 @@ public class SurpriseBagServiceTests
         saved.RestaurantId.Should().Be(restaurant.Id);
         saved.Title.Should().Be("End-of-day bakery bag");
         saved.PickupDate.Should().Be(Today.AddDays(1));
+    }
+
+    // The quantity sent is the quantity saved (no default is applied).
+    [TestMethod]
+    public async Task CreateAsync_ShouldSaveTheGivenQuantityTotal()
+    {
+        var restaurant = await SeedRestaurantAsync();
+        var dto = ValidCreateDto(restaurant.Id);
+        dto.QuantityTotal = 1;
+        dto.MaxPerCustomer = 1;
+
+        var result = await _service.CreateAsync(dto);
+
+        result.QuantityTotal.Should().Be(1);
+        result.ReservedQuantity.Should().Be(0);
+        result.RemainingQuantity.Should().Be(1);
+        result.IsSoldOut.Should().BeFalse();
+        _context.SurpriseBags.Single().QuantityTotal.Should().Be(1);
+
+        // One reservation takes the only bag.
+        await SeedReservationAsync(_context.SurpriseBags.Single(), 50, 1, SurpriseBagReservationStatus.Reserved);
+
+        var managed = await _service.GetManagedByIdAsync(result.Id);
+
+        managed!.QuantityTotal.Should().Be(1);
+        managed.ReservedQuantity.Should().Be(1);
+        managed.RemainingQuantity.Should().Be(0);
+        managed.IsSoldOut.Should().BeTrue();
     }
 
     [TestMethod]
@@ -727,6 +782,238 @@ public class SurpriseBagServiceTests
 
         withoutFlag.IsActive.Should().BeNull();
         withFlag.IsActive.Should().BeFalse();
+    }
+
+    // =========================================================
+    // Image (real file I/O under the throwaway web root)
+    // =========================================================
+
+    // A real FormFile over in-memory bytes (PNG by default), so the
+    // content check and the file copy both run for real.
+    private static IFormFile BuildFormFile(string fileName = "photo.png", byte[]? content = null)
+    {
+        var bytes = content ?? PngBytes;
+
+        return new FormFile(new MemoryStream(bytes), 0, bytes.Length, "File", fileName);
+    }
+
+    private string ToAbsolutePath(string relativePath) =>
+        Path.Combine(_testRootPath, relativePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+
+    private string BagImageFolder(int bagId) =>
+        Path.Combine(_testRootPath, "uploads", "surprisebags", bagId.ToString());
+
+    // Creates a real file for a stored image path, as an earlier upload would have.
+    private string CreateFileFor(string relativePath)
+    {
+        var absolutePath = ToAbsolutePath(relativePath);
+
+        Directory.CreateDirectory(Path.GetDirectoryName(absolutePath)!);
+        File.WriteAllBytes(absolutePath, PngBytes);
+
+        return absolutePath;
+    }
+
+    [TestMethod]
+    public async Task UploadImageAsync_ShouldSaveImageInTheBagFolder_AndExposeItPublicly()
+    {
+        var restaurant = await SeedRestaurantAsync();
+        var bag = await SeedBagAsync(restaurant, "Tomorrow", Today.AddDays(1));
+
+        var result = await _service.UploadImageAsync(bag.Id, BuildFormFile());
+
+        result.Should().StartWith($"/uploads/surprisebags/{bag.Id}/image-").And.EndWith(".png");
+        File.Exists(ToAbsolutePath(result)).Should().BeTrue();
+
+        var saved = _context.SurpriseBags.Single();
+        saved.ImageUrl.Should().Be(result);
+        saved.UpdatedAt.Should().NotBeNull();
+
+        (await _service.GetPublicByIdAsync(bag.Id))!.ImageUrl.Should().Be(result);
+        (await _service.GetManagedByIdAsync(bag.Id))!.ImageUrl.Should().Be(result);
+    }
+
+    [TestMethod]
+    public async Task UploadImageAsync_ShouldReplaceImage_AndDeleteThePreviousFile()
+    {
+        var restaurant = await SeedRestaurantAsync();
+        var bag = await SeedBagAsync(restaurant, "Tomorrow", Today.AddDays(1));
+
+        var first = await _service.UploadImageAsync(bag.Id, BuildFormFile("first.png"));
+        var second = await _service.UploadImageAsync(bag.Id, BuildFormFile("second.png"));
+
+        second.Should().NotBe(first);
+        File.Exists(ToAbsolutePath(first)).Should().BeFalse();
+        File.Exists(ToAbsolutePath(second)).Should().BeTrue();
+        Directory.GetFiles(BagImageFolder(bag.Id)).Should().ContainSingle();
+        _context.SurpriseBags.Single().ImageUrl.Should().Be(second);
+    }
+
+    // A rejected replacement must leave the current image and its file alone.
+    [TestMethod]
+    [DataRow("photo.gif", null, "Only JPG, PNG and WEBP images are allowed.")]
+    [DataRow("photo.png", "text", "The selected file is not a valid JPG, PNG or WEBP image.")]
+    [DataRow("photo.png", "empty", "The selected image is empty.")]
+    [DataRow("photo.png", "oversized", "Images must be 5 MB or smaller.")]
+    public async Task UploadImageAsync_ShouldRejectInvalidImages_AndKeepTheCurrentImage(
+        string fileName, string? content, string message)
+    {
+        var restaurant = await SeedRestaurantAsync();
+        var bag = await SeedBagAsync(restaurant, "Tomorrow", Today.AddDays(1));
+        var current = await _service.UploadImageAsync(bag.Id, BuildFormFile());
+
+        var bytes = content switch
+        {
+            "text" => "not an image at all"u8.ToArray(),
+            "empty" => Array.Empty<byte>(),
+            "oversized" => PngBytes.Concat(new byte[SurpriseBagService.MaxImageBytes]).ToArray(),
+            _ => null
+        };
+
+        var ex = await Assert.ThrowsExceptionAsync<BusinessRuleException>(
+            () => _service.UploadImageAsync(bag.Id, BuildFormFile(fileName, bytes)));
+
+        ex.Message.Should().Be(message);
+        _context.SurpriseBags.Single().ImageUrl.Should().Be(current);
+        File.Exists(ToAbsolutePath(current)).Should().BeTrue();
+        Directory.GetFiles(BagImageFolder(bag.Id)).Should().ContainSingle();
+    }
+
+    [TestMethod]
+    public async Task UploadImageAsync_ShouldAcceptAFileExactlyAtTheSizeLimit()
+    {
+        var restaurant = await SeedRestaurantAsync();
+        var bag = await SeedBagAsync(restaurant, "Tomorrow", Today.AddDays(1));
+        var atLimit = PngBytes.Concat(new byte[SurpriseBagService.MaxImageBytes - PngBytes.Length]).ToArray();
+
+        var result = await _service.UploadImageAsync(bag.Id, BuildFormFile("big.png", atLimit));
+
+        File.Exists(ToAbsolutePath(result)).Should().BeTrue();
+    }
+
+    // Images are cosmetic: allowed for an inactive bag whose pickup details
+    // are locked by a reservation.
+    [TestMethod]
+    public async Task UploadImageAsync_ShouldAllowInactiveAndPickupLockedBags()
+    {
+        var restaurant = await SeedRestaurantAsync();
+        var bag = await SeedBagAsync(restaurant, "Tomorrow", Today.AddDays(1), isActive: false);
+        await SeedReservationAsync(bag, 50, 1, SurpriseBagReservationStatus.Reserved);
+        (await _service.GetManagedByIdAsync(bag.Id))!.IsPickupLocked.Should().BeTrue();
+
+        var result = await _service.UploadImageAsync(bag.Id, BuildFormFile());
+
+        var managed = await _service.GetManagedByIdAsync(bag.Id);
+        managed!.ImageUrl.Should().Be(result);
+        managed.IsActive.Should().BeFalse();
+        managed.ReservedQuantity.Should().Be(1);
+        _context.SurpriseBagReservations.Single().Status.Should().Be(SurpriseBagReservationStatus.Reserved);
+    }
+
+    [TestMethod]
+    public async Task ImageChanges_ShouldRejectNonOwner_ButAllowAdmin()
+    {
+        var otherOwners = await SeedRestaurantAsync(ownerId: 2);
+        var bag = await SeedBagAsync(otherOwners, "Tomorrow", Today.AddDays(1));
+
+        var upload = await Assert.ThrowsExceptionAsync<BusinessRuleException>(
+            () => _service.UploadImageAsync(bag.Id, BuildFormFile()));
+        upload.Message.Should().Be("You are not authorized to change the image of this Surprise Bag.");
+        Directory.Exists(BagImageFolder(bag.Id)).Should().BeFalse();
+
+        var remove = await Assert.ThrowsExceptionAsync<BusinessRuleException>(
+            () => _service.DeleteImageAsync(bag.Id));
+        remove.Message.Should().Be("You are not authorized to remove the image of this Surprise Bag.");
+
+        _currentUser.Setup(x => x.IsAdmin).Returns(true);
+
+        var result = await _service.UploadImageAsync(bag.Id, BuildFormFile());
+        _context.SurpriseBags.Single().ImageUrl.Should().Be(result);
+
+        await _service.DeleteImageAsync(bag.Id);
+        _context.SurpriseBags.Single().ImageUrl.Should().BeNull();
+    }
+
+    [TestMethod]
+    public async Task ImageChanges_ShouldThrowNotFound_WhenBagIsMissing()
+    {
+        await Assert.ThrowsExceptionAsync<NotFoundException>(
+            () => _service.UploadImageAsync(9999, BuildFormFile()));
+        await Assert.ThrowsExceptionAsync<NotFoundException>(
+            () => _service.DeleteImageAsync(9999));
+
+        Directory.Exists(Path.Combine(_testRootPath, "uploads")).Should().BeFalse();
+    }
+
+    [TestMethod]
+    public async Task DeleteImageAsync_ShouldClearTheImage_AndDeleteItsFile()
+    {
+        var restaurant = await SeedRestaurantAsync();
+        var bag = await SeedBagAsync(restaurant, "Tomorrow", Today.AddDays(1));
+        var imageUrl = await _service.UploadImageAsync(bag.Id, BuildFormFile());
+
+        await _service.DeleteImageAsync(bag.Id);
+
+        _context.SurpriseBags.Single().ImageUrl.Should().BeNull();
+        File.Exists(ToAbsolutePath(imageUrl)).Should().BeFalse();
+        (await _service.GetPublicByIdAsync(bag.Id))!.ImageUrl.Should().BeNull();
+    }
+
+    [TestMethod]
+    public async Task DeleteImageAsync_ShouldDoNothing_WhenTheBagHasNoImage()
+    {
+        var restaurant = await SeedRestaurantAsync();
+        var bag = await SeedBagAsync(restaurant, "Tomorrow", Today.AddDays(1));
+
+        await _service.DeleteImageAsync(bag.Id);
+
+        var saved = _context.SurpriseBags.Single();
+        saved.ImageUrl.Should().BeNull();
+        saved.UpdatedAt.Should().BeNull();
+    }
+
+    // Only files under /uploads/surprisebags/ are ever deleted.
+    [TestMethod]
+    [DataRow("/uploads/demo/bakery-01.jpg")]
+    [DataRow("/uploads/surprisebags/../demo/bakery-01.jpg")]
+    public async Task ImageChanges_ShouldNotDeleteFilesOutsideSurpriseBagUploads(string storedPath)
+    {
+        var restaurant = await SeedRestaurantAsync();
+        var bag = await SeedBagAsync(restaurant, "Tomorrow", Today.AddDays(1));
+        var otherFile = CreateFileFor("/uploads/demo/bakery-01.jpg");
+
+        bag.ImageUrl = storedPath;
+        await _context.SaveChangesAsync();
+
+        await _service.UploadImageAsync(bag.Id, BuildFormFile());
+        File.Exists(otherFile).Should().BeTrue();
+
+        bag.ImageUrl = storedPath;
+        await _context.SaveChangesAsync();
+
+        await _service.DeleteImageAsync(bag.Id);
+        File.Exists(otherFile).Should().BeTrue();
+        _context.SurpriseBags.Single().ImageUrl.Should().BeNull();
+    }
+
+    // Editing or creating a bag's details never changes its image.
+    [TestMethod]
+    public async Task CreateAndUpdate_ShouldNotChangeTheImage()
+    {
+        var restaurant = await SeedRestaurantAsync();
+        var created = await _service.CreateAsync(ValidCreateDto(restaurant.Id));
+        created.ImageUrl.Should().BeNull();
+
+        var imageUrl = await _service.UploadImageAsync(created.Id, BuildFormFile());
+        var bag = _context.SurpriseBags.Single();
+        var dto = UpdateDtoFrom(bag);
+        dto.Title = "Renamed bag";
+
+        var updated = await _service.UpdateAsync(bag.Id, dto);
+
+        updated.Title.Should().Be("Renamed bag");
+        updated.ImageUrl.Should().Be(imageUrl);
+        File.Exists(ToAbsolutePath(imageUrl)).Should().BeTrue();
     }
 
     // =========================================================

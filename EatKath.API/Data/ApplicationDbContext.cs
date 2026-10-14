@@ -324,6 +324,7 @@ namespace EatKath.API.Data
                 bag.Property(x => x.Conditions).HasMaxLength(1000);
                 bag.Property(x => x.Price).HasPrecision(18, 2);
                 bag.Property(x => x.EstimatedValue).HasPrecision(18, 2);
+                bag.Property(x => x.ImageUrl).HasMaxLength(500);
 
                 bag.HasIndex(x => new { x.RestaurantId, x.PickupDate });
 

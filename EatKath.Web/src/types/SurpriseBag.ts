@@ -21,6 +21,8 @@ export interface SurpriseBag {
     pickupDate: string;
     pickupStartTime: string;
     pickupEndTime: string;
+    // Stored image path (use getImageUrl), or null: show the category icon.
+    imageUrl: string | null;
     // Calculated by the API (Reserved and Collected reservations hold stock).
     remainingQuantity: number;
     isSoldOut: boolean;

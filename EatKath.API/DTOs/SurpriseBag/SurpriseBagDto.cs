@@ -34,6 +34,10 @@ namespace EatKath.API.DTOs.SurpriseBag
 
         public TimeOnly PickupEndTime { get; set; }
 
+        // Stored image path (e.g. "/uploads/surprisebags/12/image-<guid>.jpg"),
+        // or null when the bag has no image.
+        public string? ImageUrl { get; set; }
+
         // Calculated by SurpriseBagService (Reserved and Collected
         // reservations hold stock), not mapped.
         public int RemainingQuantity { get; set; }

@@ -85,6 +85,20 @@ public class SurpriseBagModelTests
         column.IsNullable.Should().BeFalse();
     }
 
+    // Optional bag image: a bounded, nullable path.
+    [TestMethod]
+    public void ImageUrl_ShouldBeOptionalNvarchar500()
+    {
+        using var context = CreateSqlServerContext();
+
+        var column = DesignTimeModel(context).FindEntityType(typeof(SurpriseBag))!
+            .FindProperty(nameof(SurpriseBag.ImageUrl))!;
+
+        column.IsNullable.Should().BeTrue();
+        column.GetMaxLength().Should().Be(500);
+        column.GetColumnType().Should().Be("nvarchar(500)");
+    }
+
     [TestMethod]
     public void ConfirmationCode_ShouldHaveUniqueIndex()
     {
@@ -247,5 +261,26 @@ public class SurpriseBagModelTests
         migration.DownOperations.Should().AllBeOfType<DropTableOperation>();
         migration.DownOperations.Cast<DropTableOperation>().Select(t => t.Name)
             .Should().Equal("SurpriseBagReservations", "SurpriseBags");
+    }
+
+    // Additive only: one nullable column, so existing bags (null = no
+    // image) and their reservations are untouched; Down() drops just it.
+    [TestMethod]
+    public void AddSurpriseBagImageUrlMigration_ShouldOnlyAddAndDropOneNullableColumn()
+    {
+        var migration = new AddSurpriseBagImageUrl();
+
+        var add = migration.UpOperations.Should().ContainSingle()
+            .Which.Should().BeOfType<AddColumnOperation>().Subject;
+        add.Table.Should().Be("SurpriseBags");
+        add.Name.Should().Be("ImageUrl");
+        add.IsNullable.Should().BeTrue();
+        add.MaxLength.Should().Be(500);
+        add.DefaultValue.Should().BeNull();
+
+        var drop = migration.DownOperations.Should().ContainSingle()
+            .Which.Should().BeOfType<DropColumnOperation>().Subject;
+        drop.Table.Should().Be("SurpriseBags");
+        drop.Name.Should().Be("ImageUrl");
     }
 }

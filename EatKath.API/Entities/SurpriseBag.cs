@@ -39,6 +39,11 @@ namespace EatKath.API.Entities
 
         public bool IsActive { get; set; } = true;
 
+        // Optional photo, e.g. "/uploads/surprisebags/12/image-<guid>.jpg"
+        // (set only through the image upload endpoint). Null: the category
+        // icon is shown instead.
+        public string? ImageUrl { get; set; }
+
         // Navigation Properties
         public Restaurant Restaurant { get; set; } = null!;
 
